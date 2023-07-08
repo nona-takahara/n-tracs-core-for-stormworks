@@ -35,7 +35,7 @@ function Area.isInArea(self, pos)
     for i, v0 in polygon do
         local v1 = polygon[(i + 1) % n]
         prod = Complex.mul(prod,
-            Complex.sqrt(
+            Complex.halfArgument(
                 Complex.mul(
                     Complex.new(v1.x - x, v1.z - z),
                     Complex.conjugate(Complex.new(v0.x - x, v0.z - z))
