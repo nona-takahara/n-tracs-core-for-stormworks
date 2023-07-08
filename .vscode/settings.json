@@ -1,0 +1,61 @@
+{
+    "lifeboatapi.stormworks.isMicrocontrollerProject": false,
+    "lifeboatapi.stormworks.isAddonProject": true,
+    "lifeboatapi.stormworks.minimizer.removeComments": true,
+    "lifeboatapi.stormworks.minimizer.reduceAllWhitespace": true,
+    "lifeboatapi.stormworks.minimizer.reduceNewlines": true,
+    "lifeboatapi.stormworks.minimizer.removeRedundancies": true,
+    "lifeboatapi.stormworks.minimizer.shortenVariables": true,
+    "lifeboatapi.stormworks.minimizer.shortenGlobals": true,
+    "lifeboatapi.stormworks.minimizer.shortenNumbers": true,
+    "lifeboatapi.stormworks.minimizer.shortenStringDuplicates": true,
+    "lifeboatapi.stormworks.minimizer.forceNCBoilerplate": true,
+    "lifeboatapi.stormworks.minimizer.forceBoilerplate": true,
+    "Lua.diagnostics.disable": [
+        "lowercase-global"
+    ],
+    "Lua.diagnostics.globals": [
+        "__simulator",
+        "print",
+        "simulator"
+    ],
+    "Lua.runtime.version": "Lua 5.3",
+    "Lua.runtime.builtin": {
+        "coroutine": "enable",
+        "bit32": "enable",
+        "bit": "enable",
+        "builtin": "enable",
+        "utf8": "enable",
+        "package": "enable",
+        "os": "enable",
+        "jit": "enable",
+        "io": "enable",
+        "ffi": "enable",
+        "debug": "enable",
+        "basic": "enable"
+    },
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        "/_build/",
+        "!/_build/libs/",
+        "!/_build/_buildactions.lua"
+    ],
+    "Lua.runtime.path": [
+        "?.lua",
+        "?/init.lua"
+    ],
+    "Lua.runtime.pathStrict": true,
+    "Lua.workspace.library": [
+        "c:/Users/taka/Documents/GitHub/n-tracs-soya-express/",
+        "c:/Users/taka/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Common/",
+        "c:/Users/taka/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Addon/",
+        "c:/Users/taka/Documents/GitHub/n-tracs-soya-express/_build/libs/"
+    ],
+    "lifeboatapi.stormworks.libs.gitLibraries": [
+        {
+            "name": "LifeBoatAPI",
+            "gitUrl": "https://github.com/nameouschangey/Stormworks_LifeBoatAPI_Addon.git"
+        }
+    ],
+    "lifeboatapi.stormworks.user.authorName": "Nona Takahara, Asme Nanaha, Teinishi"
+}
