@@ -34,10 +34,13 @@ function Area.isInArea(self, pos)
     local prod = Complex.new(1, 0)
     for i, v0 in polygon do
         local v1 = polygon[(i + 1) % n]
-        prod = prod:mul(
-            Complex.new(v1.x - x, v1.z - z):mul(
-                Complex.new(v0.x - x, v0.z - z):conjugate()
-            ):sqrt()
+        prod = Complex.mul(prod,
+            Complex.sqrt(
+                Complex.mul(
+                    Complex.new(v1.x - x, v1.z - z),
+                    Complex.conjugate(Complex.new(v0.x - x, v0.z - z))
+                )
+            )
         )
     end
     return prod.re < 0

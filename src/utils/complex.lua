@@ -14,39 +14,39 @@ function Complex.new(re, im)
 end
 
 ---共役
----@params self Complex
+---@params a Complex
 ---@returns Complex
-function Complex.conjugate(self)
+function Complex.conjugate(a)
     return {
-        re = self.re,
-        im = -self.im
+        re = a.re,
+        im = -a.im
     }
 end
 
 ---乗算
----@params self Complex
+---@params a Complex
 ---@params b Complex
 ---@returns Complex
-function Complex.mul(self, b)
+function Complex.mul(a, b)
     return {
-        re = self.re * b.re - self.im * b.im,
-        im = self.re * b.im + b.re * self.im
+        re = a.re * b.re - a.im * b.im,
+        im = a.re * b.im + b.re * a.im
     }
 end
 
 ---1/2乗
----@params self Complex
+---@params a Complex
 ---@return Complex
-function Complex.sqrt(self)
-    local r = math.sqrt(self.re ^ 2 + self.im ^ 2);
+function Complex.sqrt(a)
+    local r = math.sqrt(a.re ^ 2 + a.im ^ 2);
     local sign = 0
-    if self.im > 0 then
+    if a.im > 0 then
         sign = 1
-    elseif self.im < 0 then
+    elseif a.im < 0 then
         sign = -1
     end
     return {
-        re = math.sqrt((self.re + r) / 2),
-        im = sign * math.sqrt((-self.re + r) / 2)
+        re = math.sqrt((a.re + r) / 2),
+        im = sign * math.sqrt((-a.re + r) / 2)
     }
 end
