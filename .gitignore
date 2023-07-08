@@ -1,0 +1,5 @@
+/.vscode/
+/_build/
+!/_build/_buildactions.lua
+edit.bat
+/res/
