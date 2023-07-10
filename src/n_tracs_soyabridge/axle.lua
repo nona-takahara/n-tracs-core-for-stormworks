@@ -64,43 +64,50 @@ function Axle.refresh(self)
 end
 
 function Axle.search(self)
-    ---@type Area[]
-    local q = {}
-    ---@type Area
-    local a
-    local top = 1
-    local found = false
-
     self.area = self.area or DEFAULT_AREA
 
+    ---@type Area[]
+    local queue = {}
+    local front = 1
+    ---@type Area
+    local targetArea
+    local found = false
+
+    table.insert(queue, self.area)
+
     -- BFS
-    table.insert(q, self.area)
-    q[1].bfsFootmark = true
-    while #(q) >= top do
-        a = q[top]
-        top = top + 1
-        if Area.isInArea(a, self.real_pos)then
+    while front <= #queue do
+        targetArea = queue[front]
+
+        if Area.isInArea(targetArea, self.real_pos) then
             found = true
             break
-        else
-            for _, aa in ipairs(a.nodeToArea) do
-                if aa.bfsFootmark == false then
-                    aa.bfsFootmark = true
-                    table.insert(q, aa)
+        end
+
+        -- 隣接エリアをキューに追加
+        for _, adjacentArea in ipairs(targetArea.nodeToArea) do
+            -- 重複チェック
+            local alreadyExist = false
+            for _, a in ipairs(queue) do
+                if a == adjacentArea then
+                    alreadyExist = true
+                    break
                 end
             end
-        end
-    end
 
-    for _, v in ipairs(q) do
-        v.bfsFootmark = false
+            if not alreadyExist then
+                table.insert(queue, adjacentArea)
+            end
+        end
+
+        front = front + 1
     end
 
     if found then
-        self.area = a
-        if a.axleModeFlag ~= AxleMode.NoChange then
-            self.mode = a.axleModeFlag
+        self.area = targetArea
+        if targetArea.axleModeFlag ~= AxleMode.NoChange then
+            self.mode = targetArea.axleModeFlag
         end
-        Area.insertAxle(a, self)
+        Area.insertAxle(targetArea, self)
     end
 end

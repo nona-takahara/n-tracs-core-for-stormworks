@@ -6,7 +6,6 @@ Area = Area or {}
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
 ---@field axleModeFlag number @上り下りのフラグ設定
 ---@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
----@field bfsFootmark boolean @探索時の足跡
 ---@field leftVertexId number
 ---@field rightVertexId number
 ---@field upAxle Axle[] @左から順に車軸情報
@@ -17,7 +16,6 @@ Area = Area or {}
 ---comment
 ---@param self Area
 function Area.clear(self)
-    self.bfsFootmark = false
     self.upAxle = {}
     self.downAxle = {}
 end
