@@ -24,13 +24,14 @@ Track = Track or {}
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.new(itemName)
-    return Track.renew({}, itemName)
+    return Track.overWrite({}, itemName)
 end
 
 ---抽象軌道回路データを作成します
+---@param baseObject table ベースとなるオブジェクト
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
-function Track.renew(baseObject, itemName)
+function Track.overWrite(baseObject, itemName)
     baseObject.name = "Track"
     baseObject.itemName = itemName
     baseObject.relatedLever = nil

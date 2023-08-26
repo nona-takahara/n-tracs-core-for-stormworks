@@ -1,3 +1,5 @@
+require('src.utils.complex')
+
 ---@type Area
 Area = Area or {}
 
@@ -6,7 +8,6 @@ Area = Area or {}
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
 ---@field axleModeFlag number @上り下りのフラグ設定
 ---@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
----@field bfsFootmark boolean @探索時の足跡
 ---@field leftVertexId number
 ---@field rightVertexId number
 ---@field upAxle Axle[] @左から順に車軸情報
@@ -17,7 +18,6 @@ Area = Area or {}
 ---comment
 ---@param self Area
 function Area.clear(self)
-    self.bfsFootmark = false
     self.upAxle = {}
     self.downAxle = {}
 end
@@ -28,26 +28,20 @@ end
 ---@return boolean
 function Area.isInArea(self, pos)
     local polygon, x, z = self.vertexs, pos.x, pos.z
-
-    local f, vt
-    f = false
-    for i = 1, (#polygon - 1) do
-        if ((polygon[i].z <= z) and polygon[i + 1].z > z)
-            or ((polygon[i].z > z) and polygon[i + 1].z <= z) then
-            vt = (z - polygon[i].z) / (polygon[i + 1].z - polygon[i].z)
-            if x < (polygon[i].x + (vt * (polygon[i + 1].x - polygon[i].x))) then
-                f = not f
-            end
-        end
+    local n = #polygon
+    local prod = Complex.new(1, 0)
+    for i, v0 in polygon do
+        local v1 = polygon[(i + 1) % n]
+        prod = Complex.mul(prod,
+            Complex.halfArgument(
+                Complex.mul(
+                    Complex.new(v1.x - x, v1.z - z),
+                    Complex.conjugate(Complex.new(v0.x - x, v0.z - z))
+                )
+            )
+        )
     end
-    if ((polygon[#polygon].z <= z) and polygon[1].z > z)
-        or ((polygon[#polygon].z > z) and polygon[1].z <= z) then
-        vt = (z - polygon[#polygon].z) / (polygon[1].z - polygon[#polygon].z)
-        if x < (polygon[#polygon].x + (vt * (polygon[1].x - polygon[#polygon].x))) then
-            f = not f
-        end
-    end
-    return f
+    return prod.re < 0
 end
 
 function Len2(v1, v2)

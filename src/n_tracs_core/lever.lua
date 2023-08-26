@@ -23,6 +23,7 @@ RouteDirection = {
 ---@field destination Track 進路てこ区間の終点
 ---@field private switches SwitchRoute[]
 ---@field private routeLock Track[]
+---@field private approachTrack Track[]
 ---@field private overrunLock Track[]
 ---@field private signalTrack Track[]
 ---@field direction RouteDirection [CONSTANT]進路てこの方向
@@ -40,18 +41,19 @@ Lever = Lever or {}
 ---@param overrunLock Track[] 過走防護を行う抽象軌道回路
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
+---@param approachTrack Track[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction, lockTime,
-                   overrunTime, updateCallback)
-    return Lever.renew({}, itemName, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
-        lockTime,
-        overrunTime, updateCallback)
+function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock, 
+    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+    return Lever.overWrite({}, itemName, startTrack, destination, switches, routeLock, overrunLock, 
+    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
 end
 
 ---てこ構造体のインスタンスを作成します
+---@param baseObject table ベースとなるオブジェクト
 ---@param itemName string てこ名称
 ---@param startTrack Track 進路てこ区間の始点
 ---@param destination Track 進路てこ区間の終点
@@ -60,13 +62,13 @@ end
 ---@param overrunLock Track[] 過走防護を行う抽象軌道回路
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
+---@param approachTrack Track[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.renew(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
-                     direction, lockTime,
-                     overrunTime, updateCallback)
+function Lever.overWrite(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock, 
+    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
     baseObject.name = "Lever"
     baseObject.itemName = itemName
     baseObject.input = false
@@ -80,6 +82,7 @@ function Lever.renew(baseObject, itemName, startTrack, destination, switches, ro
     baseObject.startTrack = startTrack
     baseObject.destination = destination
     baseObject.switches = switches
+    baseObject.approachTrack = approachTrack
     baseObject.routeLock = routeLock
     baseObject.overrunLock = overrunLock
     baseObject.signalTrack = signalTrack
@@ -212,6 +215,17 @@ function Lever:isNoShort()
     return true
 end
 
+---@private
+---@return boolean
+function Lever:isNoApproach()
+    for _, value in ipairs(self.approachTrack) do
+        if Track.isShort(value) then
+            return false
+        end
+    end
+    return true
+end
+
 ---継電連動装置の進路てこの物理的状態に相当する情報を設定します
 ---@param input boolean
 ---@param autoReset boolean
@@ -257,9 +271,10 @@ function Lever:process(deltaTick)
     self.TSSlR =
         (not self.HR) and (not self.ASR) and (Lever.isEnterRoute(self, true) or self.TSSlR)
 
-    -- たぶん接近鎖錠条件が欠落している
+    -- たぶん接近鎖錠条件が欠落している(TODO)
     self.ASR =
-        (not self.HR) and (not ZR) and (self.TSSlR and self.ASR and Lever.isTimerEnd(self))
+        (not self.HR) and (not ZR) and
+        (Lever.isNoApproach(self) or self.TSSlR or self.ASR or Lever.isTimerEnd(self))
 
     -- 時素リレー動作は「特開平04-154475」にて、既存の回路で確認
     -- R接点：動作開始で落下
