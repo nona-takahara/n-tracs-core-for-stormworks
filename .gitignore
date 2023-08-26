@@ -1,5 +1,9 @@
 /.vscode/
 /_build/
 !/_build/_buildactions.lua
-edit.bat
-/res/
+
+res/area_track.json
+res/area_track.lua
+
+res/signal.toml
+res/signal.lua

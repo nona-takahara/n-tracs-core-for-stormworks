@@ -21,6 +21,8 @@ Steamワークショップにて公開後、リンクを掲載します。
 
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Stormworks Lua with LifeBoatAPI](https://marketplace.visualstudio.com/items?itemName=NameousChangey.lifeboatapi) Extension
+- Python 3.11以降
+<!-- tomllibを使用するため -->
 
 ## How to Contribute
 コミットメッセージは日本語でOKです。

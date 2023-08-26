@@ -107,7 +107,7 @@ end
 ---@return boolean
 function Track:isOverrunLock(lever)
     return (self.relatedLever == lever and self.book == BookType.RouteOver) or
-    (self.book == BookType.RouteLock and self.direction == lever.direction)
+        (self.book == BookType.RouteLock and self.direction == lever.direction)
 end
 
 ---[package]
@@ -127,9 +127,8 @@ end
 ---@return boolean
 function Track:underRouteLock_n()
     return (self.book == BookType.Destination and self.timer < 0) or
-    (self.book == BookType.NoBook or self.book == BookType.Temporary)
+        (self.book == BookType.NoBook or self.book == BookType.Temporary)
 end
-
 
 ---[private]
 ---@private
