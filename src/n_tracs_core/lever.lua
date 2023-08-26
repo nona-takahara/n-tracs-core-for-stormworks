@@ -46,29 +46,49 @@ Lever = Lever or {}
 ---@return Lever
 function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction, lockTime,
                    overrunTime, updateCallback)
-    return {
-        name = "Lever",
-        itemName = itemName,
-        input = false,
-        ASR = true,
-        MSlR = false,
-        timerCount = 0,
-        TSSlR = false,
-        HR = false,
-        aspect = 0,
-        nextAspect = 0,
-        startTrack = startTrack,
-        destination = destination,
-        switches = switches,
-        routeLock = routeLock,
-        overrunLock = overrunLock,
-        signalTrack = signalTrack,
-        direction = direction,
-        lockTime = lockTime,
-        overrunTime = overrunTime,
-        updateCallback = updateCallback,
-        autoReset = false
-    }
+    return Lever.renew({}, itemName, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
+        lockTime,
+        overrunTime, updateCallback)
+end
+
+---てこ構造体のインスタンスを作成します
+---@param itemName string てこ名称
+---@param startTrack Track 進路てこ区間の始点
+---@param destination Track 進路てこ区間の終点
+---@param switches SwitchRoute[] 関連する転てつ器と開通方向の組み合わせ情報
+---@param routeLock Track[] 進路鎖錠を行う抽象軌道回路
+---@param overrunLock Track[] 過走防護を行う抽象軌道回路
+---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
+---@param direction RouteDirection 進路てこの方向
+---@param lockTime number 接近・保留鎖錠の時間(Tick)
+---@param overrunTime number 過走防護鎖錠の時間(Tick)
+---@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@return Lever
+function Lever.renew(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
+                     direction, lockTime,
+                     overrunTime, updateCallback)
+    baseObject.name = "Lever"
+    baseObject.itemName = itemName
+    baseObject.input = false
+    baseObject.ASR = true
+    baseObject.MSlR = false
+    baseObject.timerCount = 0
+    baseObject.TSSlR = false
+    baseObject.HR = false
+    baseObject.aspect = 0
+    baseObject.nextAspect = 0
+    baseObject.startTrack = startTrack
+    baseObject.destination = destination
+    baseObject.switches = switches
+    baseObject.routeLock = routeLock
+    baseObject.overrunLock = overrunLock
+    baseObject.signalTrack = signalTrack
+    baseObject.direction = direction
+    baseObject.lockTime = lockTime
+    baseObject.overrunTime = overrunTime
+    baseObject.updateCallback = updateCallback
+    baseObject.autoReset = false
+    return baseObject
 end
 
 ---現場扱いのてこが正当方向に転換しているか調べます

@@ -4,8 +4,8 @@
 require("src.n_tracs_core")
 
 -- 2. Load settings
-require("res.areas")
-require("res.levers")
+require("res.area_track")
+require("res.signal")
 
 -- 3. Load bridge
 require("src.n_tracs_soyabridge")

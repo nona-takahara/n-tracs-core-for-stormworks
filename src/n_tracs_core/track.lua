@@ -24,15 +24,21 @@ Track = Track or {}
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.new(itemName)
-    return {
-        name = "Track",
-        itemName = itemName,
-        relatedLever = nil,
-        book = BookType.NoBook,
-        direction = RouteDirection.None,
-        timer = 0,
-        beforeRouteLockItem = nil
-    }
+    return Track.renew({}, itemName)
+end
+
+---抽象軌道回路データを作成します
+---@param itemName string 抽象軌道回路名称です
+---@return Track
+function Track.renew(baseObject, itemName)
+    baseObject.name = "Track"
+    baseObject.itemName = itemName
+    baseObject.relatedLever = nil
+    baseObject.book = BookType.NoBook
+    baseObject.direction = RouteDirection.None
+    baseObject.timer = 0
+    baseObject.beforeRouteLockItem = nil
+    return baseObject
 end
 
 ---[package]
@@ -100,7 +106,7 @@ end
 ---@return boolean
 function Track:isOverrunLock(lever)
     return (self.relatedLever == lever and self.book == BookType.RouteOver) or
-    (self.book == BookType.RouteLock and self.direction == lever.direction)
+        (self.book == BookType.RouteLock and self.direction == lever.direction)
 end
 
 ---[package]
@@ -120,9 +126,8 @@ end
 ---@return boolean
 function Track:underRouteLock_n()
     return (self.book == BookType.Destination and self.timer < 0) or
-    (self.book == BookType.NoBook or self.book == BookType.Temporary)
+        (self.book == BookType.NoBook or self.book == BookType.Temporary)
 end
-
 
 ---[private]
 ---@private
