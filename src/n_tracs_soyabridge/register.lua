@@ -25,7 +25,7 @@ function onButtonPress(vehicle_id, peer_id, button_name)
 		VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
 		VehicleTable[vehicle_id].bridges = LoadBridgeDatas(vdata)
 	end
-	--[[]
+	--[[
     if button_name == "ENABLE CTC" then
 		local state, s = server.getVehicleButton(vehicle_id, button_name)
 		if state.on then
@@ -74,14 +74,15 @@ function LoadBridgeDatas(vdata)
 		if TRACKS[sign.name] then
 			table.insert(bridges.tracks, TRACKS[sign.name])
 		end
-		if SWITCH[sign.name] then
-			table.insert(bridges.switches, SWITCH[sign.name])
+		if SWITCHES[sign.name] then
+			table.insert(bridges.switches, SWITCHES[sign.name])
 		end
 		if LEVERS[sign.name] then
 			table.insert(bridges.levers, LEVERS[sign.name])
 		end
 	end
 
+	--[[
 	for _, button in ipairs(vdata.components.buttons) do
 		local v, _ = (button.name):gsub("_ASPECT", "")
 		if BRIDGE_LEVER_ALIAS[v] then
@@ -93,5 +94,6 @@ function LoadBridgeDatas(vdata)
 			table.insert(bridges.bridge.cross, v)
 		end
 	end
+	]]
 	return bridges
 end

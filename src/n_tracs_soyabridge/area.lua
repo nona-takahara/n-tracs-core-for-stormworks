@@ -1,6 +1,6 @@
 require('src.utils.complex')
 
----@type Area
+---@class Area
 Area = Area or {}
 
 ---@class Area
@@ -16,14 +16,12 @@ Area = Area or {}
 
 
 ---comment
----@param self Area
 function Area.clear(self)
     self.upAxle = {}
     self.downAxle = {}
 end
 
 ---comment
----@param self Area
 ---@param pos Vector2d
 ---@return boolean
 function Area.isInArea(self, pos)
@@ -48,6 +46,8 @@ function Len2(v1, v2)
 	return (v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z)
 end
 
+---comment
+---@param axle any
 function Area.insertAxle(self, axle)
     local lv = self.vertexs[self.leftVertexId]
     local lself = Len2(lv, axle.real_pos)
