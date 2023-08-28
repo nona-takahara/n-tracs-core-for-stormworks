@@ -30,8 +30,8 @@ function Area.isInArea(self, pos)
     local polygon, x, z = self.vertexs, pos.x, pos.z
     local n = #polygon
     local prod = Complex.new(1, 0)
-    for i, v0 in polygon do
-        local v1 = polygon[(i + 1) % n]
+    for i, v0 in ipairs(polygon) do
+        local v1 = polygon[i % n + 1]
         prod = Complex.mul(prod,
             Complex.halfArgument(
                 Complex.mul(
