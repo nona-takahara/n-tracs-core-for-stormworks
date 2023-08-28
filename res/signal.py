@@ -34,6 +34,7 @@ def lever_lua_code(name, data):
         '{' + ','.join(overrunLockMake) + '},' +\
         '{' + ','.join(signalTrackMake) + '},' +\
         f'RouteDirection.{data["direction"].capitalize()},' +\
+        '{' + ','.join(approachTrackMake) + '},' +\
         f'{data["approach_lock_time"]},' +\
         f'{data["overrun_lock_time"]},' +\
         f'{data["update_callback"]}' +\
