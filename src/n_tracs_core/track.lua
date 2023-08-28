@@ -130,15 +130,20 @@ function Track.underRouteLock_n(self)
         (self.book == BookType.NoBook or self.book == BookType.Temporary)
 end
 
----ポリフォーリズム的に取り扱う。ひとつ前の
+---ポリモーフィズム的に取り扱う。ひとつ前のNtracsObjectを調べる。
 ---@param item nil | NtracsObject
 ---@return boolean
 function CheckUnlockRouteLock(item)
     if item == nil then return true end
+
+    --クラス判別の必要があるため、内部データnameを取得
+    ---@diagnostic disable-next-line: invisible
     if item.name == "Track" then
         --Track型が確定しているためエラー回避
         ---@diagnostic disable-next-line
         return Track.underRouteLock_n(item)
+    --クラス判別の必要があるため、内部データnameを取得
+    ---@diagnostic disable-next-line: invisible
     elseif item.name == "Lever" then
         --Lever型が確定しているためエラー回避
         ---@diagnostic disable-next-line
