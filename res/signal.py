@@ -25,8 +25,8 @@ def lever_lua_code(name, data):
         approachTrackMake.append(f'TrackGetter"{v}"')
 
     rets = 'Lever.overWrite(' + \
-        f'LeverGetter"${name}",' +\
-        f'"${name}",' +\
+        f'LeverGetter"{name}",' +\
+        f'"{name}",' +\
         f'TrackGetter"{data["start"]}",' + \
         f'TrackGetter"{data["destination"]}",' + \
         '{' + f'{",".join(switchesMake)}' + '},' + \
