@@ -24,7 +24,7 @@ def lever_lua_code(name, data):
     for v in data["approach_track"]:
         approachTrackMake.append(f'TrackGetter"{v}"')
 
-    rets = 'Lever.renew(' + \
+    rets = 'Lever.overWrite(' + \
         f'LeverGetter"${name}",' +\
         f'"${name}",' +\
         f'TrackGetter"{data["start"]}",' + \
