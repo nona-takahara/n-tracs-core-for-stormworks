@@ -24,5 +24,23 @@ Steamワークショップにて公開後、リンクを掲載します。
 - Python 3.11以降
 <!-- tomllibを使用するため -->
 
+ワークスペースを作成し、設定の`Lua.workspace.library`に以下のディレクトリに対する**絶対パス**を設定してください
+- この`README.md`があるディレクトリ
+- このリポジトリの`/_build/libs/`
+- LifeBoat APIの`/assets/lua/Common/`
+- LifeBoat APIの`/assets/lua/Addon/`
+
+GitHub Desktopを使用している場合の具体的な`.code-workspace`の設定は以下のようになります。
+```json
+"settings": {
+    "Lua.workspace.library": [
+	    "c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/",
+		"c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Common/",
+		"c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Addon/",
+		"c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/_build/libs/"
+	]
+}
+```
+
 ## How to Contribute
 コミットメッセージは日本語でOKです。
