@@ -16,6 +16,7 @@ Area = Area or {}
 
 
 --- Areaの状態を初期化します。
+---@param self Area
 function Area.initializeForProcess(self)
     self.upAxle = {}
     self.downAxle = {}
