@@ -28,6 +28,11 @@ AxleMode = {
 ---@field sending number[]
 ---@field arc number
 
+---輪軸を初期化します
+---@param vehicle_id number
+---@param name string
+---@param voxelPos Vector3d
+---@return Axle
 function Axle.new(vehicle_id, name, voxelPos)
     return {
         vehicle_id = vehicle_id,
@@ -40,9 +45,9 @@ function Axle.new(vehicle_id, name, voxelPos)
     }
 end
 
----comment
+---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle.refresh(self)
+function Axle.initializeForProcess(self)
     ---@type SWMatrix
     local mtx
     ---@type boolean
@@ -67,6 +72,8 @@ function Axle.refresh(self)
     end
 end
 
+---輪軸の現在地を更新します
+---@param self Axle
 function Axle.search(self)
     self.area = self.area or DEFAULT_AREA
 

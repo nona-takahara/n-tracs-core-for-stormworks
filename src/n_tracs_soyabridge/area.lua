@@ -15,13 +15,13 @@ Area = Area or {}
 
 
 
----comment
-function Area.clear(self)
+--- Areaの状態を初期化します。
+function Area.initializeForProcess(self)
     self.upAxle = {}
     self.downAxle = {}
 end
 
----comment
+--- 渡された座標がエリア内にあるか判定します。
 ---@param pos Vector2d
 ---@return boolean
 function Area.isInArea(self, pos)
@@ -46,7 +46,7 @@ function Len2(v1, v2)
 	return (v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z)
 end
 
----comment
+---渡された輪軸を、上下線フラグに基づいて順番通り挿入します
 ---@param axle any
 function Area.insertAxle(self, axle)
     local lv = self.vertexs[self.leftVertexId]
