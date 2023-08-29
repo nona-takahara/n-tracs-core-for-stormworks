@@ -24,9 +24,9 @@ def lever_lua_code(name, data):
     for v in data["approach_track"]:
         approachTrackMake.append(f'TrackGetter"{v}"')
 
-    rets = 'Lever.renew(' + \
-        f'LeverGetter"${name}",' +\
-        f'"${name}",' +\
+    rets = 'Lever.overWrite(' + \
+        f'LeverGetter"{name}",' +\
+        f'"{name}",' +\
         f'TrackGetter"{data["start"]}",' + \
         f'TrackGetter"{data["destination"]}",' + \
         '{' + f'{",".join(switchesMake)}' + '},' + \
@@ -34,6 +34,7 @@ def lever_lua_code(name, data):
         '{' + ','.join(overrunLockMake) + '},' +\
         '{' + ','.join(signalTrackMake) + '},' +\
         f'RouteDirection.{data["direction"].capitalize()},' +\
+        '{' + ','.join(approachTrackMake) + '},' +\
         f'{data["approach_lock_time"]},' +\
         f'{data["overrun_lock_time"]},' +\
         f'{data["update_callback"]}' +\

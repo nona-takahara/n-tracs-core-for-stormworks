@@ -42,14 +42,14 @@ end
 
 ---現在の開通方向を取得します
 ---@return TargetRoute
-function Switch:getRealRoute()
+function Switch.getRealRoute(self)
     return self.K
 end
 
 ---[package]
 ---@package
 ---@param target TargetRoute
-function Switch:move(target)
+function Switch.move(self, target)
     if Switch.getWLR(self) then
         self.W = target
     end
@@ -57,7 +57,7 @@ end
 
 ---転換可能であればtrueを返却します
 ---@return boolean
-function Switch:getWLR()
+function Switch.getWLR(self)
     for _, value in ipairs(self.relatedTracks) do
         if Track.isShort(value) or Track.isLocked(value, not self.isSite) then
             return false
@@ -68,11 +68,11 @@ end
 
 ---processの実行前に呼び出してください。現在の状態を設定します
 ---@param currentState TargetRoute 現在の開通方向
-function Switch:beforeProcess(currentState)
+function Switch.beforeProcess(self, currentState)
     self.K = currentState
 end
 
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
-function Switch:process(deltaTick)
+function Switch.process(self, deltaTick)
 end

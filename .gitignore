@@ -1,4 +1,4 @@
-/.vscode/
+*.code-workspace
 /_build/
 !/_build/_buildactions.lua
 

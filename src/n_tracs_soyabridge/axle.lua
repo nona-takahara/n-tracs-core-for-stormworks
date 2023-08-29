@@ -21,48 +21,59 @@ AxleMode = {
 ---@class Axle
 ---@field name string
 ---@field vehicle_id number @車軸のあるビークルID
----@field voxel_pos Vector3d @車軸のボクセル
+---@field voxel_pos Vector3d | nil @車軸のボクセル
 ---@field real_pos Vector2d @実際の位置
----@field hasRealPosSending boolean @実際の位置の送信機能があるか
 ---@field area Area | nil @現在のエリア
 ---@field mode number @下り1・上り-1
 ---@field sending number[]
 ---@field arc number
 
+---輪軸を初期化します
+---@param vehicle_id number
+---@param name string
+---@param voxelPos Vector3d
+---@return Axle
 function Axle.new(vehicle_id, name, voxelPos)
     return {
         vehicle_id = vehicle_id,
         name = name,
         voxel_pos = voxelPos or { x = 0, y = 0, z = 0 },
-        real_pos = { x = 0, z = 0},
+        real_pos = { x = 0, z = 0 },
         area = DEFAULT_AREA,
         mode = 0,
         arc = 0
     }
 end
 
----comment
+---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle.refresh(self)
-    if self.hasRealPosSending then
-        local dialData, ss = server.getVehicleDial(self.vehicle_id, self.name .. "_POS")
-        if ss then
-            self.real_pos = { x = dialData.value, z = dialData.value2 }
-        end
+function Axle.initializeForProcess(self)
+    ---@type SWMatrix
+    local mtx
+    ---@type boolean
+    local ss
+    if self.voxel_pos == nil then
+        ---@diagnostic disable-next-line: missing-parameter
+        mtx, ss = server.getVehiclePos(self.vehicle_id)
     else
-        local mtx, ss = server.getVehiclePos(self.vehicle_id)
-        if ss then
-            local x, y, z = matrix.multiplyXYZW(mtx, self.voxel_pos.x, self.voxel_pos.y, self.voxel_pos.z, 1)
-            self.real_pos = { x = x, z = z }
-        end
+        mtx, ss = server.getVehiclePos(self.vehicle_id, self.voxel_pos.x, self.voxel_pos.y, self.voxel_pos.z)
     end
 
-    local dialArc, ss = server.getVehicleDial(self.vehicle_id, self.name .. "_ARC")
+    if ss then
+        local x, y, z = matrix.position(mtx)
+        self.real_pos = { x = x, z = z }
+    end
+
+    ---@type SWVehicleDialData
+    local dialArc
+    dialArc, ss = server.getVehicleDial(self.vehicle_id, self.name .. "_ARC")
     if ss then
         self.arc = dialArc.value
     end
 end
 
+---輪軸の現在地を更新します
+---@param self Axle
 function Axle.search(self)
     self.area = self.area or DEFAULT_AREA
 

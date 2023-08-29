@@ -18,14 +18,14 @@ function onVehicleDespawn(vehicle_id)
 end
 
 function onButtonPress(vehicle_id, peer_id, button_name)
-    if button_name == "N-TRACS RESET" then
+	if button_name == "N-TRACS RESET" then
 		local vdata, s = server.getVehicleData(vehicle_id)
 		if not s then return end
 
-        VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
+		VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
 		VehicleTable[vehicle_id].bridges = LoadBridgeDatas(vdata)
-    end
-	--[[]
+	end
+	--[[
     if button_name == "ENABLE CTC" then
 		local state, s = server.getVehicleButton(vehicle_id, button_name)
 		if state.on then
@@ -43,32 +43,17 @@ end
 ---@param forceRegister boolean
 ---@return Axle[] | nil
 function LoadAxles(vehicle_id, vdata, forceRegister)
-	local x, y, z, counter = 0, 0, 0, 0
-
+	---@type Axle[]
+	local axles = {}
 	for _, sign in ipairs(vdata.components.signs) do
 		if sign.name:find("TRAIN") == 1 then
-			counter = counter + 1
-			x = x + sign.pos.x
-			y = y + sign.pos.y
-			z = z + sign.pos.z
+			table.insert(axles,
+				Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
 		end
 	end
 
-	---@type Axle[] | nil
-	local axles = nil
-	if forceRegister and counter == 0 then
-		axles = { [1] = Axle.new(vehicle_id, "", { x = 0, y = 0, z = 0 }) }
-	elseif counter ~= 0 then
-		axles = {}
-		x = x / counter / 4
-		y = z / counter / 4
-		y = z / counter / 4
-		for _, sign in ipairs(vdata.components.signs) do
-			if sign.name:find("TRAIN") == 1 then
-				table.insert(axles,
-					Axle.new(vehicle_id, sign.name, { x = sign.pos.x - x, y = sign.pos.y - y, z = sign.pos.z - z }))
-			end
-		end
+	if forceRegister and #axles == 0 then
+		axles = { [1] = Axle.new(vehicle_id, "", nil) }
 	end
 	return axles
 end
@@ -89,14 +74,15 @@ function LoadBridgeDatas(vdata)
 		if TRACKS[sign.name] then
 			table.insert(bridges.tracks, TRACKS[sign.name])
 		end
-		if SWITCH[sign.name] then
-			table.insert(bridges.switches, SWITCH[sign.name])
+		if SWITCHES[sign.name] then
+			table.insert(bridges.switches, SWITCHES[sign.name])
 		end
 		if LEVERS[sign.name] then
 			table.insert(bridges.levers, LEVERS[sign.name])
 		end
 	end
 
+	--[[
 	for _, button in ipairs(vdata.components.buttons) do
 		local v, _ = (button.name):gsub("_ASPECT", "")
 		if BRIDGE_LEVER_ALIAS[v] then
@@ -108,5 +94,6 @@ function LoadBridgeDatas(vdata)
 			table.insert(bridges.bridge.cross, v)
 		end
 	end
+	]]
 	return bridges
 end

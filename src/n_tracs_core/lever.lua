@@ -97,7 +97,7 @@ end
 ---現場扱いのてこが正当方向に転換しているか調べます
 ---@private
 ---@return boolean
-function Lever:siteSwitchAssert()
+function Lever.siteSwitchAssert(self)
     for _, value in ipairs(self.switches) do
         if Switch.isSite(SwitchRoute.getRelatedSwitch(value)) and not SwitchRoute.isTargetRoute(value) then
             return false
@@ -108,7 +108,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever:isReadyToBookTemporary()
+function Lever.isReadyToBookTemporary(self)
     for _, value in ipairs(self.routeLock) do
         if not Track.isReadyToBookTemporary(value, self) then
             return false
@@ -124,7 +124,7 @@ end
 
 ---@private
 ---@param self Lever
-function Lever:bookTemporary()
+function Lever.bookTemporary(self)
     for _, value in ipairs(self.routeLock) do
         Track.bookTemporary(value, self)
     end
@@ -135,7 +135,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever:checkSwitches()
+function Lever.checkSwitches(self)
     for _, value in ipairs(self.switches) do
         if not SwitchRoute.isTargetRoute(value) then
             return false
@@ -146,25 +146,25 @@ end
 
 ---@private
 ---@return boolean
-function Lever:isTimerRunning()
+function Lever.isTimerRunning(self)
     return self.MSlR and self.timerCount < self.lockTime
 end
 
 ---@private
 ---@return boolean
-function Lever:isTimerEnd()
+function Lever.isTimerEnd(self)
     return self.MSlR and self.timerCount >= self.lockTime
 end
 
 ---進路鎖錠が成立していたらfalseを返します
 ---@return boolean
-function Lever:underRouteLock_n()
+function Lever.underRouteLock_n(self)
     return self.ASR
 end
 
 ---@private
 ---@return boolean
-function Lever:isEnterRoute(forTSSlR)
+function Lever.isEnterRoute(self, forTSSlR)
     if self.routeLock[1] == nil then
         return false
     else
@@ -178,7 +178,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever:isReserved()
+function Lever.isReserved(self)
     for _, value in ipairs(self.routeLock) do
         if not Track.isRouteLock(value, self) then
             return false
@@ -194,7 +194,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever:checkWLR()
+function Lever.checkWLR(self)
     for _, value in ipairs(self.switches) do
         local rswitch = SwitchRoute.getRelatedSwitch(value)
         if Switch.isSite(rswitch) and (not Switch.getWLR(rswitch)) then
@@ -206,7 +206,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever:isNoShort()
+function Lever.isNoShort(self)
     for _, value in ipairs(self.signalTrack) do
         if Track.isShort(value) then
             return false
@@ -217,7 +217,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever:isNoApproach()
+function Lever.isNoApproach(self)
     for _, value in ipairs(self.approachTrack) do
         if Track.isShort(value) then
             return false
@@ -229,31 +229,31 @@ end
 ---継電連動装置の進路てこの物理的状態に相当する情報を設定します
 ---@param input boolean
 ---@param autoReset boolean
-function Lever:setInput(input, autoReset)
+function Lever.setInput(self, input, autoReset)
     self.input = input
     self.autoReset = input and (not (not autoReset))
 end
 
 ---継電連動装置の進路リレー相当の情報を返却します
 ---@return boolean
-function Lever:getInput()
+function Lever.getInput(self)
     return self.input and Lever.siteSwitchAssert(self)
 end
 
 ---信号現示を返します
 ---@return number
-function Lever:getAspect()
+function Lever.getAspect(self)
     return self.aspect
 end
 
 ---processを呼び出す前に呼び出してください。現在の状態を設定します
-function Lever:beforeProcess()
+function Lever.beforeProcess(self)
     self.aspect = self.nextAspect
 end
 
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
-function Lever:process(deltaTick)
+function Lever.process(self, deltaTick)
     if (Lever.getInput(self) and Lever.isReadyToBookTemporary(self)) then
         for _, rswitch in ipairs(self.switches) do
             SwitchRoute.moveToTarget(rswitch)

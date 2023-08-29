@@ -1,6 +1,6 @@
 require('src.utils.complex')
 
----@type Area
+---@class Area
 Area = Area or {}
 
 ---@class Area
@@ -15,23 +15,22 @@ Area = Area or {}
 
 
 
----comment
+--- Areaの状態を初期化します。
 ---@param self Area
-function Area.clear(self)
+function Area.initializeForProcess(self)
     self.upAxle = {}
     self.downAxle = {}
 end
 
----comment
----@param self Area
+--- 渡された座標がエリア内にあるか判定します。
 ---@param pos Vector2d
 ---@return boolean
 function Area.isInArea(self, pos)
     local polygon, x, z = self.vertexs, pos.x, pos.z
     local n = #polygon
     local prod = Complex.new(1, 0)
-    for i, v0 in polygon do
-        local v1 = polygon[(i + 1) % n]
+    for i, v0 in ipairs(polygon) do
+        local v1 = polygon[i % n + 1]
         prod = Complex.mul(prod,
             Complex.halfArgument(
                 Complex.mul(
@@ -48,6 +47,8 @@ function Len2(v1, v2)
 	return (v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z)
 end
 
+---渡された輪軸を、上下線フラグに基づいて順番通り挿入します
+---@param axle any
 function Area.insertAxle(self, axle)
     local lv = self.vertexs[self.leftVertexId]
     local lself = Len2(lv, axle.real_pos)
