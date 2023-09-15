@@ -10,21 +10,12 @@ Axle = Axle or {}
 ---@field x number
 ---@field z number
 
----@enum AxleMode
-AxleMode = {
-    NoChange = 0,
-    Up = 1,
-    Down = 2,
-    Both = 3
-}
-
 ---@class Axle
 ---@field name string
 ---@field vehicle_id number @車軸のあるビークルID
 ---@field voxel_pos Vector3d | nil @車軸のボクセル
 ---@field real_pos Vector2d @実際の位置
 ---@field area Area | nil @現在のエリア
----@field mode number @下り1・上り-1
 ---@field sending number[]
 ---@field arc number
 
@@ -40,7 +31,6 @@ function Axle.new(vehicle_id, name, voxelPos)
         voxel_pos = voxelPos or { x = 0, y = 0, z = 0 },
         real_pos = { x = 0, z = 0 },
         area = DEFAULT_AREA,
-        mode = 0,
         arc = 0
     }
 end
@@ -116,9 +106,6 @@ function Axle.search(self)
 
     if found then
         self.area = targetArea
-        if targetArea.axleModeFlag ~= AxleMode.NoChange then
-            self.mode = targetArea.axleModeFlag
-        end
         Area.insertAxle(targetArea, self)
     end
 end
