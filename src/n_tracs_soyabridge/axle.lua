@@ -28,7 +28,7 @@ function Axle.new(vehicle_id, name, voxelPos)
     return {
         vehicle_id = vehicle_id,
         name = name,
-        voxel_pos = voxelPos or { x = 0, y = 0, z = 0 },
+        voxel_pos = voxelPos,
         real_pos = { x = 0, z = 0 },
         area = DEFAULT_AREA,
         arc = 0
