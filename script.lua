@@ -4,6 +4,7 @@
 require("src.n_tracs_core")
 
 -- 2. Load settings
+require("res.utils")
 require("res.area_track")
 require("res.signal")
 

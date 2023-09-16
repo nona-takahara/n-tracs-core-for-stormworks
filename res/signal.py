@@ -6,29 +6,29 @@ os.chdir(os.path.dirname(__file__))
 def lever_lua_code(name, data):
     switchesMake=[]
     for v in data["switches"]:
-        switchesMake.append(f'SwitchRoute.new(SwitchGetter"${v["sw"]}",TargetRoute.{v["t"].capitalize()})')
+        switchesMake.append(f'SwitchRoute.new(SwitchGetter("{v["sw"]}"),TargetRoute.{v["t"].capitalize()})')
     
     routeLockMake=[]
     for v in data["route_lock"]:
-        routeLockMake.append(f'TrackGetter"{v}"')
+        routeLockMake.append(f'TrackGetter("{v}")')
 
     overrunLockMake=[]
     for v in data["overrun_lock"]:
-        overrunLockMake.append(f'TrackGetter"{v}"')
+        overrunLockMake.append(f'TrackGetter("{v}")')
 
     signalTrackMake=[]
     for v in data["signal_track"]:
-        signalTrackMake.append(f'TrackGetter"{v}"')
+        signalTrackMake.append(f'TrackGetter("{v}")')
 
     approachTrackMake=[]
     for v in data["approach_track"]:
-        approachTrackMake.append(f'TrackGetter"{v}"')
+        approachTrackMake.append(f'TrackGetter("{v}")')
 
     rets = 'Lever.overWrite(' + \
-        f'LeverGetter"{name}",' +\
+        f'LeverGetter("{name}"),' +\
         f'"{name}",' +\
-        f'TrackGetter"{data["start"]}",' + \
-        f'TrackGetter"{data["destination"]}",' + \
+        f'TrackGetter("{data["start"]}"),' + \
+        f'TrackGetter("{data["destination"]}"),' + \
         '{' + f'{",".join(switchesMake)}' + '},' + \
         '{' + ','.join(routeLockMake) + '},' +\
         '{' + ','.join(overrunLockMake) + '},' +\
