@@ -65,6 +65,7 @@ function LoadBridgeDatas(vdata)
 	for _, button in ipairs(vdata.components.buttons) do
 		if button.name == "N-TRACS RESET" then
 			f = true
+			break
 		end
 	end
 	if not f then return end

@@ -13,11 +13,12 @@ require("src.n_tracs_soyabridge")
 ---[Stormworks] onTick function.
 -- 1 Tickごとに呼び出されます.
 function onTick()
-	TickCounter = TickCounter + 1
+	TickCounter = (TickCounter or 0) + 1
 
 	-- 毎Tick実行
 	for vehicle_id, _ in pairs(VehicleTable) do
 		server.setVehicleBattery(vehicle_id, "signal_bat", 3)
+		server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
 	end
 
 	Phase = (Phase + 1) % 6
