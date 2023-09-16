@@ -5,10 +5,21 @@ Area = Area or {}
 
 ---@class Area
 ---@field name string
+---@field itemName string
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
 ---@field leftVertexId number
 ---@field axles Axle[] @左から順に車軸情報
 ---@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
+
+function Area.overWrite(baseObject, name, vertexs, leftVertexId, nodeToArea)
+    baseObject = baseObject or {}
+    baseObject.name = "Area"
+    baseObject.itemName = name
+    baseObject.vertexs = vertexs
+    baseObject.leftVertexId = leftVertexId
+    baseObject.nodeToArea = nodeToArea
+    return baseObject
+end
 
 --- Areaの状態を初期化します。
 ---@param self Area

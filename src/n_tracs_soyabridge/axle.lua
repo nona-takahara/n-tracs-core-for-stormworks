@@ -12,6 +12,7 @@ Axle = Axle or {}
 
 ---@class Axle
 ---@field name string
+---@field itemName string
 ---@field vehicle_id number @車軸のあるビークルID
 ---@field voxel_pos Vector3d | nil @車軸のボクセル
 ---@field real_pos Vector2d @実際の位置
@@ -27,7 +28,8 @@ Axle = Axle or {}
 function Axle.new(vehicle_id, name, voxelPos)
     return {
         vehicle_id = vehicle_id,
-        name = name,
+        name = "Axle",
+        itemName = name,
         voxel_pos = voxelPos,
         real_pos = { x = 0, z = 0 },
         area = DEFAULT_AREA,
@@ -56,7 +58,7 @@ function Axle.initializeForProcess(self)
 
     ---@type SWVehicleDialData
     local dialArc
-    dialArc, ss = server.getVehicleDial(self.vehicle_id, self.name .. "_ARC")
+    dialArc, ss = server.getVehicleDial(self.vehicle_id, self.itemName .. "_ARC")
     if ss then
         self.arc = dialArc.value
     end
