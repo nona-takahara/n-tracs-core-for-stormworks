@@ -7,6 +7,8 @@ require("src.n_tracs_core")
 require("res.area_track")
 require("res.signal")
 
+DEFAULT_AREA = AreaGetter"Area_0"
+
 -- 3. Load bridge
 require("src.n_tracs_soyabridge")
 
