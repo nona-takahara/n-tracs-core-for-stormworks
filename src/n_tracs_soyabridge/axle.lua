@@ -22,7 +22,7 @@ Axle = Axle or {}
 ---輪軸を初期化します
 ---@param vehicle_id number
 ---@param name string
----@param voxelPos Vector3d
+---@param voxelPos Vector3d | nil
 ---@return Axle
 function Axle.new(vehicle_id, name, voxelPos)
     return {
