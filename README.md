@@ -34,11 +34,11 @@ GitHub Desktopを使用している場合の具体的な`.code-workspace`の設�
 ```json
 "settings": {
     "Lua.workspace.library": [
-	    "c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/",
-		"c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Common/",
-		"c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Addon/",
-		"c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/_build/libs/"
-	]
+        "c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/",
+        "c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Common/",
+        "c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Addon/",
+        "c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/_build/libs/"
+    ]
 }
 ```
 
