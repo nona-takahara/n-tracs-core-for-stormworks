@@ -9,8 +9,8 @@ def area_track_lua_code(area, vertexes):
         return ""
     listVertex = "{" + ",".join(["{" + f"x={vertexes[id]['x']},z={vertexes[id]['z']}" + "}" for id in area["vertexes"]]) + "}"
     #listVertex = "{" + ",".join([f"V[{id}]" for id in area["vertexes"]]) + "}"
-    listRelated = "{" + ",".join([f"AreaGetter(\"{id}\")" for id in area["related"]]) + "}"
-    return f"Area.overWrite(AreaGetter(\"{area['name']}\"),{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
+    listRelated = "{" + ",".join([f"AreaGetter(\"{str(id).replace('Area_','')}\")" for id in area["related"]]) + "}"
+    return f"Area.overWrite(AreaGetter(\"{str(area['name']).replace('Area_','')}\"),{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
 
 # @class Area
 # @field name string
