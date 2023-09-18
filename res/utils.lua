@@ -37,3 +37,9 @@ function AreaGetter(name)
     end
     return AREAS[name]
 end
+
+---@type TrackBridge[]
+BRIDGE_TRACK = BRIDGE_TRACK or {}
+
+---@type SwitchBridge[]
+BRIDGE_SWITCH = BRIDGE_SWITCH or {}

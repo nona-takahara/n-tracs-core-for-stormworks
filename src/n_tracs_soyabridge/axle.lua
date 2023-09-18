@@ -111,3 +111,28 @@ function Axle.search(self)
         Area.insertAxle(targetArea, self)
     end
 end
+
+---comment
+---@param vehicle_id number
+---@param vdata SWVehicleData
+---@param forceRegister boolean
+---@return Axle[] | nil
+function LoadAxles(vehicle_id, vdata, forceRegister)
+	---@type Axle[]
+	local axles = {}
+	for _, sign in ipairs(vdata.components.signs) do
+		if sign.name:find("TRAIN") == 1 then
+			table.insert(axles,
+				Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
+		end
+	end
+
+	if forceRegister and #axles == 0 then
+		axles = { [1] = Axle.new(vehicle_id, "", nil) }
+	end
+	return axles
+end
+
+function Axle.send(self)
+    
+end
