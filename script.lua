@@ -13,6 +13,15 @@ DEFAULT_AREA = AreaGetter("Area_0")
 -- 3. Load bridge
 require("src.n_tracs_soyabridge")
 
+
+---@type PointSetter[]
+POINTLIST = {}
+for _, data in pairs(BRIDGE_SWITCH) do
+	for key, _ in data.pointAndRoute do
+		POINTLIST[key] = SwitchBridge.getPointSetter(data, key)
+	end
+end
+
 ---[Stormworks] onTick function.
 -- 1 Tickごとに呼び出されます.
 function onTick()
@@ -31,16 +40,40 @@ function onTick()
 			Area.initializeForProcess(area)
 		end
 
-		for _, data in pairs(VehicleTable) do
+		for vehicle_id, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
 					Axle.initializeForProcess(axle)
 				end
 			end
+
+			if data.bridges then
+				for _, setter in ipairs(data.bridges.points) do
+					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName)
+					if ss then
+						setter.set(dial)
+					end
+				end
+			end
 		end
 	elseif Phase == 2 then
 		-- 取得データをCoreに処理させるのに適した状態に変換するフェーズ
+		for _, data in pairs(VehicleTable) do
+			if data.axles then
+				for _, axle in ipairs(data.axles) do
+					Axle.search(axle)
+				end
+			end
+		end
 
+		for _, data in ipairs(BRIDGE_TRACK) do
+			Track.beforeProcess(TRACKS[data.itemName], TrackBridge.isInAxle(data))
+		end
+
+		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
+		for _, data in ipairs(BRIDGE_SWITCH) do
+			Switch.beforeProcess(SWITCHES[data.itemName], SwitchBridge.getState(data))
+		end
 	elseif Phase == 3 then
 		-- Coreで処理するフェーズ
 		for _, track in ipairs(TRACKS) do
@@ -56,5 +89,17 @@ function onTick()
 		-- Coreで処理したデータを配信用に加工するフェーズ その2
 	elseif Phase == 0 then
 		-- 全ての情報を配信するフェーズ
+		SendingSign = (SendingSign or -1) * -1
+		for vehicle_id, data in pairs(VehicleTable) do
+			if data.axles then
+				for _, axle in ipairs(data.axles) do
+					Axle.send(axle)
+				end
+			end
+
+			if data.bridges then
+				SendBridge(vehicle_id, data.bridges)
+			end
+		end
 	end
 end

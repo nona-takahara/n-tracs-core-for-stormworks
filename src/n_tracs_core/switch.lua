@@ -9,7 +9,7 @@ TargetRoute = {
 
 ---転てつ器に関する情報です
 ---@class Switch:NtracsObject
----@field private W TargetRoute
+---@field W TargetRoute
 ---@field private K TargetRoute
 ---@field private isSite boolean
 ---@field private relatedTracks Track[]
