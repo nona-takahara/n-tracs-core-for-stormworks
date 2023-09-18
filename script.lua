@@ -49,7 +49,7 @@ function onTick()
 
 			if data.bridges then
 				for _, setter in ipairs(data.bridges.points) do
-					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName)
+					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName.."K")
 					if ss then
 						setter.set(dial)
 					end
