@@ -1,15 +1,7 @@
 -- N-TRACS Core [Lever]
 
----列車・車両の進行方向を表現します
----@enum RouteDirection
-RouteDirection = {
-    None = 0,
-    Left = 1,
-    Right = 2
-}
-
 ---てこに関する操作を行います
----@class Lever:NtracsObject
+---@class Lever:SignalBase
 ---@field private input boolean てこの入力状態
 ---@field private autoReset boolean てこを自動復位するかフラグ
 ---@field private ASR boolean
@@ -238,12 +230,6 @@ end
 ---@return boolean
 function Lever.getInput(self)
     return self.input and Lever.siteSwitchAssert(self)
-end
-
----信号現示を返します
----@return number
-function Lever.getAspect(self)
-    return self.aspect
 end
 
 ---processを呼び出す前に呼び出してください。現在の状態を設定します

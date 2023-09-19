@@ -77,6 +77,10 @@ function onTick()
 		for _, data in ipairs(BRIDGE_SWITCH) do
 			Switch.beforeProcess(SWITCHES[data.itemName], SwitchBridge.getState(data))
 		end
+
+		for _, data in ipairs(LEVERS) do
+			SignalBase.beforeProcess(data)
+		end
 	elseif Phase == 3 then
 		-- Coreで処理するフェーズ
 		for _, track in ipairs(TRACKS) do
@@ -84,7 +88,7 @@ function onTick()
 		end
 
 		for _, lever in ipairs(LEVERS) do
-			Lever.process(lever, 6)
+			SignalBase.process(lever, 6)
 		end
 	elseif Phase == 4 then
 		-- Coreで処理したデータを配信用に加工するフェーズ その1

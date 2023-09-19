@@ -1,4 +1,4 @@
----@type Lever[]
+---@type SignalBase[]
 LEVERS = LEVERS or {}
 function LeverGetter(name)
     if not LEVERS[name] then
