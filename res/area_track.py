@@ -12,6 +12,14 @@ def area_track_lua_code(area, vertexes):
     listRelated = "{" + ",".join([f"AreaGetter(\"{str(id).replace('Area_','')}\")" for id in area["related"]]) + "}"
     return f"Area.overWrite(AreaGetter(\"{str(area['name']).replace('Area_','')}\"),{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
 
+def track_lua_code(track):
+    arealist = "{" + ",".join([f"AreaGetter(\"{id['name'].replace('Area_','')}\")" for id in track["areas"]]) + "}"
+    return f"CrateTrack(\"{track['name']}\",{arealist})"
+
+# {"name":"NHB4LT",
+# "areas":[{"name":"Area_38","trackFlag":"none"},{"name":"Area_37","trackFlag":"none"},{"name":"Area_39","trackFlag":"none"}]
+# }
+
 # @class Area
 # @field name string
 # @field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
@@ -29,3 +37,6 @@ with (open("area_track.json", "rb") as json_f, open("area_track.lua", "w") as lu
 
     for a in data["areas"]:
         print(area_track_lua_code(a, vv), file = lua_f)
+
+    for a in data["tracks"]:
+        print(track_lua_code(a), file = lua_f)

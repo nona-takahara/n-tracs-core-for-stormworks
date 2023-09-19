@@ -40,6 +40,10 @@ end
 
 ---@type TrackBridge[]
 BRIDGE_TRACK = BRIDGE_TRACK or {}
+function CrateTrack(name, arealist)
+    BRIDGE_TRACK[name]=TrackBridge.overWrite(BRIDGE_TRACK[name],name,arealist)
+    TRACKS[name]=Track.overWrite(TRACKS[name],name)
+end
 
 ---@type SwitchBridge[]
 BRIDGE_SWITCH = BRIDGE_SWITCH or {}
