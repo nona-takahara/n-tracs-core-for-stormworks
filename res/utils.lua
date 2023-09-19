@@ -60,7 +60,7 @@ end
 ---comments
 ---@param area Area
 ---@param sending number[]
-function SetLeftAxle(area, sending)
+function SendLeftAxle(area, sending)
     if area.axles and #(area.axles) > 0 then
         area.axles[1].sending = sending
     end
@@ -70,7 +70,7 @@ end
 ---comments
 ---@param area Area
 ---@param sending number[]
-function SetRightAxle(area, sending)
+function SendRightAxle(area, sending)
     if area.axles and #(area.axles) > 0 then
         area.axles[#(area.axles)].sending = sending
     end
@@ -79,7 +79,7 @@ end
 ---comments
 ---@param area Area
 ---@param sending number[]
-function SetAllAxle(area, sending)
+function SendAllAxle(area, sending)
     for _,v in ipairs(area.axles)do
         v.sending=sending
     end
