@@ -3,15 +3,15 @@
 ---@enum TargetRoute
 TargetRoute = {
     Normal = 1,
-    Reverse = 2,
+    Reverse = -1,
     Indefinite = 0
 }
 
 ---転てつ器に関する情報です
 ---@class Switch:NtracsObject
----@field private W TargetRoute
+---@field W TargetRoute
 ---@field private K TargetRoute
----@field private isSite boolean
+---@field isSite boolean
 ---@field private relatedTracks Track[]
 Switch = Switch or {}
 
@@ -31,6 +31,7 @@ end
 ---@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
 function Switch.overWrite(baseObject, itemName, isSite, relatedTracks)
+    baseObject = baseObject or {}
     baseObject.name = "Switch"
     baseObject.itemName = itemName
     baseObject.W = TargetRoute.Indefinite

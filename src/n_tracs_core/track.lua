@@ -17,7 +17,7 @@ BookType = {
 ---@field private direction RouteDirection
 ---@field private timer number
 ---@field private beforeRouteLockItem Track | Lever | nil
----@field private isShort boolean
+---@field isShort boolean
 Track = Track or {}
 
 ---抽象軌道回路データを作成します
@@ -32,6 +32,7 @@ end
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.overWrite(baseObject, itemName)
+    baseObject = baseObject or {}
     baseObject.name = "Track"
     baseObject.itemName = itemName
     baseObject.relatedLever = nil

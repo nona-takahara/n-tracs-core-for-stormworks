@@ -1,6 +1,11 @@
 ---@class VehicleInfo
 ---@field axles Axle[] | nil
----@field bridges any
+---@field bridges VehicleBridge | nil
+
+---@class VehicleBridge
+---@field levers Lever[]
+---@field tracks Track[]
+---@field points PointSetter[]
 
 ---@type VehicleInfo[]
 VehicleTable = {}
@@ -37,45 +42,29 @@ function onButtonPress(vehicle_id, peer_id, button_name)
 	]]
 end
 
----comment
----@param vehicle_id number
+---comments
 ---@param vdata SWVehicleData
----@param forceRegister boolean
----@return Axle[] | nil
-function LoadAxles(vehicle_id, vdata, forceRegister)
-	---@type Axle[]
-	local axles = {}
-	for _, sign in ipairs(vdata.components.signs) do
-		if sign.name:find("TRAIN") == 1 then
-			table.insert(axles,
-				Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
-		end
-	end
-
-	if forceRegister and #axles == 0 then
-		axles = { [1] = Axle.new(vehicle_id, "", nil) }
-	end
-	return axles
-end
-
+---@return VehicleBridge | nil
 function LoadBridgeDatas(vdata)
-	if not vdata then return end
+	if not vdata then return nil end
 	local f = false
 
 	for _, button in ipairs(vdata.components.buttons) do
 		if button.name == "N-TRACS RESET" then
 			f = true
+			break
 		end
 	end
-	if not f then return end
+	if not f then return nil end
 
-	local bridges = { tracks = {}, levers = {}, switches = {}, bridge = { levers = {}, cross = {} } }
+	---@type VehicleBridge
+	local bridges = { tracks = {}, levers = {}, points = {} }
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
 			table.insert(bridges.tracks, TRACKS[sign.name])
 		end
-		if SWITCHES[sign.name] then
-			table.insert(bridges.switches, SWITCHES[sign.name])
+		if POINTLIST[sign.name] then
+			table.insert(bridges.points, POINTLIST[sign.name])
 		end
 		if LEVERS[sign.name] then
 			table.insert(bridges.levers, LEVERS[sign.name])
@@ -96,4 +85,26 @@ function LoadBridgeDatas(vdata)
 	end
 	]]
 	return bridges
+end
+
+---comments
+---@param vehicle_id number
+---@param bridge VehicleBridge
+function SendBridge(vehicle_id, bridge)
+	for _, lever in ipairs(bridge.levers) do
+		local sending = lever.aspect
+		server.setVehicleKeypad(vehicle_id, lever.itemName.."_ASPECT", sending * SendingSign)
+	end
+
+	for _, track in ipairs(bridge.tracks) do
+		local sending = 1 - (track.isShort and 1 or 0)
+		server.setVehicleKeypad(vehicle_id, track.itemName.."R", sending * SendingSign)
+	end
+
+	for _, point in ipairs(bridge.points) do
+		server.setVehicleKeypad(vehicle_id, point.switchName.."W", SWITCHES[point.switchName].W)
+
+		local sending = Switch.getWLR(SWITCHES[point.switchName]) and 1 or 0
+		server.setVehicleKeypad(vehicle_id, point.switchName.."WLR", sending * SendingSign)
+	end
 end

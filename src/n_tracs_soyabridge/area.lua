@@ -5,21 +5,29 @@ Area = Area or {}
 
 ---@class Area
 ---@field name string
+---@field itemName string
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
----@field axleModeFlag number @上り下りのフラグ設定
----@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
 ---@field leftVertexId number
----@field rightVertexId number
----@field upAxle Axle[] @左から順に車軸情報
----@field downAxle Axle[] @左から順に車軸情報
+---@field axles Axle[] @左から順に車軸情報
+---@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
+---@field updateCallback function
+---@field cbdata any @コールバック関数で使えるデータ
 
-
+function Area.overWrite(baseObject, name, vertexs, leftVertexId, nodeToArea, updateCallback)
+    baseObject = baseObject or {}
+    baseObject.name = "Area"
+    baseObject.itemName = name
+    baseObject.vertexs = vertexs
+    baseObject.leftVertexId = leftVertexId
+    baseObject.nodeToArea = nodeToArea
+    baseObject.updateCallback = updateCallback
+    return baseObject
+end
 
 --- Areaの状態を初期化します。
 ---@param self Area
 function Area.initializeForProcess(self)
-    self.upAxle = {}
-    self.downAxle = {}
+    self.axles = {}
 end
 
 --- 渡された座標がエリア内にあるか判定します。
@@ -48,36 +56,19 @@ function Len2(v1, v2)
 end
 
 ---渡された輪軸を、上下線フラグに基づいて順番通り挿入します
----@param axle any
+---@param axle Axle
 function Area.insertAxle(self, axle)
     local lv = self.vertexs[self.leftVertexId]
     local lself = Len2(lv, axle.real_pos)
     local i = 0
 
-    if self.axleModeFlag == AxleMode.Up or self.axleModeFlag == AxleMode.Both then
-        for index, value in ipairs(self.upAxle) do
-            local l = Len2(lv, value.real_pos)
-            if lself > l then
-                i = index
-            else
-                break
-            end
+    for index, value in ipairs(self.axles) do
+        local l = Len2(lv, value.real_pos)
+        if lself > l then
+            i = index
+        else
+            break
         end
-
-        table.insert(self.upAxle, i + 1, axle)
     end
-
-    if self.axleModeFlag == AxleMode.Down or self.axleModeFlag == AxleMode.Both then
-        i = 0
-        for index, value in ipairs(self.downAxle) do
-            local l = Len2(lv, value.real_pos)
-            if lself > l then
-                i = index
-            else
-                break
-            end
-        end
-
-        table.insert(self.downAxle, i + 1, axle)
-    end
+    table.insert(self.axles, i + 1, axle)
 end
