@@ -56,3 +56,31 @@ function CreateSwitch(itemName, pointNames,relatedTracks, isSite)
     BRIDGE_SWITCH[itemName] = SwitchBridge.overWrite(BRIDGE_SWITCH[itemName], itemName, pointNames)
     SWITCHES[itemName] = Switch.overWrite(SWITCHES[itemName], itemName, isSite or false, relatedTracks)
 end
+
+---comments
+---@param area Area
+---@param sending number[]
+function SetLeftAxle(area, sending)
+    if area.axles and #(area.axles) > 0 then
+        area.axles[1].sending = sending
+    end
+end
+
+
+---comments
+---@param area Area
+---@param sending number[]
+function SetRightAxle(area, sending)
+    if area.axles and #(area.axles) > 0 then
+        area.axles[#(area.axles)].sending = sending
+    end
+end
+
+---comments
+---@param area Area
+---@param sending number[]
+function SetAllAxle(area, sending)
+    for _,v in ipairs(area.axles)do
+        v.sending=sending
+    end
+end
