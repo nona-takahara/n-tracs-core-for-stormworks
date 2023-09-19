@@ -13,6 +13,7 @@ DEFAULT_AREA = AreaGetter("Area_0")
 -- 3. Load bridge
 require("src.n_tracs_soyabridge")
 
+require("src.utils.debug_http")
 
 ---@type PointSetter[]
 POINTLIST = {}
