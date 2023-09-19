@@ -10,7 +10,7 @@ def area_track_lua_code(area, vertexes):
     listVertex = "{" + ",".join(["{" + f"x={vertexes[id]['x']},z={vertexes[id]['z']}" + "}" for id in area["vertexes"]]) + "}"
     #listVertex = "{" + ",".join([f"V[{id}]" for id in area["vertexes"]]) + "}"
     listRelated = "{" + ",".join([f"AreaGetter(\"{str(id).replace('Area_','')}\")" for id in area["related"]]) + "}"
-    return f"Area.overWrite(AreaGetter(\"{str(area['name']).replace('Area_','')}\"),{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
+    return f"Area.overWrite(AreaGetter(\"{str(area['name']).replace('Area_','')}\"),\"{str(area['name']).replace('Area_','')}\",{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
 
 def track_lua_code(track):
     arealist = "{" + ",".join([f"AreaGetter(\"{id['name'].replace('Area_','')}\")" for id in track["areas"]]) + "}"

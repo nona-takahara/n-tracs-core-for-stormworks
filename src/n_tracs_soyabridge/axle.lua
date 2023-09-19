@@ -77,7 +77,6 @@ function Axle.search(self)
     local found = false
 
     table.insert(queue, self.area)
-
     -- BFS
     while front <= #queue do
         targetArea = queue[front]

@@ -9,12 +9,13 @@ __DEBUGLOGS = __DEBUGLOGS or {}
 __HTTPCALL = false
 
 function debuglog(str)
-    table.insert(__DEBUGLOGS, "LOG|" .. str)
+    table.insert(__DEBUGLOGS, "LOG|" .. tostring(str))
+    server.announce("[DEBUG]", tostring(str))
     if not __HTTPCALL then SendLogHttp() end
 end
 
 function error(str)
-    table.insert(__DEBUGLOGS, "ERR|" .. str)
+    table.insert(__DEBUGLOGS, "ERR|" .. tostring(str))
     if not __HTTPCALL then SendLogHttp() end
 end
 
@@ -22,10 +23,11 @@ function SendLogHttp()
     __HTTPCALL = true
     local counter = 0
     local req = ""
-    while #__DEBUGLOGS > 0 do
-        counter = counter + 1
-        req = req .. "&m"..tostring(counter).."="..urlencode(table.remove(__DEBUGLOGS,0))
+    for index, value in ipairs(__DEBUGLOGS) do
+        req = req .. "&m"..tostring(index).."="..urlencode(value)
+        counter = index
     end
+    __DEBUGLOGS = {}
     server.httpGet(3000, "/luaapi?l="..tostring(counter)..req)
 end
 

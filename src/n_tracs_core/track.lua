@@ -32,6 +32,7 @@ end
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.overWrite(baseObject, itemName)
+    baseObject = baseObject or {}
     baseObject.name = "Track"
     baseObject.itemName = itemName
     baseObject.relatedLever = nil

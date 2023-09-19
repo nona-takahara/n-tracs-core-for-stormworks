@@ -55,7 +55,7 @@ function Len2(v1, v2)
 end
 
 ---渡された輪軸を、上下線フラグに基づいて順番通り挿入します
----@param axle any
+---@param axle Axle
 function Area.insertAxle(self, axle)
     local lv = self.vertexs[self.leftVertexId]
     local lself = Len2(lv, axle.real_pos)

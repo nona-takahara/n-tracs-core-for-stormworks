@@ -3,17 +3,18 @@
 -- 1. Load N-TRACS Core
 require("src.n_tracs_core")
 
--- 2. Load settings
+-- 2. Load bridge
+require("src.n_tracs_soyabridge")
+
+require("src.utils.debug_http")
+
+-- 3. Load settings
 require("res.utils")
 require("res.area_track")
 require("res.signal")
 
-DEFAULT_AREA = AreaGetter("Area_0")
+DEFAULT_AREA = AreaGetter("2")
 
--- 3. Load bridge
-require("src.n_tracs_soyabridge")
-
-require("src.utils.debug_http")
 
 ---@type PointSetter[]
 POINTLIST = {}
@@ -34,10 +35,10 @@ function onTick()
 		server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
 	end
 
-	Phase = (Phase + 1) % 6
+	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then
 		-- データの初期化及びビークルデータの取得フェーズ
-		for _, area in ipairs(AREAS) do
+		for _, area in pairs(AREAS) do
 			Area.initializeForProcess(area)
 		end
 
@@ -59,6 +60,7 @@ function onTick()
 		end
 	elseif Phase == 2 then
 		-- 取得データをCoreに処理させるのに適した状態に変換するフェーズ
+		--debuglog("Before AXLE")
 		for _, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
@@ -66,11 +68,11 @@ function onTick()
 				end
 			end
 		end
-
+		--debuglog("Before BRIDGE TRACK")
 		for _, data in ipairs(BRIDGE_TRACK) do
 			Track.beforeProcess(TRACKS[data.itemName], TrackBridge.isInAxle(data))
 		end
-
+		--debuglog("Before BRIDGE SWITCH")
 		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
 		for _, data in ipairs(BRIDGE_SWITCH) do
 			Switch.beforeProcess(SWITCHES[data.itemName], SwitchBridge.getState(data))
