@@ -11,7 +11,7 @@ RouteDirection = {
 ---てこに関する操作を行います
 ---@class SignalBase:NtracsObject
 ---@field HR boolean
----@field protected aspect number
+---@field aspect number
 ---@field protected nextAspect number
 ---@field direction RouteDirection [CONSTANT]進路てこの方向
 ---@field protected updateCallback fun(lever: SignalBase, deltaTick: number):number

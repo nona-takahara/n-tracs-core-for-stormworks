@@ -92,7 +92,7 @@ end
 ---@param bridge VehicleBridge
 function SendBridge(vehicle_id, bridge)
 	for _, lever in ipairs(bridge.levers) do
-		local sending = Lever.getAspect(lever)
+		local sending = lever.aspect
 		server.setVehicleKeypad(vehicle_id, lever.itemName.."_ASPECT", sending * SendingSign)
 	end
 
