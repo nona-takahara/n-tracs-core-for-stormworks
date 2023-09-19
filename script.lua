@@ -88,6 +88,9 @@ function onTick()
 		end
 	elseif Phase == 4 then
 		-- Coreで処理したデータを配信用に加工するフェーズ その1
+		for _, area in pairs(AREAS) do
+			area.cbdata = area.updateCallback(area, 6)
+		end
 	elseif Phase == 5 then
 		-- Coreで処理したデータを配信用に加工するフェーズ その2
 	elseif Phase == 0 then

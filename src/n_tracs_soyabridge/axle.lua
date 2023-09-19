@@ -117,21 +117,24 @@ end
 ---@param forceRegister boolean
 ---@return Axle[] | nil
 function LoadAxles(vehicle_id, vdata, forceRegister)
-	---@type Axle[]
-	local axles = {}
-	for _, sign in ipairs(vdata.components.signs) do
-		if sign.name:find("TRAIN") == 1 then
-			table.insert(axles,
-				Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
-		end
-	end
+    ---@type Axle[]
+    local axles = {}
+    for _, sign in ipairs(vdata.components.signs) do
+        if sign.name:find("TRAIN") == 1 then
+            table.insert(axles,
+                Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
+        end
+    end
 
-	if forceRegister and #axles == 0 then
-		axles = { [1] = Axle.new(vehicle_id, "", nil) }
-	end
-	return axles
+    if forceRegister and #axles == 0 then
+        axles = { [1] = Axle.new(vehicle_id, "", nil) }
+    end
+    return axles
 end
 
 function Axle.send(self)
-    
+    local sending = self.sending or { 0, 0}
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * SendingSign)
+    self.sending = { 0, 0 }
 end

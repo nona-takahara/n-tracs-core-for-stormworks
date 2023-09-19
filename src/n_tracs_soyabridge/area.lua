@@ -11,6 +11,7 @@ Area = Area or {}
 ---@field axles Axle[] @左から順に車軸情報
 ---@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
 ---@field updateCallback function
+---@field cbdata any @コールバック関数で使えるデータ
 
 function Area.overWrite(baseObject, name, vertexs, leftVertexId, nodeToArea, updateCallback)
     baseObject = baseObject or {}
@@ -19,7 +20,7 @@ function Area.overWrite(baseObject, name, vertexs, leftVertexId, nodeToArea, upd
     baseObject.vertexs = vertexs
     baseObject.leftVertexId = leftVertexId
     baseObject.nodeToArea = nodeToArea
-    baseObject.callback = updateCallback
+    baseObject.updateCallback = updateCallback
     return baseObject
 end
 
