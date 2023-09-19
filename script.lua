@@ -70,25 +70,25 @@ function onTick()
 			end
 		end
 		--debuglog("Before BRIDGE TRACK")
-		for _, data in ipairs(BRIDGE_TRACK) do
+		for _, data in pairs(BRIDGE_TRACK) do
 			Track.beforeProcess(TRACKS[data.itemName], TrackBridge.isInAxle(data))
 		end
 		--debuglog("Before BRIDGE SWITCH")
 		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
-		for _, data in ipairs(BRIDGE_SWITCH) do
+		for _, data in pairs(BRIDGE_SWITCH) do
 			Switch.beforeProcess(SWITCHES[data.itemName], SwitchBridge.getState(data))
 		end
 
-		for _, data in ipairs(LEVERS) do
+		for _, data in pairs(LEVERS) do
 			SignalBase.beforeProcess(data)
 		end
 	elseif Phase == 3 then
 		-- Coreで処理するフェーズ
-		for _, track in ipairs(TRACKS) do
+		for _, track in pairs(TRACKS) do
 			Track.process(track, 6)
 		end
 
-		for _, lever in ipairs(LEVERS) do
+		for _, lever in pairs(LEVERS) do
 			SignalBase.process(lever, 6)
 		end
 	elseif Phase == 4 then
@@ -111,6 +111,11 @@ function onTick()
 			if data.bridges then
 				SendBridge(vehicle_id, data.bridges)
 			end
+		end
+
+		while #DELAY_ANNOUNE > 0 do
+			local calls = table.remove(DELAY_ANNOUNE, 1)
+			if type(calls) == "function" then calls() end
 		end
 	end
 end

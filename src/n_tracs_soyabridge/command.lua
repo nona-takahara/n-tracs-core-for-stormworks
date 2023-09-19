@@ -7,6 +7,8 @@
 ---@type table<string,Command>
 COMMANDS = {}
 
+DELAY_ANNOUNE = {}
+
 COMMANDS["help"] = {
     admin = false,
     auth = false,
@@ -16,6 +18,22 @@ COMMANDS["help"] = {
             if (not cmd.admin or (cmd.admin and is_admin)) and (not cmd.auth or (cmd.auth and is_auth)) then
                 Announce("?nt " .. key .. ": " .. cmd.description, peer_id)
             end
+        end
+    end)
+}
+
+COMMANDS["aspect"] = {
+    admin = false,
+    auth = false,
+    description = "Get aspect of signal",
+    command = (function(args, is_admin, is_auth, peer_id)
+        local nm = args[2]
+        if LEVERS[nm] then
+            table.insert(DELAY_ANNOUNE, function()
+                Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(LEVERS[nm].aspect), peer_id)
+            end)
+        else
+            Announce("Singal \"" .. nm .. "\" is not found", peer_id)
         end
     end)
 }
