@@ -8,9 +8,6 @@
 ---@field private MSlR boolean
 ---@field private timerCount number
 ---@field private TSSlR boolean
----@field private HR boolean
----@field private aspect number
----@field private nextAspect number
 ---@field startTrack Track 進路てこ区間の始点
 ---@field destination Track 進路てこ区間の終点
 ---@field private switches SwitchRoute[]
@@ -18,10 +15,8 @@
 ---@field private approachTrack Track[]
 ---@field private overrunLock Track[]
 ---@field private signalTrack Track[]
----@field direction RouteDirection [CONSTANT]進路てこの方向
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
----@field private updateCallback fun(lever: Lever):number
 Lever = Lever or {}
 
 ---てこ構造体のインスタンスを作成します
@@ -36,7 +31,7 @@ Lever = Lever or {}
 ---@param approachTrack Track[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
----@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
 function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock, 
     signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
@@ -57,7 +52,7 @@ end
 ---@param approachTrack Track[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
----@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
 function Lever.overWrite(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock, 
     signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
@@ -299,10 +294,8 @@ function Lever.process(self, deltaTick)
         (not Lever.ASR) and
         Lever.isNoShort(self)
 
-    if self.HR then
-        self.nextAspect = self.updateCallback(self)
-    else
-        self.updateCallback(self)
+    self.nextAspect = self.updateCallback(self, deltaTick)
+    if not self.HR then
         self.nextAspect = 0
     end
 end

@@ -4,6 +4,14 @@ import tomllib
 os.chdir(os.path.dirname(__file__))
 
 def lever_lua_code(name, data):
+    try:
+        if data["auto"] == True:
+            return auto_lever_lua_code(name, data)
+        return absolute_lever_lua_code(name, data)
+    except:
+        return absolute_lever_lua_code(name, data)
+
+def absolute_lever_lua_code(name, data):
     switchesMake=[]
     for v in data["switches"]:
         switchesMake.append(f'SwitchRoute.new(SwitchGetter("{v["sw"]}"),TargetRoute.{v["t"].capitalize()})')
@@ -40,6 +48,20 @@ def lever_lua_code(name, data):
         f'{data["update_callback"]}' +\
     ')'
 
+    return rets
+
+def auto_lever_lua_code(name, data):
+    signalTrackMake=[]
+    for v in data["signal_track"]:
+        signalTrackMake.append(f'TrackGetter("{v}")')
+
+    rets = 'AutoSignal.overWrite(' +\
+    f'LeverGetter("{name}"),' +\
+        f'"{name}",' +\
+        '{' + ','.join(signalTrackMake) + '},' +\
+        f'RouteDirection.{data["direction"].capitalize()},' +\
+        f'{data["update_callback"]}' +\
+    ')'
     return rets
 
 with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w") as lua_f):

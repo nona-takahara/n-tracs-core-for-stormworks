@@ -10,13 +10,14 @@ RouteDirection = {
 
 ---てこに関する操作を行います
 ---@class AutoSignal:SignalBase
+---@field private signalTrack Track[]
 AutoSignal = AutoSignal or {}
 
 ---てこ構造体のインスタンスを作成します
 ---@param itemName string てこ名称
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
----@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
 function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
     return AutoSignal.overWrite({}, itemName, signalTrack, direction, updateCallback)
@@ -26,7 +27,7 @@ end
 ---@param baseObject table ベースとなるオブジェクト---@param itemName string てこ名称
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
----@param updateCallback fun(lever: Lever):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
 function AutoSignal.overWrite(baseObject, itemName, signalTrack, direction, updateCallback)
     baseObject.name = "AutoSignal"
@@ -63,10 +64,9 @@ end
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
 function AutoSignal.process(self, deltaTick)
-    if AutoSignal.isNoShort(self) then
-        self.nextAspect = self.updateCallback(self)
-    else
-        self.updateCallback(self)
+    self.HR = AutoSignal.isNoShort(self)
+    self.nextAspect = self.updateCallback(self, deltaTick)
+    if not self.HR then
         self.nextAspect = 0
     end
 end

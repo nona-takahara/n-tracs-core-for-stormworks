@@ -24,6 +24,7 @@ function Announce(message, peer_id)
     server.announce("[Soya Express WS]", message, peer_id)
 end
 
+---@diagnostic disable-next-line: lowercase-global
 function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
     if command == "?ntracs" or command == "?nt" then
         local args = { ... }

@@ -8,6 +8,7 @@
 __DEBUGLOGS = __DEBUGLOGS or {}
 __HTTPCALL = false
 
+---@diagnostic disable-next-line: lowercase-global
 function debuglog(str)
     table.insert(__DEBUGLOGS, "LOG|" .. tostring(str))
     server.announce("[DEBUG]", tostring(str))
@@ -24,27 +25,28 @@ function SendLogHttp()
     local counter = 0
     local req = ""
     for index, value in ipairs(__DEBUGLOGS) do
-        req = req .. "&m"..tostring(index).."="..urlencode(value)
+        req = req .. "&m"..tostring(index).."="..Urlencode(value)
         counter = index
     end
     __DEBUGLOGS = {}
     server.httpGet(3000, "/luaapi?l="..tostring(counter)..req)
 end
 
+---@diagnostic disable-next-line: lowercase-global
 function httpReply(port, request, reply)
     __HTTPCALL = false
 end
 
-function char_to_hex(c)
+function Char_to_hex(c)
     return string.format("%%%02X", string.byte(c))
 end
 
-function urlencode(url)
+function Urlencode(url)
     if url == nil then
         return
     end
     url = url:gsub("\n", "\r\n")
-    url = url:gsub("([^%w ])", char_to_hex)
+    url = url:gsub("([^%w ])", Char_to_hex)
     url = url:gsub(" ", "+")
     return url
 end
