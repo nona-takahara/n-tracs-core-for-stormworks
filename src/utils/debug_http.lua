@@ -26,7 +26,7 @@ function SendLogHttp()
         counter = counter + 1
         req = req .. "&m"..tostring(counter).."="..urlencode(table.remove(__DEBUGLOGS,0))
     end
-    server.httpGet(3000, "/?l="..tonumber(counter)..req)
+    server.httpGet(3000, "/luaapi?l="..tostring(counter)..req)
 end
 
 function httpReply(port, request, reply)
