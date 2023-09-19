@@ -104,7 +104,7 @@ function SendBridge(vehicle_id, bridge)
 	for _, point in ipairs(bridge.points) do
 		server.setVehicleKeypad(vehicle_id, point.switchName.."W", SWITCHES[point.switchName].W)
 
-		local sending = Switch.getWLR(SWITCHES[point.switchName])
+		local sending = Switch.getWLR(SWITCHES[point.switchName]) and 1 or 0
 		server.setVehicleKeypad(vehicle_id, point.switchName.."WLR", sending * SendingSign)
 	end
 end

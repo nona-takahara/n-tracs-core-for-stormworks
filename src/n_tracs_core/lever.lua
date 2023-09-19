@@ -86,7 +86,7 @@ end
 ---@return boolean
 function Lever.siteSwitchAssert(self)
     for _, value in ipairs(self.switches) do
-        if Switch.isSite(SwitchRoute.getRelatedSwitch(value)) and not SwitchRoute.isTargetRoute(value) then
+        if SwitchRoute.getRelatedSwitch(value).isSite and not SwitchRoute.isTargetRoute(value) then
             return false
         end
     end
@@ -109,6 +109,7 @@ function Lever.isReadyToBookTemporary(self)
     return true
 end
 
+---BookTemporary
 ---@private
 ---@param self Lever
 function Lever.bookTemporary(self)
@@ -120,6 +121,7 @@ function Lever.bookTemporary(self)
     end
 end
 
+---CheckSwitches
 ---@private
 ---@return boolean
 function Lever.checkSwitches(self)
@@ -149,6 +151,7 @@ function Lever.underRouteLock_n(self)
     return self.ASR
 end
 
+---isEnterRoute
 ---@private
 ---@return boolean
 function Lever.isEnterRoute(self, forTSSlR)
@@ -163,6 +166,7 @@ function Lever.isEnterRoute(self, forTSSlR)
     end
 end
 
+---isReserved
 ---@private
 ---@return boolean
 function Lever.isReserved(self)
@@ -179,18 +183,20 @@ function Lever.isReserved(self)
     return true
 end
 
+---checkWLR
 ---@private
 ---@return boolean
 function Lever.checkWLR(self)
     for _, value in ipairs(self.switches) do
         local rswitch = SwitchRoute.getRelatedSwitch(value)
-        if Switch.isSite(rswitch) and (not Switch.getWLR(rswitch)) then
+        if rswitch.isSite and (not Switch.getWLR(rswitch)) then
             return false
         end
     end
     return true
 end
 
+---isNoShort
 ---@private
 ---@return boolean
 function Lever.isNoShort(self)
@@ -241,9 +247,8 @@ function Lever.process(self, deltaTick)
         end
         Lever.bookTemporary(self)
     end
-
     local ZR = Lever.getInput(self) and Lever.checkSwitches(self)
-
+    
     if self.autoReset and self.TSSlR then
         self.input = false
         self.autoReset = false

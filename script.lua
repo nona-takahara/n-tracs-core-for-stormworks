@@ -15,11 +15,13 @@ require("res.signal")
 
 DEFAULT_AREA = AreaGetter("2")
 
+CreateSwitch("NHB21", {"NHB21"}, {TrackGetter("NHB21T")})
+CreateSwitch("NHB22", {"NHB22a","NHB22b"}, {TrackGetter("NHB21T"),TrackGetter("NHB22T")})
 
 ---@type PointSetter[]
 POINTLIST = {}
 for _, data in pairs(BRIDGE_SWITCH) do
-	for key, _ in data.pointAndRoute do
+	for key, _ in pairs(data.pointAndRoute) do
 		POINTLIST[key] = SwitchBridge.getPointSetter(data, key)
 	end
 end
@@ -54,7 +56,7 @@ function onTick()
 				for _, setter in ipairs(data.bridges.points) do
 					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName.."K")
 					if ss then
-						setter.set(dial)
+						setter.set(dial.value)
 					end
 				end
 			end

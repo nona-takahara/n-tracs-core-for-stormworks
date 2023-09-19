@@ -40,10 +40,19 @@ end
 
 ---@type TrackBridge[]
 BRIDGE_TRACK = BRIDGE_TRACK or {}
-function CrateTrack(name, arealist)
+function CreateTrack(name, arealist)
     BRIDGE_TRACK[name] = TrackBridge.overWrite(BRIDGE_TRACK[name], name, arealist)
     TRACKS[name] = Track.overWrite(TRACKS[name], name)
 end
 
 ---@type SwitchBridge[]
 BRIDGE_SWITCH = BRIDGE_SWITCH or {}
+---comments
+---@param itemName string
+---@param pointNames string[]
+---@param relatedTracks Track[]
+---@param isSite boolean | nil
+function CreateSwitch(itemName, pointNames,relatedTracks, isSite)
+    BRIDGE_SWITCH[itemName] = SwitchBridge.overWrite(BRIDGE_SWITCH[itemName], itemName, pointNames)
+    SWITCHES[itemName] = Switch.overWrite(SWITCHES[itemName], itemName, isSite or false, relatedTracks)
+end

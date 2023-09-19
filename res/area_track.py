@@ -14,7 +14,7 @@ def area_track_lua_code(area, vertexes):
 
 def track_lua_code(track):
     arealist = "{" + ",".join([f"AreaGetter(\"{id['name'].replace('Area_','')}\")" for id in track["areas"]]) + "}"
-    return f"CrateTrack(\"{track['name']}\",{arealist})"
+    return f"CreateTrack(\"{track['name']}\",{arealist})"
 
 # {"name":"NHB4LT",
 # "areas":[{"name":"Area_38","trackFlag":"none"},{"name":"Area_37","trackFlag":"none"},{"name":"Area_39","trackFlag":"none"}]

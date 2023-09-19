@@ -14,6 +14,27 @@ SwitchBridge = SwitchBridge or {}
 
 -- 役割：複数ビークルからなるSwitchを束ねる
 
+function SwitchBridge.new(itemName, pointlist)
+    return SwitchBridge.overWrite({}, itemName, pointlist)
+end
+
+---comments
+---@param baseObject any
+---@param itemName string
+---@param pointlist string[]
+---@return SwitchBridge
+function SwitchBridge.overWrite(baseObject, itemName, pointlist)
+    baseObject = baseObject or {}
+    baseObject.name = "SwitchBridge"
+    baseObject.itemName = itemName
+    local par={}
+    for _, key in ipairs(pointlist) do
+        par[key] = TargetRoute.Indefinite
+    end
+    baseObject.pointAndRoute = par
+    return baseObject
+end
+
 ---comments
 ---@param self SwitchBridge
 ---@param name string
