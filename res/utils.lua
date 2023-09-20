@@ -84,7 +84,7 @@ function SendAllAxle(area, sending)
     end
 end
 
-function TrackInformation(trackName, area)
+function TrackInformation(trackName, area, direction)
     local t = TRACKS[trackName]
     local lv = t.relatedLever and t.relatedLever.itemName
     local trackArea = BRIDGE_TRACK[trackName].areas
@@ -92,7 +92,7 @@ function TrackInformation(trackName, area)
     local ends = #trackArea
     local step = 1
 
-    if t.direction == RouteDirection.Right then
+    if direction == RouteDirection.Right or t.direction == RouteDirection.Right then
         begins = #trackArea
         ends = 1
         step = -1
