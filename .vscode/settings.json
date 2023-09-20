@@ -1,4 +1,16 @@
 {
+    "[lua]": {
+        "editor.formatOnSave": true,
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+    },
+    "[toml]": {
+        "editor.formatOnSave": true,
+    },
+    "[json]": {
+        "editor.formatOnSave": true,
+    },
     "lifeboatapi.stormworks.isMicrocontrollerProject": false,
     "lifeboatapi.stormworks.isAddonProject": true,
     "lifeboatapi.stormworks.minimizer.removeComments": true,

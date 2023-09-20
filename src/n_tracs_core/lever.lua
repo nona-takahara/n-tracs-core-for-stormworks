@@ -33,10 +33,10 @@ Lever = Lever or {}
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock, 
-    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
-    return Lever.overWrite({}, itemName, startTrack, destination, switches, routeLock, overrunLock, 
-    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
+                   signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+    return Lever.overWrite({}, itemName, startTrack, destination, switches, routeLock, overrunLock,
+        signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
 end
 
 ---てこ構造体のインスタンスを作成します
@@ -54,8 +54,8 @@ end
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.overWrite(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock, 
-    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+function Lever.overWrite(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock,
+                         signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
     baseObject.name = "Lever"
     baseObject.itemName = itemName
     baseObject.input = false
@@ -248,7 +248,7 @@ function Lever.process(self, deltaTick)
         Lever.bookTemporary(self)
     end
     local ZR = Lever.getInput(self) and Lever.checkSwitches(self)
-    
+
     if self.autoReset and self.TSSlR then
         self.input = false
         self.autoReset = false

@@ -15,8 +15,8 @@ require("res.signal")
 
 DEFAULT_AREA = AreaGetter("2")
 
-CreateSwitch("NHB21", {"NHB21"}, {TrackGetter("NHB21T")})
-CreateSwitch("NHB22", {"NHB22a","NHB22b"}, {TrackGetter("NHB21T"),TrackGetter("NHB22T")})
+CreateSwitch("NHB21", { "NHB21" }, { TrackGetter("NHB21T") })
+CreateSwitch("NHB22", { "NHB22a", "NHB22b" }, { TrackGetter("NHB21T"), TrackGetter("NHB22T") })
 
 ---@type PointSetter[]
 POINTLIST = {}
@@ -54,7 +54,7 @@ function onTick()
 
 			if data.bridges then
 				for _, setter in ipairs(data.bridges.points) do
-					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName.."K")
+					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
 					if ss then
 						setter.set(dial.value)
 					end

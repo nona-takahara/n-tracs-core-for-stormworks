@@ -14,8 +14,10 @@ function onVehicleLoad(vehicle_id)
 	local vdata, s = server.getVehicleData(vehicle_id)
 	if not s then return end
 
-	VehicleTable[vehicle_id] = { axles = LoadAxles(vehicle_id, vdata, false),
-		bridges = LoadBridgeDatas(vdata) }
+	VehicleTable[vehicle_id] = {
+		axles = LoadAxles(vehicle_id, vdata, false),
+		bridges = LoadBridgeDatas(vdata)
+	}
 end
 
 function onVehicleDespawn(vehicle_id)
@@ -93,18 +95,18 @@ end
 function SendBridge(vehicle_id, bridge)
 	for _, lever in ipairs(bridge.levers) do
 		local sending = lever.aspect
-		server.setVehicleKeypad(vehicle_id, lever.itemName.."_ASPECT", sending * SendingSign)
+		server.setVehicleKeypad(vehicle_id, lever.itemName .. "_ASPECT", sending * SendingSign)
 	end
 
 	for _, track in ipairs(bridge.tracks) do
 		local sending = 1 - (track.isShort and 1 or 0)
-		server.setVehicleKeypad(vehicle_id, track.itemName.."R", sending * SendingSign)
+		server.setVehicleKeypad(vehicle_id, track.itemName .. "R", sending * SendingSign)
 	end
 
 	for _, point in ipairs(bridge.points) do
-		server.setVehicleKeypad(vehicle_id, point.switchName.."W", SWITCHES[point.switchName].W)
+		server.setVehicleKeypad(vehicle_id, point.switchName .. "W", SWITCHES[point.switchName].W)
 
 		local sending = Switch.getWLR(SWITCHES[point.switchName]) and 1 or 0
-		server.setVehicleKeypad(vehicle_id, point.switchName.."WLR", sending * SendingSign)
+		server.setVehicleKeypad(vehicle_id, point.switchName .. "WLR", sending * SendingSign)
 	end
 end

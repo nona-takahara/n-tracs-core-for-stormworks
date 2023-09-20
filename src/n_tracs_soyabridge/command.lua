@@ -38,7 +38,7 @@ COMMANDS["aspect"] = {
     end)
 }
 
-COMMANDS["set"] ={
+COMMANDS["set"] = {
     admin = true,
     auth = false,
     description = "Set signal",
@@ -57,7 +57,7 @@ COMMANDS["set"] ={
     end)
 }
 
-COMMANDS["reset"] ={
+COMMANDS["reset"] = {
     admin = true,
     auth = false,
     description = "Reset signal",
@@ -76,7 +76,7 @@ COMMANDS["reset"] ={
     end)
 }
 
-COMMANDS["debug"]={
+COMMANDS["debug"] = {
     admin = true,
     auth = false,
     description = "Reset signal",

@@ -19,20 +19,20 @@ RouteDirection = {
 SignalBase = SignalBase or {}
 
 function SignalBase.process(self, deltaTick)
-    if self.name=="Lever" then
+    if self.name == "Lever" then
         ---@diagnostic disable-next-line: param-type-mismatch
         Lever.process(self, deltaTick)
-    elseif self.name=="AutoSignal" then
+    elseif self.name == "AutoSignal" then
         ---@diagnostic disable-next-line: param-type-mismatch
         AutoSignal.process(self, deltaTick)
     end
 end
 
 function SignalBase.beforeProcess(self)
-    if self.name=="Lever" then
+    if self.name == "Lever" then
         ---@diagnostic disable-next-line: param-type-mismatch
         Lever.beforeProcess(self)
-    elseif self.name=="AutoSignal" then
+    elseif self.name == "AutoSignal" then
         ---@diagnostic disable-next-line: param-type-mismatch
         AutoSignal.beforeProcess(self)
     end

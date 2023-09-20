@@ -52,7 +52,7 @@ function Area.isInArea(self, pos)
 end
 
 function Len2(v1, v2)
-	return (v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z)
+    return (v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z)
 end
 
 ---渡された輪軸を、上下線フラグに基づいて順番通り挿入します

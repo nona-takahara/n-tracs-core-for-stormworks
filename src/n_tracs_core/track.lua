@@ -12,9 +12,9 @@ BookType = {
 
 ---軌道回路に関するものです
 ---@class Track:NtracsObject
----@field private relatedLever Lever | nil
----@field private book BookType
----@field private direction RouteDirection
+---@field  relatedLever Lever | nil
+---@field book BookType
+---@field direction RouteDirection
 ---@field private timer number
 ---@field private beforeRouteLockItem Track | Lever | nil
 ---@field isShort boolean

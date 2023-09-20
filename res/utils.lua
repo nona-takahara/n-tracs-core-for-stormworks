@@ -52,7 +52,7 @@ BRIDGE_SWITCH = BRIDGE_SWITCH or {}
 ---@param pointNames string[]
 ---@param relatedTracks Track[]
 ---@param isSite boolean | nil
-function CreateSwitch(itemName, pointNames,relatedTracks, isSite)
+function CreateSwitch(itemName, pointNames, relatedTracks, isSite)
     BRIDGE_SWITCH[itemName] = SwitchBridge.overWrite(BRIDGE_SWITCH[itemName], itemName, pointNames)
     SWITCHES[itemName] = Switch.overWrite(SWITCHES[itemName], itemName, isSite or false, relatedTracks)
 end
@@ -65,7 +65,6 @@ function SendLeftAxle(area, sending)
         area.axles[1].sending = sending
     end
 end
-
 
 ---comments
 ---@param area Area
@@ -80,7 +79,35 @@ end
 ---@param area Area
 ---@param sending number[]
 function SendAllAxle(area, sending)
-    for _,v in ipairs(area.axles)do
-        v.sending=sending
+    for _, v in ipairs(area.axles) do
+        v.sending = sending
+    end
+end
+
+function TrackLeverFromRight(trackName, area)
+    local lever = TRACKS[trackName].relatedLever
+    local book = TRACKS[trackName].book
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    for i = #trackArea, 1, -1 do
+        local tarea = trackArea[i]
+        if tarea == area then
+            return lever, true, book
+        elseif tarea.axles and #(tarea.axles) > 0 then
+            return lever, false, book
+        end
+    end
+end
+
+function TrackLeverFromLeft(trackName, area)
+    local lever = TRACKS[trackName].relatedLever
+    local book = TRACKS[trackName].book
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    for i = 1, #trackArea do
+        local tarea = trackArea[i]
+        if tarea == area then
+            return lever, true, book
+        elseif tarea.axles and #(tarea.axles) > 0 then
+            return lever, false, book
+        end
     end
 end
