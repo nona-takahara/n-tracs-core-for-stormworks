@@ -84,30 +84,26 @@ function SendAllAxle(area, sending)
     end
 end
 
-function TrackLeverFromRight(trackName, area)
-    local lever = TRACKS[trackName].relatedLever
-    local book = TRACKS[trackName].book
+function TrackInformation(trackName, area)
+    local t = TRACKS[trackName]
+    local lv = t.relatedLever and t.relatedLever.itemName
     local trackArea = BRIDGE_TRACK[trackName].areas
-    for i = #trackArea, 1, -1 do
-        local tarea = trackArea[i]
-        if tarea == area then
-            return lever, true, book
-        elseif tarea.axles and #(tarea.axles) > 0 then
-            return lever, false, book
-        end
-    end
-end
+    local begins = 1
+    local ends = #trackArea
+    local step = 1
 
-function TrackLeverFromLeft(trackName, area)
-    local lever = TRACKS[trackName].relatedLever
-    local book = TRACKS[trackName].book
-    local trackArea = BRIDGE_TRACK[trackName].areas
-    for i = 1, #trackArea do
+    if t.direction == RouteDirection.Right then
+        begins = #trackArea
+        ends = 1
+        step = -1
+    end
+
+    for i = begins, ends, step do
         local tarea = trackArea[i]
         if tarea == area then
-            return lever, true, book
+            return lv, t.direction, true, t.book
         elseif tarea.axles and #(tarea.axles) > 0 then
-            return lever, false, book
+            return lv, t.direction, false, t.book
         end
     end
 end
