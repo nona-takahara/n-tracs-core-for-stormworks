@@ -101,9 +101,26 @@ function TrackInformation(trackName, area)
     for i = begins, ends, step do
         local tarea = trackArea[i]
         if tarea == area then
-            return lv, t.direction, true, t.book
+            break
         elseif tarea.axles and #(tarea.axles) > 0 then
             return lv, t.direction, false, t.book
         end
     end
+    return lv, t.direction, true, t.book
+end
+
+function GetLeftTrackArea(trackName, area)
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    for i = 0, #trackArea - 1 do
+        if trackArea[i + 1] == area then return trackArea[i] end
+    end
+    return nil
+end
+
+function GetRightTrackArea(trackName, area)
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    for i = 1, #trackArea - 1 do
+        if trackArea[i] == area then return trackArea[i + 1] end
+    end
+    return nil
 end
