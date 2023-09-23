@@ -96,6 +96,9 @@ function SendBridge(vehicle_id, bridge)
 	for _, lever in ipairs(bridge.levers) do
 		local sending = lever.aspect
 		server.setVehicleKeypad(vehicle_id, lever.itemName .. "_ASPECT", sending * SendingSign)
+		if lever.itemName == "WAK_SGN1" then
+			server.setVehicleKeypad(vehicle_id, "ATS", AREAS["23"].cbdata or 0)
+		end
 	end
 
 	for _, track in ipairs(bridge.tracks) do

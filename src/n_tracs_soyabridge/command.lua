@@ -46,7 +46,7 @@ COMMANDS["set"] = {
         local nm = args[2]
         if LEVERS[nm] then
             if LEVERS[nm].name == "Lever" then
-                Lever.setInput(LEVERS[nm], true, true)
+                Lever.setInput(LEVERS[nm], true, not (nm == "WAK1R" or nm == "WAK4L" or nm == "SGN1R" or nm == "SGN4L"))
                 Announce("Singal \"" .. nm .. "\" has set", peer_id)
             else
                 Announce("Singal \"" .. nm .. "\" cannot set", peer_id)
