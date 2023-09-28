@@ -71,6 +71,7 @@ end
 ---@param currentState TargetRoute 現在の開通方向
 function Switch.beforeProcess(self, currentState)
     self.K = currentState
+    self.W = TargetRoute.Indefinite
 end
 
 ---毎ループごとに呼び出してください

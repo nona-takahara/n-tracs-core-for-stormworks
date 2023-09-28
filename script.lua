@@ -28,6 +28,21 @@ CreateSwitch("SGN12", { "SGN12" }, { TrackGetter("SGN12T") })
 CreateSwitch("SNH21", { "SNH21a", "SNH21b" }, { TrackGetter("SNH21AT"), TrackGetter("SNH21BT") })
 CreateSwitch("SNH22", { "SNH22" }, { TrackGetter("SNH22T") })
 
+---@type table<string, Lever>
+BRIDGE_LEVER_ALIAS = BRIDGE_LEVER_ALIAS or {}
+BRIDGE_LEVER_ALIAS["aNHB_3d"] = LEVERS["NHB5R"] -- 3番線 潮凪浜方
+--BRIDGE_LEVER_ALIAS["aNHB_3u"]=LEVERS[""] -- 3番線 掘戸方
+BRIDGE_LEVER_ALIAS["aNHB_4d"] = LEVERS["NHB4R"] -- 4番線 潮凪浜方
+BRIDGE_LEVER_ALIAS["aAKA_D"] = LEVERS["WAK_SGN4"]
+BRIDGE_LEVER_ALIAS["aAKA_U"] = LEVERS["WAK4L"]
+BRIDGE_LEVER_ALIAS["aONL_D"] = LEVERS["WAK_SGN1"]
+BRIDGE_LEVER_ALIAS["aONL_U"] = LEVERS["SGN_WAK3"]
+BRIDGE_LEVER_ALIAS["aKGM_D"] = LEVERS["SGN_SNH2"]
+BRIDGE_LEVER_ALIAS["aKGM_U"] = LEVERS["SNH_SGN2"]
+--BRIDGE_LEVER_ALIAS["aSNH_D"] = LEVERS[""] -- 2番線 入守山方
+BRIDGE_LEVER_ALIAS["aSNH_U"] = LEVERS["SNH2L"] -- 1番線 掘戸方
+--BRIDGE_LEVER_ALIAS["aSNH_Ud"] = LEVERS[""] -- 1番線 入守山方
+
 ---@type PointSetter[]
 POINTLIST = {}
 for _, data in pairs(BRIDGE_SWITCH) do
@@ -73,7 +88,6 @@ function onTick()
 		end
 	elseif Phase == 2 then
 		-- 取得データをCoreに処理させるのに適した状態に変換するフェーズ
-		--debuglog("Before AXLE")
 		for _, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
@@ -81,11 +95,11 @@ function onTick()
 				end
 			end
 		end
-		--debuglog("Before BRIDGE TRACK")
+	elseif Phase == 3 then
 		for _, data in pairs(BRIDGE_TRACK) do
 			Track.beforeProcess(TRACKS[data.itemName], TrackBridge.isInAxle(data))
 		end
-		--debuglog("Before BRIDGE SWITCH")
+
 		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
 		for _, data in pairs(BRIDGE_SWITCH) do
 			Switch.beforeProcess(SWITCHES[data.itemName], SwitchBridge.getState(data))
@@ -94,7 +108,7 @@ function onTick()
 		for _, data in pairs(LEVERS) do
 			SignalBase.beforeProcess(data)
 		end
-	elseif Phase == 3 then
+	elseif Phase == 4 then
 		-- Coreで処理するフェーズ
 		for _, track in pairs(TRACKS) do
 			Track.process(track, 6)
@@ -103,13 +117,11 @@ function onTick()
 		for _, lever in pairs(LEVERS) do
 			SignalBase.process(lever, 6)
 		end
-	elseif Phase == 4 then
-		-- Coreで処理したデータを配信用に加工するフェーズ その1
-		for _, area in pairs(AREAS) do
-			area.cbdata = area.updateCallback(area, 6)
-		end
 	elseif Phase == 5 then
-		-- Coreで処理したデータを配信用に加工するフェーズ その2
+		-- Coreで処理したデータを配信用に加工するフェーズ
+		for _, area in pairs(AREAS) do
+			area.cbdata = area.updateCallback and area.updateCallback(area, 6)
+		end
 	elseif Phase == 0 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
