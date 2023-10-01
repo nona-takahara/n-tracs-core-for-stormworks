@@ -133,8 +133,8 @@ function LoadAxles(vehicle_id, vdata, forceRegister)
 end
 
 function Axle.send(self)
-    local sending = self.sending or { 0, 0 }
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * SendingSign)
+    --local sending = self.sending or { 0, 0 }
+    --server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
+    --server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * SendingSign)
     self.sending = { 0, 0 }
 end
