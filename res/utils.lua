@@ -124,3 +124,19 @@ function GetRightTrackArea(trackName, area)
     end
     return nil
 end
+
+ATS_Gh = { 110, 4 }
+ATS_G = { 100, 4 }
+ATS_YGh = { 80, 4 }
+ATS_YG = { 70, 4 }
+ATS_Y = { 50, 4 }
+ATS_YY = { 30, 4 }
+ATS_T = { 15, 4 }
+ATS_R = { 0, 4 }
+ATS_N = { 0, 0 }
+ATS_E = { -1, 14 }
+
+ATS_P60 = { 17, 18 }
+ATS_P40 = { 14, 17 }
+ATS_P25 = { 12, 16 }
+ATS_PEP = { 6, 15 }

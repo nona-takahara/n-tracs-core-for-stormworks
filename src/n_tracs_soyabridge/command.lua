@@ -22,6 +22,16 @@ COMMANDS["help"] = {
     end)
 }
 
+COMMANDS["version"] = {
+    admin = false,
+    auth = false,
+    description = "Get version of N-TRACS Soya Express Wayside Signals",
+    command = (function(_, is_admin, is_auth, peer_id)
+        Announce("N-TRACS Soya Express Wayside Signals v0.9.0", peer_id)
+    end)
+}
+
+
 COMMANDS["aspect"] = {
     admin = false,
     auth = false,
