@@ -6,6 +6,8 @@
 ---@field levers Lever[]
 ---@field tracks Track[]
 ---@field points PointSetter[]
+---@field arc_send boolean
+---@field alias string[]
 
 ---@type VehicleInfo[]
 VehicleTable = {}
@@ -14,8 +16,10 @@ function onVehicleLoad(vehicle_id)
 	local vdata, s = server.getVehicleData(vehicle_id)
 	if not s then return end
 
-	VehicleTable[vehicle_id] = { axles = LoadAxles(vehicle_id, vdata, false),
-		bridges = LoadBridgeDatas(vdata) }
+	VehicleTable[vehicle_id] = {
+		axles = LoadAxles(vehicle_id, vdata, false),
+		bridges = LoadBridgeDatas(vdata)
+	}
 end
 
 function onVehicleDespawn(vehicle_id)
@@ -58,10 +62,22 @@ function LoadBridgeDatas(vdata)
 	if not f then return nil end
 
 	---@type VehicleBridge
-	local bridges = { tracks = {}, levers = {}, points = {} }
+	local bridges = { tracks = {}, levers = {}, points = {}, arc_send = false, alias = {} }
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
 			table.insert(bridges.tracks, TRACKS[sign.name])
+			if not bridges.arc_send then
+				for _, dial in ipairs(vdata.components.buttons) do
+					if dial.name == sign.name .. "_ARC_L" then
+						bridges.arc_send = true
+						break
+					end
+					if dial.name == sign.name .. "_ARC_R" then
+						bridges.arc_send = true
+						break
+					end
+				end
+			end
 		end
 		if POINTLIST[sign.name] then
 			table.insert(bridges.points, POINTLIST[sign.name])
@@ -71,19 +87,12 @@ function LoadBridgeDatas(vdata)
 		end
 	end
 
-	--[[
 	for _, button in ipairs(vdata.components.buttons) do
 		local v, _ = (button.name):gsub("_ASPECT", "")
 		if BRIDGE_LEVER_ALIAS[v] then
-			table.insert(bridges.bridge.levers, v)
-		end
-
-		v, _ = (button.name):gsub("CR", "")
-		if BRIDGE_CROSS[v] then
-			table.insert(bridges.bridge.cross, v)
+			table.insert(bridges.alias, v)
 		end
 	end
-	]]
 	return bridges
 end
 
@@ -93,18 +102,42 @@ end
 function SendBridge(vehicle_id, bridge)
 	for _, lever in ipairs(bridge.levers) do
 		local sending = lever.aspect
-		server.setVehicleKeypad(vehicle_id, lever.itemName.."_ASPECT", sending * SendingSign)
+		server.setVehicleKeypad(vehicle_id, lever.itemName .. "_ASPECT", sending * SendingSign)
+	end
+
+	for _, alias in ipairs(bridge.alias) do
+		local sending = BRIDGE_LEVER_ALIAS[alias].aspect
+		server.setVehicleKeypad(vehicle_id, alias .. "_ASPECT", sending * SendingSign)
 	end
 
 	for _, track in ipairs(bridge.tracks) do
 		local sending = 1 - (track.isShort and 1 or 0)
-		server.setVehicleKeypad(vehicle_id, track.itemName.."R", sending * SendingSign)
+		server.setVehicleKeypad(vehicle_id, track.itemName .. "R", sending * SendingSign)
+		if bridge.arc_send then
+			local right_arc = nil
+			for _, area in ipairs(BRIDGE_TRACK[track.itemName].areas) do
+				if #area.axles > 0 then
+					if right_arc == nil then
+						server.setVehicleKeypad(vehicle_id, track.itemName .. "_ARC_L", area.axles[1].arc * SendingSign)
+					end
+					right_arc = area.axles[#area.axles].arc
+				end
+			end
+			if right_arc ~= nil then
+				server.setVehicleKeypad(vehicle_id, track.itemName .. "_ARC_R", right_arc * SendingSign)
+			else
+				server.setVehicleKeypad(vehicle_id, track.itemName .. "_ARC_L", 0)
+				server.setVehicleKeypad(vehicle_id, track.itemName .. "_ARC_R", 0)
+			end
+		end
 	end
 
 	for _, point in ipairs(bridge.points) do
-		server.setVehicleKeypad(vehicle_id, point.switchName.."W", SWITCHES[point.switchName].W)
+		if SWITCHES[point.switchName].W ~= TargetRoute.Indefinite then
+			server.setVehicleKeypad(vehicle_id, point.switchName .. "W", SWITCHES[point.switchName].W)
+		end
 
 		local sending = Switch.getWLR(SWITCHES[point.switchName]) and 1 or 0
-		server.setVehicleKeypad(vehicle_id, point.switchName.."WLR", sending * SendingSign)
+		server.setVehicleKeypad(vehicle_id, point.switchName .. "WLR", sending * SendingSign)
 	end
 end

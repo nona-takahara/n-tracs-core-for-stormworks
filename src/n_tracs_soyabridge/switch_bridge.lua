@@ -27,7 +27,7 @@ function SwitchBridge.overWrite(baseObject, itemName, pointlist)
     baseObject = baseObject or {}
     baseObject.name = "SwitchBridge"
     baseObject.itemName = itemName
-    local par={}
+    local par = {}
     for _, key in ipairs(pointlist) do
         par[key] = TargetRoute.Indefinite
     end
@@ -44,7 +44,7 @@ function SwitchBridge.getPointSetter(self, name)
         name = "PointSetter",
         pointName = name,
         switchName = self.itemName,
-        set = function (state)
+        set = function(state)
             self.pointAndRoute[name] = state
         end
     }

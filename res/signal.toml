@@ -1,0 +1,956 @@
+[NHB4R]
+start = "NHB4LT"
+destination = "NHB_WAK1T"
+direction = "right"
+switches = [{ sw = "NHB21", t = "reverse" }, { sw = "NHB22", t = "normal" }]
+route_lock = ["NHB21T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB21T", "NHB_WAK1T"]
+
+approach_track = ["NHB4LT"]
+approach_lock_time = 20
+
+update_callback = """
+function(self)
+    if self.HR then
+--        if LEVERS["WAK1R"].aspect >= 2 or LEVERS["WAK2R"].aspect >= 2 then
+        if LEVERS["WAK1R"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[NHB5R]
+start = "NHB5LT"
+destination = "NHB_WAK1T"
+direction = "right"
+switches = [{ sw = "NHB21", t = "normal" }, { sw = "NHB22", t = "normal" }]
+route_lock = ["NHB21T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB21T", "NHB_WAK1T"]
+
+approach_track = ["NHB5LT"]
+approach_lock_time = 20
+
+update_callback = """
+function(self)
+    if self.HR then
+--        if LEVERS["WAK1R"].aspect >= 2 or LEVERS["WAK2R"].aspect >= 2 then
+        if LEVERS["WAK1R"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[NHB11R]
+start = "NHB4LT"
+destination = "NHB13RT"
+direction = "right"
+switches = [{ sw = "NHB21", t = "reverse" }, { sw = "NHB22", t = "reverse" }]
+route_lock = ["NHB21T", "NHB22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB21T", "NHB22T", "NHB13RT"]
+
+approach_track = []
+approach_lock_time = 0
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[NHB12R]
+start = "NHB5LT"
+destination = "NHB13RT"
+direction = "right"
+switches = [{ sw = "NHB21", t = "normal" }, { sw = "NHB22", t = "reverse" }]
+route_lock = ["NHB21T", "NHB22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB21T", "NHB22T", "NHB13RT"]
+
+approach_track = []
+approach_lock_time = 0
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[NHB13R]
+start = "NHB6LT"
+destination = "NHB13RT"
+direction = "right"
+switches = [
+    #{sw="NHB31", t="normal"},
+    { sw = "NHB22", t = "normal" },
+]
+route_lock = ["NHB22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB22T", "NHB13RT"]
+
+approach_track = []
+approach_lock_time = 0
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[NHB4L]
+start = "WAK_NHB1T"
+destination = "NHB4LT"
+direction = "left"
+switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "reverse" }]
+route_lock = ["NHB13RT", "NHB22T", "NHB21T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB13RT", "NHB22T", "NHB21T", "NHB4LT"]
+
+approach_track = ["WAK_NHB1T"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 2
+    else
+        return 0
+    end
+end
+"""
+
+[NHB5L]
+start = "WAK_NHB1T"
+destination = "NHB5LT"
+direction = "left"
+switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "normal" }]
+route_lock = ["NHB13RT", "NHB22T", "NHB21T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB13RT", "NHB22T", "NHB21T", "NHB5LT"]
+
+approach_track = ["WAK_NHB1T"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 2
+    else
+        return 0
+    end
+end
+"""
+
+[NHB6L]
+start = "WAK_NHB1T"
+destination = "NHB6LT"
+direction = "left"
+switches = [
+    { sw = "NHB22", t = "normal" },
+    #{sw="NHB31", t="normal"},
+]
+route_lock = ["NHB13RT", "NHB22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB13RT", "NHB22T", "NHB"]
+
+approach_track = ["WAK_NHB1T"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 2
+    else
+        return 0
+    end
+end
+"""
+
+[NHB11L]
+start = "NHB13RT"
+destination = "NHB4LT"
+direction = "left"
+switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "reverse" }]
+route_lock = ["NHB22T", "NHB21T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB22T", "NHB21T", "NHB4LT"]
+
+approach_track = []
+approach_lock_time = 0
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[NHB12L]
+start = "NHB13RT"
+destination = "NHB5LT"
+direction = "left"
+switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "normal" }]
+route_lock = ["NHB22T", "NHB21T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB22T", "NHB21T", "NHB5LT"]
+
+approach_track = []
+approach_lock_time = 0
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[NHB13L]
+start = "NHB13RT"
+destination = "NHB6LT"
+direction = "left"
+switches = [
+    { sw = "NHB22", t = "normal" },
+    #{sw="NHB31", t="normal"},
+]
+route_lock = ["NHB22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NHB22T", "NHB"]
+
+approach_track = []
+approach_lock_time = 0
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[WAK_NHB1]
+auto = true
+direction = "left"
+signal_track = ["WAK_NHB1T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["NHB4L"].aspect >= 2 or LEVERS["NHB5L"].aspect >= 2 or LEVERS["NHB6L"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[WAK1R]
+start = "NHB_WAK1T"
+destination = "WAK_SGN5T"
+direction = "right"
+switches = [{ sw = "WAK11", t = "normal" }]
+route_lock = ["WAK1RAT", "WAK1RBT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["WAK1RAT", "WAK1RBT", "WAK_SGN5T"]
+
+approach_track = ["NHB_WAK1T"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["WAK_SGN4"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[WAK4L]
+start = "SGN_WAK1T"
+destination = "WAK12T"
+direction = "left"
+switches = [{ sw = "WAK11", t = "normal" }, { sw = "WAK12", t = "normal" }]
+route_lock = ["WAK4LT", "WAK11T"]                                           # 到着地点のためWAK12Tを省略
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["WAK4LT", "WAK11T", "WAK12T"]
+
+approach_track = ["SGN_WAK1T"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["WAK_NHB1"].aspect >= 3 then
+            return 4
+        elseif LEVERS["WAK_NHB1"].aspect >= 2 then
+            return 3
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[WAK_SGN4]
+auto = true
+direction = "right"
+signal_track = ["WAK_SGN4T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["WAK_SGN3"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[WAK_SGN3]
+auto = true
+direction = "right"
+signal_track = ["WAK_SGN3T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["WAK_SGN2"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[WAK_SGN2]
+auto = true
+direction = "right"
+signal_track = ["WAK_SGN2T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["WAK_SGN1"].aspect >= 3 then
+            return 4
+        elseif LEVERS["WAK_SGN1"].aspect >= 2 then
+            return 3
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[WAK_SGN1]
+auto = true
+direction = "right"
+signal_track = ["WAK_SGN1T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN1R"].aspect >= 2 then
+--        if LEVERS["SGN1R"].aspect >= 2 or LEVERS["SGN2R"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_WAK5]
+auto = true
+direction = "left"
+signal_track = ["SGN_WAK5T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_WAK4"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_WAK4]
+auto = true
+direction = "right"
+signal_track = ["SGN_WAK4T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_WAK3"].aspect >= 3 then
+            return 4
+        elseif LEVERS["SGN_WAK3"].aspect >= 2 then
+            return 3
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_WAK3]
+auto = true
+direction = "left"
+signal_track = ["SGN_WAK3T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_WAK2"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_WAK2]
+auto = true
+direction = "left"
+signal_track = ["SGN_WAK2T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_WAK1"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_WAK1]
+auto = true
+direction = "left"
+signal_track = ["SGN_WAK1T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["WAK4L"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN1R]
+start = "WAK_SGN1R"
+destination = "SGN_SNH5T"
+direction = "right"
+switches = [{ sw = "SGN11", t = "normal" }]
+route_lock = ["SGN1RAT", "SGN1RBT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SGN1RAT", "SGN1RBT", "SGN_SNH5T"]
+
+approach_track = ["WAK_SGN1R"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_SNH4"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN4L]
+start = "SNH_SGN1T"
+destination = "SGN_WAK6T"
+direction = "left"
+switches = [{ sw = "SGN11", t = "normal" }, { sw = "SGN12", t = "normal" }]
+route_lock = ["SGN4LT", "SGN11T", "SGN12T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SGN4LT", "SGN11T", "SGN12T", "SGN_WAK6T"]
+
+approach_track = ["SNH_SGN1T"]
+approach_lock_time = 40
+
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_WAK5"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_SNH4]
+auto = true
+direction = "right"
+signal_track = ["SGN_SNH4T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_SNH3"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_SNH3]
+auto = true
+direction = "right"
+signal_track = ["SGN_SNH3T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_SNH2"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+
+[SGN_SNH2]
+auto = true
+direction = "right"
+signal_track = ["SGN_SNH2T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN_SNH1"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SGN_SNH1]
+auto = true
+direction = "right"
+signal_track = ["SGN_SNH1T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SNH1R"].HR then
+            return 3
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SNH_SGN3]
+auto = true
+direction = "left"
+signal_track = ["SNH_SGN3T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SNH_SGN2"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SNH_SGN2]
+auto = true
+direction = "left"
+signal_track = ["SNH_SGN2T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SNH_SGN1"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SNH_SGN1]
+auto = true
+direction = "left"
+signal_track = ["SNH_SGN1T"]
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SGN4L"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+[SNH1R]
+start = "SGN_SNH1T"
+destination = "SNH1RT"
+direction = "right"
+switches = []
+route_lock = []
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH1RT"]
+
+approach_track = ["SGN_SNH1T"]
+approach_lock_time = 20
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+
+[SNH2L]
+start = "SNH4LT"
+destination = "SNH_SGN4T"
+direction = "left"
+switches = [{ sw = "SNH22", t = "normal" }]
+route_lock = ["SNH22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH22T", "SNH_SGN4T"]
+
+approach_track = ["SNH4LT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        if LEVERS["SNH_SGN3"].aspect >= 2 then
+            return 4
+        else
+            return 2
+        end
+    else
+        return 0
+    end
+end
+"""
+
+
+[SNH11R]
+start = "SNH1RT"
+destination = "SNH3RT"
+direction = "right"
+switches = [{ sw = "SNH21", t = "normal" }]
+route_lock = ["SNH21AT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21AT", "SNH3RT"]
+
+approach_track = ["SNH1RT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[SNH11L]
+start = "SNH3RT"
+destination = "SNH1RT"
+direction = "left"
+switches = [{ sw = "SNH21", t = "normal" }]
+route_lock = ["SNH21AT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21AT", "SNH1RT"]
+
+approach_track = ["SNH3RT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[SNH12R]
+start = "SNH4LT"
+destination = "SNH3RT"
+direction = "right"
+switches = [{ sw = "SNH21", t = "reverse" }]
+route_lock = ["SNH21BT", "SNH21AT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21BT", "SNH21AT", "SNH3RT"]
+
+approach_track = ["SNH4LT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+
+[SNH12L]
+start = "SNH3RT"
+destination = "SNH4LT"
+direction = "left"
+switches = [{ sw = "SNH21", t = "reverse" }]
+route_lock = ["SNH21AT", "SNH21BT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21AT", "SNH21BT", "SNH4LT"]
+
+approach_track = ["SNH3RT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[SNH12LZ]
+start = "SNH3RT"
+destination = "SNH4LT"
+direction = "left"
+switches = [{ sw = "SNH21", t = "reverse" }]
+route_lock = ["SNH21AT", "SNH21BT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21AT", "SNH21BT"]
+
+approach_track = ["SNH3RT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR and TRACKS["SNH4LT"].isShort then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+[SNH13R]
+start = "SNH13LT"
+destination = "SNH4LT"
+direction = "right"
+switches = [{ sw = "SNH22", t = "reverse" }]
+route_lock = ["SNH22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH22T", "SNH4LT"]
+
+approach_track = ["SNH13LT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""
+
+
+[SNH13L]
+start = "SNH4LT"
+destination = "SNH13LT"
+direction = "left"
+switches = [{ sw = "SNH21", t = "reverse" }]
+route_lock = ["SNH22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH22T", "SNH13LT"]
+
+approach_track = ["SNH4LT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR then
+        return 1
+    else
+        return 0
+    end
+end
+"""

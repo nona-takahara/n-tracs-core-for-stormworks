@@ -51,7 +51,6 @@ function AutoSignal.beforeProcess(self)
     self.aspect = self.nextAspect
 end
 
-
 function AutoSignal.isNoShort(self)
     for _, value in ipairs(self.signalTrack) do
         if Track.isShort(value) then

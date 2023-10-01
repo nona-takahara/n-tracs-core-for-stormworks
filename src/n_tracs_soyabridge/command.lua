@@ -22,6 +22,16 @@ COMMANDS["help"] = {
     end)
 }
 
+COMMANDS["version"] = {
+    admin = false,
+    auth = false,
+    description = "Get version of N-TRACS Soya Express Wayside Signals",
+    command = (function(_, is_admin, is_auth, peer_id)
+        Announce("N-TRACS Soya Express Wayside Signals v0.9.0", peer_id)
+    end)
+}
+
+
 COMMANDS["aspect"] = {
     admin = false,
     auth = false,
@@ -38,7 +48,7 @@ COMMANDS["aspect"] = {
     end)
 }
 
-COMMANDS["set"] ={
+COMMANDS["set"] = {
     admin = true,
     auth = false,
     description = "Set signal",
@@ -46,7 +56,7 @@ COMMANDS["set"] ={
         local nm = args[2]
         if LEVERS[nm] then
             if LEVERS[nm].name == "Lever" then
-                Lever.setInput(LEVERS[nm], true, true)
+                Lever.setInput(LEVERS[nm], true, not (nm == "WAK1R" or nm == "WAK4L" or nm == "SGN1R" or nm == "SGN4L"))
                 Announce("Singal \"" .. nm .. "\" has set", peer_id)
             else
                 Announce("Singal \"" .. nm .. "\" cannot set", peer_id)
@@ -57,7 +67,7 @@ COMMANDS["set"] ={
     end)
 }
 
-COMMANDS["reset"] ={
+COMMANDS["reset"] = {
     admin = true,
     auth = false,
     description = "Reset signal",
@@ -76,7 +86,7 @@ COMMANDS["reset"] ={
     end)
 }
 
-COMMANDS["debug"]={
+COMMANDS["debug"] = {
     admin = true,
     auth = false,
     description = "Reset signal",

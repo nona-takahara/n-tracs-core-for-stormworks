@@ -52,7 +52,7 @@ BRIDGE_SWITCH = BRIDGE_SWITCH or {}
 ---@param pointNames string[]
 ---@param relatedTracks Track[]
 ---@param isSite boolean | nil
-function CreateSwitch(itemName, pointNames,relatedTracks, isSite)
+function CreateSwitch(itemName, pointNames, relatedTracks, isSite)
     BRIDGE_SWITCH[itemName] = SwitchBridge.overWrite(BRIDGE_SWITCH[itemName], itemName, pointNames)
     SWITCHES[itemName] = Switch.overWrite(SWITCHES[itemName], itemName, isSite or false, relatedTracks)
 end
@@ -65,7 +65,6 @@ function SendLeftAxle(area, sending)
         area.axles[1].sending = sending
     end
 end
-
 
 ---comments
 ---@param area Area
@@ -80,7 +79,64 @@ end
 ---@param area Area
 ---@param sending number[]
 function SendAllAxle(area, sending)
-    for _,v in ipairs(area.axles)do
-        v.sending=sending
+    for _, v in ipairs(area.axles) do
+        v.sending = sending
     end
 end
+
+function TrackInformation(trackName, area, direction)
+    local t = TRACKS[trackName]
+    local lv = t.relatedLever and t.relatedLever.itemName
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    local begins = 1
+    local ends = #trackArea
+    local step = 1
+
+    if direction == RouteDirection.Right or t.direction == RouteDirection.Right then
+        begins = #trackArea
+        ends = 1
+        step = -1
+    end
+
+    for i = begins, ends, step do
+        local tarea = trackArea[i]
+        if tarea == area then
+            break
+        elseif tarea.axles and #(tarea.axles) > 0 then
+            return lv, t.direction, false, t.book
+        end
+    end
+    return lv, t.direction, true, t.book
+end
+
+function GetLeftTrackArea(trackName, area)
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    for i = 0, #trackArea - 1 do
+        if trackArea[i + 1] == area then return trackArea[i] end
+    end
+    return nil
+end
+
+function GetRightTrackArea(trackName, area)
+    local trackArea = BRIDGE_TRACK[trackName].areas
+    for i = 1, #trackArea - 1 do
+        if trackArea[i] == area then return trackArea[i + 1] end
+    end
+    return nil
+end
+
+ATS_Gh = { 110, 4 }
+ATS_G = { 100, 4 }
+ATS_YGh = { 80, 4 }
+ATS_YG = { 70, 4 }
+ATS_Y = { 50, 4 }
+ATS_YY = { 30, 4 }
+ATS_T = { 15, 4 }
+ATS_R = { 0, 4 }
+ATS_N = { 0, 0 }
+ATS_E = { -1, 14 }
+
+ATS_P60 = { 17, 18 }
+ATS_P40 = { 14, 17 }
+ATS_P25 = { 12, 16 }
+ATS_PEP = { 6, 15 }

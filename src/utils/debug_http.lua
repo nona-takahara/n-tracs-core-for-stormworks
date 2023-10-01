@@ -25,11 +25,11 @@ function SendLogHttp()
     local counter = 0
     local req = ""
     for index, value in ipairs(__DEBUGLOGS) do
-        req = req .. "&m"..tostring(index).."="..Urlencode(value)
+        req = req .. "&m" .. tostring(index) .. "=" .. Urlencode(value)
         counter = index
     end
     __DEBUGLOGS = {}
-    server.httpGet(3000, "/luaapi?l="..tostring(counter)..req)
+    server.httpGet(3000, "/luaapi?l=" .. tostring(counter) .. req)
 end
 
 ---@diagnostic disable-next-line: lowercase-global
