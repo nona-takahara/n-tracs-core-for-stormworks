@@ -112,10 +112,7 @@ end
 start = "NHB6LT"
 destination = "NHB13RT"
 direction = "right"
-switches = [
-    #{sw="NHB31", t="normal"},
-    { sw = "NHB22", t = "normal" },
-]
+switches = [{ sw = "NHB31", t = "normal" }, { sw = "NHB22", t = "normal" }]
 route_lock = ["NHB22T"]
 
 overrun_lock = []
@@ -190,10 +187,7 @@ end
 start = "WAK_NHB1T"
 destination = "NHB6LT"
 direction = "left"
-switches = [
-    { sw = "NHB22", t = "normal" },
-    #{sw="NHB31", t="normal"},
-]
+switches = [{ sw = "NHB22", t = "normal" }, { sw = "NHB31", t = "normal" }]
 route_lock = ["NHB13RT", "NHB22T"]
 
 overrun_lock = []
@@ -268,10 +262,7 @@ end
 start = "NHB13RT"
 destination = "NHB6LT"
 direction = "left"
-switches = [
-    { sw = "NHB22", t = "normal" },
-    #{sw="NHB31", t="normal"},
-]
+switches = [{ sw = "NHB22", t = "normal" }, { sw = "NHB31", t = "normal" }]
 route_lock = ["NHB22T"]
 
 overrun_lock = []

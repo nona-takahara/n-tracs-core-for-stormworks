@@ -56,6 +56,7 @@ COMMANDS["set"] = {
         local nm = args[2]
         if LEVERS[nm] then
             if LEVERS[nm].name == "Lever" then
+                ---@diagnostic disable-next-line: param-type-mismatch
                 Lever.setInput(LEVERS[nm], true, not (nm == "WAK1R" or nm == "WAK4L" or nm == "SGN1R" or nm == "SGN4L"))
                 Announce("Singal \"" .. nm .. "\" has set", peer_id)
             else
@@ -75,6 +76,7 @@ COMMANDS["reset"] = {
         local nm = args[2]
         if LEVERS[nm] then
             if LEVERS[nm].name == "Lever" then
+                ---@diagnostic disable-next-line: param-type-mismatch
                 Lever.setInput(LEVERS[nm], false, false)
                 Announce("Singal \"" .. nm .. "\" has reset", peer_id)
             else

@@ -1,3 +1,3 @@
 ---@class NtracsObject
----@field protected name string クラス名です
+---@field name string クラス名です
 ---@field itemName string

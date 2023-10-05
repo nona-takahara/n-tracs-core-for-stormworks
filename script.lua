@@ -6,42 +6,14 @@ require("src.n_tracs_core")
 -- 2. Load bridge
 require("src.n_tracs_soyabridge")
 
-require("src.utils.debug_http")
-
 -- 3. Load settings
 require("res.utils")
 require("res.area_track")
-require("res.signal")
-
 DEFAULT_AREA = AreaGetter("2")
-
-CreateSwitch("NHB21", { "NHB21" }, { TrackGetter("NHB21T") })
-CreateSwitch("NHB22", { "NHB22a", "NHB22b" }, { TrackGetter("NHB21T"), TrackGetter("NHB22T") })
---CreateSwitch("NHB31", { "NHB31" }, { TrackGetter("NHB22T") }, true)
-
-CreateSwitch("WAK11", { "WAK11" }, { TrackGetter("WAK1RBT"), TrackGetter("WAK11T") })
-CreateSwitch("WAK12", { "WAK12" }, { TrackGetter("WAK12T") })
-
-CreateSwitch("SGN11", { "SGN11" }, { TrackGetter("SGN1RBT"), TrackGetter("SGN11T") })
-CreateSwitch("SGN12", { "SGN12" }, { TrackGetter("SGN12T") })
-
-CreateSwitch("SNH21", { "SNH21a", "SNH21b" }, { TrackGetter("SNH21AT"), TrackGetter("SNH21BT") })
-CreateSwitch("SNH22", { "SNH22" }, { TrackGetter("SNH22T") })
-
----@type table<string, Lever>
-BRIDGE_LEVER_ALIAS = BRIDGE_LEVER_ALIAS or {}
-BRIDGE_LEVER_ALIAS["aNHB_3d"] = LEVERS["NHB5R"] -- 3番線 潮凪浜方
---BRIDGE_LEVER_ALIAS["aNHB_3u"]=LEVERS[""] -- 3番線 掘戸方
-BRIDGE_LEVER_ALIAS["aNHB_4d"] = LEVERS["NHB4R"] -- 4番線 潮凪浜方
-BRIDGE_LEVER_ALIAS["aAKA_D"] = LEVERS["WAK_SGN4"]
-BRIDGE_LEVER_ALIAS["aAKA_U"] = LEVERS["WAK4L"]
-BRIDGE_LEVER_ALIAS["aONL_D"] = LEVERS["WAK_SGN1"]
-BRIDGE_LEVER_ALIAS["aONL_U"] = LEVERS["SGN_WAK3"]
-BRIDGE_LEVER_ALIAS["aKGM_D"] = LEVERS["SGN_SNH2"]
-BRIDGE_LEVER_ALIAS["aKGM_U"] = LEVERS["SNH_SGN2"]
---BRIDGE_LEVER_ALIAS["aSNH_D"] = LEVERS[""] -- 2番線 入守山方
-BRIDGE_LEVER_ALIAS["aSNH_U"] = LEVERS["SNH2L"] -- 1番線 掘戸方
---BRIDGE_LEVER_ALIAS["aSNH_Ud"] = LEVERS[""] -- 1番線 入守山方
+require("res.signal")
+require("res.signal_alias")
+require("res.switch")
+require("res.ctc")
 
 ---@type PointSetter[]
 POINTLIST = {}
@@ -86,6 +58,11 @@ function onTick()
 				end
 			end
 		end
+
+		-- CTCデータ取得
+		if CTC then
+			GetCtcState()
+		end
 	elseif Phase == 2 then
 		-- 取得データをCoreに処理させるのに適した状態に変換するフェーズ
 		for _, data in pairs(VehicleTable) do
@@ -94,6 +71,11 @@ function onTick()
 					Axle.search(axle)
 				end
 			end
+		end
+
+		-- CTC取得データの変換
+		if CTC_ACTIVE then
+			SetCtcState()
 		end
 	elseif Phase == 3 then
 		for _, data in pairs(BRIDGE_TRACK) do
@@ -122,6 +104,11 @@ function onTick()
 		for _, area in pairs(AREAS) do
 			area.cbdata = area.updateCallback and area.updateCallback(area, 6)
 		end
+
+		-- CTCデータ生成
+		if CTC_ACTIVE then
+			MakeCtcData()
+		end
 	elseif Phase == 0 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
@@ -135,6 +122,10 @@ function onTick()
 			if data.bridges then
 				SendBridge(vehicle_id, data.bridges)
 			end
+		end
+
+		if CTC_ACTIVE then
+			SendCtcData(SendingSign)
 		end
 
 		while #DELAY_ANNOUNE > 0 do
