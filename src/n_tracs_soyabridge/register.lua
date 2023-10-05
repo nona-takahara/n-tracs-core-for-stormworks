@@ -18,12 +18,16 @@ function onVehicleLoad(vehicle_id)
 
 	VehicleTable[vehicle_id] = {
 		axles = LoadAxles(vehicle_id, vdata, false),
-		bridges = LoadBridgeDatas(vdata)
+		bridges = LoadBridgeDatas(vehicle_id, vdata)
 	}
 end
 
 function onVehicleDespawn(vehicle_id)
 	VehicleTable[vehicle_id] = nil
+	if vehicle_id == CTC then
+		CTC = nil
+		CTC_ACTIVE = false
+	end
 end
 
 function onButtonPress(vehicle_id, peer_id, button_name)
@@ -32,28 +36,26 @@ function onButtonPress(vehicle_id, peer_id, button_name)
 		if not s then return end
 
 		VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
-		VehicleTable[vehicle_id].bridges = LoadBridgeDatas(vdata)
+		VehicleTable[vehicle_id].bridges = LoadBridgeDatas(vehicle_id, vdata)
 	end
-	--[[
-    if button_name == "ENABLE CTC" then
-		local state, s = server.getVehicleButton(vehicle_id, button_name)
-		if state.on then
-			CTC = vehicle_id
-		else
-			CTC = nil
-		end
+
+	if button_name == "Activate CTC" then
+		CTC = vehicle_id
 	end
-	]]
 end
 
 ---comments
+---@param vehicle_id number
 ---@param vdata SWVehicleData
 ---@return VehicleBridge | nil
-function LoadBridgeDatas(vdata)
+function LoadBridgeDatas(vehicle_id, vdata)
 	if not vdata then return nil end
 	local f = false
 
 	for _, button in ipairs(vdata.components.buttons) do
+		if button.name == "Activate CTC" then
+			CTC = vehicle_id
+		end
 		if button.name == "N-TRACS RESET" then
 			f = true
 			break

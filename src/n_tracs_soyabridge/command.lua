@@ -27,7 +27,7 @@ COMMANDS["version"] = {
     auth = false,
     description = "Get version of N-TRACS Soya Express Wayside Signals",
     command = (function(_, is_admin, is_auth, peer_id)
-        Announce("N-TRACS Soya Express Wayside Signals v0.9.0", peer_id)
+        Announce("N-TRACS Soya Express Wayside Signals v0.9.1", peer_id)
     end)
 }
 
@@ -56,6 +56,7 @@ COMMANDS["set"] = {
         local nm = args[2]
         if LEVERS[nm] then
             if LEVERS[nm].name == "Lever" then
+                ---@diagnostic disable-next-line: param-type-mismatch
                 Lever.setInput(LEVERS[nm], true, not (nm == "WAK1R" or nm == "WAK4L" or nm == "SGN1R" or nm == "SGN4L"))
                 Announce("Singal \"" .. nm .. "\" has set", peer_id)
             else
@@ -75,6 +76,7 @@ COMMANDS["reset"] = {
         local nm = args[2]
         if LEVERS[nm] then
             if LEVERS[nm].name == "Lever" then
+                ---@diagnostic disable-next-line: param-type-mismatch
                 Lever.setInput(LEVERS[nm], false, false)
                 Announce("Singal \"" .. nm .. "\" has reset", peer_id)
             else

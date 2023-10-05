@@ -189,7 +189,7 @@ end
 function Lever.checkWLR(self)
     for _, value in ipairs(self.switches) do
         local rswitch = SwitchRoute.getRelatedSwitch(value)
-        if rswitch.isSite and (not Switch.getWLR(rswitch)) then
+        if Switch.getWLR(rswitch) then
             return false
         end
     end
@@ -291,6 +291,7 @@ function Lever.process(self, deltaTick)
             Track.bookOverrun(track, self)
         end
     end
+
     self.HR =
         ZR and
         Lever.isReserved(self) and

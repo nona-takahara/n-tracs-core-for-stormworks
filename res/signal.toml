@@ -112,10 +112,7 @@ end
 start = "NHB6LT"
 destination = "NHB13RT"
 direction = "right"
-switches = [
-    #{sw="NHB31", t="normal"},
-    { sw = "NHB22", t = "normal" },
-]
+switches = [{ sw = "NHB31", t = "normal" }, { sw = "NHB22", t = "normal" }]
 route_lock = ["NHB22T"]
 
 overrun_lock = []
@@ -190,16 +187,13 @@ end
 start = "WAK_NHB1T"
 destination = "NHB6LT"
 direction = "left"
-switches = [
-    { sw = "NHB22", t = "normal" },
-    #{sw="NHB31", t="normal"},
-]
+switches = [{ sw = "NHB22", t = "normal" }, { sw = "NHB31", t = "normal" }]
 route_lock = ["NHB13RT", "NHB22T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB13RT", "NHB22T", "NHB"]
+signal_track = ["NHB13RT", "NHB22T", "NHB6LT"]
 
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
@@ -268,16 +262,13 @@ end
 start = "NHB13RT"
 destination = "NHB6LT"
 direction = "left"
-switches = [
-    { sw = "NHB22", t = "normal" },
-    #{sw="NHB31", t="normal"},
-]
+switches = [{ sw = "NHB22", t = "normal" }, { sw = "NHB31", t = "normal" }]
 route_lock = ["NHB22T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB22T", "NHB"]
+signal_track = ["NHB22T", "NHB6LT"]
 
 approach_track = []
 approach_lock_time = 0
@@ -538,7 +529,7 @@ end
 """
 
 [SGN1R]
-start = "WAK_SGN1R"
+start = "WAK_SGN1T"
 destination = "SGN_SNH5T"
 direction = "right"
 switches = [{ sw = "SGN11", t = "normal" }]
@@ -549,7 +540,7 @@ overrun_lock_time = 0
 
 signal_track = ["SGN1RAT", "SGN1RBT", "SGN_SNH5T"]
 
-approach_track = ["WAK_SGN1R"]
+approach_track = ["WAK_SGN1T"]
 approach_lock_time = 40
 
 update_callback = """
@@ -929,12 +920,36 @@ function(self)
 end
 """
 
+[SNH13RZ]
+start = "SNH13LT"
+destination = "SNH4LT"
+direction = "right"
+switches = [{ sw = "SNH22", t = "reverse" }]
+route_lock = ["SNH22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH22T"]
+
+approach_track = ["SNH13LT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR and TRACKS["SNH4LT"].isShort  then
+        return 1
+    else
+        return 0
+    end
+end
+"""
 
 [SNH13L]
 start = "SNH4LT"
 destination = "SNH13LT"
 direction = "left"
-switches = [{ sw = "SNH21", t = "reverse" }]
+switches = [{ sw = "SNH22", t = "reverse" }]
 route_lock = ["SNH22T"]
 
 overrun_lock = []
