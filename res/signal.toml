@@ -949,7 +949,7 @@ end
 start = "SNH4LT"
 destination = "SNH13LT"
 direction = "left"
-switches = [{ sw = "SNH21", t = "reverse" }]
+switches = [{ sw = "SNH22", t = "reverse" }]
 route_lock = ["SNH22T"]
 
 overrun_lock = []
