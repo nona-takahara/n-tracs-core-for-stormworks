@@ -193,7 +193,7 @@ route_lock = ["NHB13RT", "NHB22T"]
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB13RT", "NHB22T", "NHB"]
+signal_track = ["NHB13RT", "NHB22T", "NHB6LT"]
 
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
@@ -268,7 +268,7 @@ route_lock = ["NHB22T"]
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB22T", "NHB"]
+signal_track = ["NHB22T", "NHB6LT"]
 
 approach_track = []
 approach_lock_time = 0
@@ -529,7 +529,7 @@ end
 """
 
 [SGN1R]
-start = "WAK_SGN1R"
+start = "WAK_SGN1T"
 destination = "SGN_SNH5T"
 direction = "right"
 switches = [{ sw = "SGN11", t = "normal" }]
@@ -540,7 +540,7 @@ overrun_lock_time = 0
 
 signal_track = ["SGN1RAT", "SGN1RBT", "SGN_SNH5T"]
 
-approach_track = ["WAK_SGN1R"]
+approach_track = ["WAK_SGN1T"]
 approach_lock_time = 40
 
 update_callback = """

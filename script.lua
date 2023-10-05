@@ -9,11 +9,12 @@ require("src.n_tracs_soyabridge")
 -- 3. Load settings
 require("res.utils")
 require("res.area_track")
-DEFAULT_AREA = AreaGetter("2")
 require("res.signal")
 require("res.signal_alias")
 require("res.switch")
 require("res.ctc")
+
+DEFAULT_AREA = AreaGetter("2")
 
 ---@type PointSetter[]
 POINTLIST = {}
