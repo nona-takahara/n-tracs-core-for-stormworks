@@ -24,6 +24,10 @@ end
 
 function onVehicleDespawn(vehicle_id)
 	VehicleTable[vehicle_id] = nil
+	if vehicle_id == CTC then
+		CTC = nil
+		CTC_ACTIVE = false
+	end
 end
 
 function onButtonPress(vehicle_id, peer_id, button_name)
