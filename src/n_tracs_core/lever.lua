@@ -291,11 +291,6 @@ function Lever.process(self, deltaTick)
             Track.bookOverrun(track, self)
         end
     end
-    if self.itemName == "NHB13R" then
-        Announce(ZR and "true" or "false", -1)
-        Announce(Lever.isReserved(self) and "true" or "false", -1)
-        Announce(Lever.checkWLR(self) and "true" or "false", -1)
-    end
 
     self.HR =
         ZR and
