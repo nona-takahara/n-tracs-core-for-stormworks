@@ -929,6 +929,30 @@ function(self)
 end
 """
 
+[SNH13RZ]
+start = "SNH13LT"
+destination = "SNH4LT"
+direction = "right"
+switches = [{ sw = "SNH22", t = "reverse" }]
+route_lock = ["SNH22T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH22T"]
+
+approach_track = ["SNH13LT"]
+approach_lock_time = 15
+
+update_callback = """
+function(self)
+    if self.HR and TRACKS["SNH4LT"].isShort  then
+        return 1
+    else
+        return 0
+    end
+end
+"""
 
 [SNH13L]
 start = "SNH4LT"
