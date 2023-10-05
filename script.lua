@@ -107,7 +107,7 @@ function onTick()
 		end
 
 		-- CTCデータ生成
-		if CTC_ACTIVE then
+		if CTC then
 			MakeCtcData()
 		end
 	elseif Phase == 0 then
@@ -125,7 +125,7 @@ function onTick()
 			end
 		end
 
-		if CTC_ACTIVE then
+		if CTC then
 			SendCtcData(SendingSign)
 		end
 

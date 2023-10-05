@@ -6,37 +6,37 @@ CTC_IN = CTC_IN or {}
 CTC_OUT = CTC_OUT or {}
 
 CTC_IN.SIG_TABLE = {
-    CTC1 = {
+    ["CTC1"] = {
         "NHB4L", "NHB5L", "NHB6L", "NHB11L", "NHB12L", "NHB13L",
         "NHB4R", "NHB11R", "NHB5R", "NHB12R", "NHB13R"
     },
-    CTC3 = {
+    ["CTC3"] = {
         "WAK1R", "WAK2R", "WAK3L", "WAK4L"
     },
-    CTC5 = {
+    ["CTC5"] = {
         "SGN1R", "SGN2R", "SGN3L", "SGN4L"
     },
-    CTC7 = {
+    ["CTC7"] = {
         "SNH1R", "SNH13R", "SNH13RZ", "SNH13L", "SNH11R", "SNH12R", "SNH2L",
         "SNH3R", "SNH4R", "SNH11L", "SNH12L", "SNH12LZ", "SNH4L", "SNH4LZ"
     }
 }
 CTC_IN.RESET_TABLE = {
-    CTC1 = 23, CTC3 = 4, CTC5 = 4, CTC7 = 14
+    ["CTC1"] = 23, ["CTC3"] = 4, ["CTC5"] = 4, ["CTC7"] = 14
 }
 CTC_IN.SWITCH_TABLE = {
-    CTC1 = { [25] = "NHB21", [27] = "NHB22", [29] = "NHB31" },
-    CTC3 = { [6] = "WAK11", [8] = "WAK12" },
-    CTC5 = { [6] = "SGN11", [8] = "SGN12" },
-    CTC7 = { [16] = "SNH21", [18] = "SNH22" },
+    ["CTC1"] = { [25] = "NHB21", [27] = "NHB22", [29] = "NHB31" },
+    ["CTC3"] = { [6] = "WAK11", [8] = "WAK12" },
+    ["CTC5"] = { [6] = "SGN11", [8] = "SGN12" },
+    ["CTC7"] = { [16] = "SNH21", [18] = "SNH22" },
 }
 
 
 CTC_OUT.TRACK_TABLE_FULL = {
-    CTC10 = { [1] = "NHB4LT", [3] = "NHB5LT", [5] = "NHB6LT", [7] = "NHB21T", [9] = "NHB22T", [11] = "NHB13RT" },
-    CTC30 = { [1] = "WAK1RAT", [3] = "WAK1RBT", [5] = "WAK12T", [7] = "WAK11T", [9] = "WAK4LT" },
-    CTC50 = { [1] = "SGN1RAT", [3] = "SGN1RBT", [5] = "SGN12T", [7] = "SGN11T", [9] = "SGN4LT" },
-    CTC70 = {
+    ["CTC10"] = { [1] = "NHB4LT", [3] = "NHB5LT", [5] = "NHB6LT", [7] = "NHB21T", [9] = "NHB22T", [11] = "NHB13RT" },
+    ["CTC30"] = { [1] = "WAK1RAT", [3] = "WAK1RBT", [5] = "WAK12T", [7] = "WAK11T", [9] = "WAK4LT" },
+    ["CTC50"] = { [1] = "SGN1RAT", [3] = "SGN1RBT", [5] = "SGN12T", [7] = "SGN11T", [9] = "SGN4LT" },
+    ["CTC70"] = {
         [1] = "SNH1RT",
         [3] = "SNH22T",
         [5] = "SNH13LT",
@@ -48,10 +48,10 @@ CTC_OUT.TRACK_TABLE_FULL = {
 }
 
 CTC_OUT.TRACK_TABLE_MIN = {
-    CTC20 = { "NHB_WAK1T", "WAK_NHB1T" },
-    CTC40 = { "WAK_SNG5T", "WAK_SNG4T", "WAK_SNG3T", "WAK_SNG2T", "WAK_SNG1T" },
-    CTC41 = { "SGN_WAK6T", "SGN_WAK5T", "SGN_WAK4T", "SGN_WAK3T", "SGN_WAK2T", "SGN_WAK1T" },
-    CTC60 = {
+    ["CTC20"] = { "NHB_WAK1T", "WAK_NHB1T" },
+    ["CTC40"] = { "WAK_SGN5T", "WAK_SGN4T", "WAK_SGN3T", "WAK_SGN2T", "WAK_SGN1T" },
+    ["CTC41"] = { "SGN_WAK6T", "SGN_WAK5T", "SGN_WAK4T", "SGN_WAK3T", "SGN_WAK2T", "SGN_WAK1T" },
+    ["CTC60"] = {
         [1] = "SGN_SNH5T",
         [2] = "SGN_SNH4T",
         [3] = "SGN_SNH3T",
@@ -65,15 +65,15 @@ CTC_OUT.TRACK_TABLE_MIN = {
 }
 
 CTC_OUT.SWITCH_TABLE = {
-    CTC10 = { [25] = "NHB21", [27] = "NHB22", [29] = "NHB31" },
-    CTC30 = { [11] = "WAK11", [13] = "WAK12" },
-    CTC50 = { [11] = "SGN11", [13] = "SGN12" },
-    CTC70 = { [15] = "SNH21", [17] = "SNH22" }
+    ["CTC10"] = { [25] = "NHB21", [27] = "NHB22", [29] = "NHB31" },
+    ["CTC30"] = { [11] = "WAK11", [13] = "WAK12" },
+    ["CTC50"] = { [11] = "SGN11", [13] = "SGN12" },
+    ["CTC70"] = { [15] = "SNH21", [17] = "SNH22" }
 }
 
 -- 現示部1ビット
 CTC_OUT.SIGNAL_TABLE_G = {
-    CTC11 = {
+    ["CTC11"] = {
         [1] = "NHB4L",
         [9] = "NHB11L",
         [11] = "NHB12L",
@@ -82,18 +82,18 @@ CTC_OUT.SIGNAL_TABLE_G = {
         [23] = "NHB12R",
         [25] = "NHB13R"
     },
-    CTC70 = { [19] = "SNH1R", [21] = "SNH13R", [23] = "SNH13RZ", [25] = "SNH13L", [27] = "SNH11R", [29] = "SNH12R" }
+    ["CTC70"] = { [19] = "SNH1R", [21] = "SNH13R", [23] = "SNH13RZ", [25] = "SNH13L", [27] = "SNH11R", [29] = "SNH12R" }
 }
 
 -- 現示部2ビット
 CTC_OUT.SIGNAL_TABLE_YG = {
-    CTC11 = { [3] = "NHB5L", [6] = "NHB6L", [15] = "NHB4R", [20] = "NHB5R" },
-    CTC20 = { [3] = "WAK_NHB1" },
-    CTC30 = { [15] = "WAK1R", [18] = "WAK2R", [21] = "WAK3L", [24] = "WAK4L" },
-    CTC40 = { [6] = "WAK_SGN4", [9] = "WAK_SGN3", [12] = "WAK_SGN2", [15] = "WAK_SGN1" },
-    CTC41 = { [7] = "SGN_WAK5", [10] = "SGN_WAK4", [13] = "SGN_WAK3", [16] = "SGN_WAK2", [19] = "SGN_WAK1" },
-    CTC50 = { [15] = "SGN1R", [18] = "SGN2R", [21] = "SGN3L", [24] = "SGN4L" },
-    CTC60 = {
+    ["CTC11"] = { [3] = "NHB5L", [6] = "NHB6L", [15] = "NHB4R", [20] = "NHB5R" },
+    ["CTC20"] = { [3] = "WAK_NHB1" },
+    ["CTC30"] = { [15] = "WAK1R", [18] = "WAK2R", [21] = "WAK3L", [24] = "WAK4L" },
+    ["CTC40"] = { [6] = "WAK_SGN4", [9] = "WAK_SGN3", [12] = "WAK_SGN2", [15] = "WAK_SGN1" },
+    ["CTC41"] = { [7] = "SGN_WAK5", [10] = "SGN_WAK4", [13] = "SGN_WAK3", [16] = "SGN_WAK2", [19] = "SGN_WAK1" },
+    ["CTC50"] = { [15] = "SGN1R", [18] = "SGN2R", [21] = "SGN3L", [24] = "SGN4L" },
+    ["CTC60"] = {
         [6] = "SGN_SNH4",
         [9] = "SGN_SNH3",
         [12] = "SGN_SNH2",
@@ -102,7 +102,7 @@ CTC_OUT.SIGNAL_TABLE_YG = {
         [25] = "SNH_SGN2",
         [28] = "SNH_SGN1"
     },
-    CTC71 = { [1] = "SNH2L", [4] = "SNH3R", [7] = "SNH4R" }
+    ["CTC71"] = { [1] = "SNH2L", [4] = "SNH3R", [7] = "SNH4R" }
 }
 
 -- 将来に備えて用意
@@ -162,8 +162,8 @@ function MakeCtcData()
         for i, n in pairs(v) do
             local tr = TRACKS[n]
             if tr then
-                vv = Setbit(vv, i, TRACKS[n].isShort and 1 or 0)
-                vv = Setbit(vv, i + 1, Track.isLocked(TRACKS[n], true) and 1 or 0)
+                vv = Setbit(vv, i, tr.isShort)
+                vv = Setbit(vv, i + 1, Track.isLocked(tr, true))
             end
         end
         CTC_DATA.OUT[k] = vv
@@ -174,7 +174,7 @@ function MakeCtcData()
         for i, n in pairs(v) do
             local tr = TRACKS[n]
             if tr then
-                vv = Setbit(vv, i, tr.isShort and 1 or 0)
+                vv = Setbit(vv, i, tr.isShort)
             end
         end
         CTC_DATA.OUT[k] = vv
@@ -185,8 +185,8 @@ function MakeCtcData()
         for i, n in pairs(v) do
             local sk = SWITCHES[n]
             if sk then
-                vv = Setbit(vv, i, sk.K == TargetRoute.Normal and 1 or 0)
-                vv = Setbit(vv, i + 1, sk.K == TargetRoute.Reverse and 1 or 0)
+                vv = Setbit(vv, i, sk.K == TargetRoute.Normal)
+                vv = Setbit(vv, i + 1, sk.K == TargetRoute.Reverse)
             end
         end
         CTC_DATA.OUT[k] = vv
@@ -197,8 +197,8 @@ function MakeCtcData()
         for i, n in pairs(v) do
             local lv = LEVERS[n]
             if lv then
-                vv = Setbit(vv, i, lv.input and 1 or 0)
-                vv = Setbit(vv, i + 1, lv.aspect > 0 and 1 or 0)
+                vv = Setbit(vv, i, lv.input)
+                vv = Setbit(vv, i + 1, lv.aspect > 0)
             end
         end
         CTC_DATA.OUT[k] = vv
@@ -211,8 +211,8 @@ function MakeCtcData()
             if lv then
                 local ab = math.max(lv.aspect - 1, 0)
                 vv = Setbit(vv, i, lv.input and 1 or 0)
-                vv = Setbit(vv, i + 1, (ab % 2) == 1 and 1 or 0)
-                vv = Setbit(vv, i + 2, (ab // 2) == 1 and 1 or 0)
+                vv = Setbit(vv, i + 1, (ab % 2) == 1)
+                vv = Setbit(vv, i + 2, (ab // 2) == 1)
             end
         end
         CTC_DATA.OUT[k] = vv
@@ -224,9 +224,9 @@ function MakeCtcData()
             local lv = LEVERS[n]
             if lv then
                 local ab = math.max(lv.aspect, 0)
-                vv = Setbit(vv, i, lv.input and 1 or 0)
-                vv = Setbit(vv, i + 1, (ab % 2) == 1 and 1 or 0)
-                vv = Setbit(vv, i + 2, (ab // 2) == 1 and 1 or 0)
+                vv = Setbit(vv, i, lv.input)
+                vv = Setbit(vv, i + 1, (ab % 2) == 1)
+                vv = Setbit(vv, i + 2, (ab // 2) == 1)
             end
         end
         CTC_DATA.OUT[k] = vv
@@ -262,13 +262,13 @@ end
 ---comments
 ---@param t integer
 ---@param b integer
----@param v integer
+---@param v boolean
 ---@return integer
 function Setbit(t, b, v)
     if v then
-        t = t & ~(1 << (b - 1))
+        t = t | (1 << (b - 1))
     else
-        t = t | ~(1 << (b - 1))
+        t = t & (~(1 << (b - 1)))
     end
-    return v
+    return t
 end
