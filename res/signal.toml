@@ -17,7 +17,7 @@ update_callback = """
 function(self)
     if self.HR then
 --        if LEVERS["WAK1R"].aspect >= 2 or LEVERS["WAK2R"].aspect >= 2 then
-        if LEVERS["WAK1R"].aspect >= 2 then
+        if LEVERS["WAK1R"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -47,7 +47,7 @@ update_callback = """
 function(self)
     if self.HR then
 --        if LEVERS["WAK1R"].aspect >= 2 or LEVERS["WAK2R"].aspect >= 2 then
-        if LEVERS["WAK1R"].aspect >= 2 then
+        if LEVERS["WAK1R"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -290,7 +290,7 @@ signal_track = ["WAK_NHB1T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["NHB4L"].aspect >= 2 or LEVERS["NHB5L"].aspect >= 2 or LEVERS["NHB6L"].aspect >= 2 then
+        if (LEVERS["NHB4L"].aspect >= 2 or LEVERS["NHB5L"].aspect >= 2 or LEVERS["NHB6L"].aspect >= 2) and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -319,7 +319,7 @@ approach_lock_time = 40
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_SGN4"].aspect >= 2 then
+        if LEVERS["WAK_SGN4"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -348,9 +348,9 @@ approach_lock_time = 40
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_NHB1"].aspect >= 3 then
+        if LEVERS["WAK_NHB1"].aspect >= 3 and self.aspect >= 3 then
             return 4
-        elseif LEVERS["WAK_NHB1"].aspect >= 2 then
+        elseif LEVERS["WAK_NHB1"].aspect >= 2 and self.aspect >= 2 then
             return 3
         else
             return 2
@@ -368,7 +368,7 @@ signal_track = ["WAK_SGN4T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_SGN3"].aspect >= 2 then
+        if LEVERS["WAK_SGN3"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -386,7 +386,7 @@ signal_track = ["WAK_SGN3T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_SGN2"].aspect >= 2 then
+        if LEVERS["WAK_SGN2"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -404,9 +404,9 @@ signal_track = ["WAK_SGN2T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_SGN1"].aspect >= 3 then
+        if LEVERS["WAK_SGN1"].aspect >= 3 and self.aspect >= 3 then
             return 4
-        elseif LEVERS["WAK_SGN1"].aspect >= 2 then
+        elseif LEVERS["WAK_SGN1"].aspect >= 2 and self.aspect >= 2 then
             return 3
         else
             return 2
@@ -424,7 +424,7 @@ signal_track = ["WAK_SGN1T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN1R"].aspect >= 2 then
+        if LEVERS["SGN1R"].aspect >= 2 and self.aspect >= 2 then
 --        if LEVERS["SGN1R"].aspect >= 2 or LEVERS["SGN2R"].aspect >= 2 then
             return 4
         else
@@ -443,7 +443,7 @@ signal_track = ["SGN_WAK5T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_WAK4"].aspect >= 2 then
+        if LEVERS["SGN_WAK4"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -461,9 +461,9 @@ signal_track = ["SGN_WAK4T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_WAK3"].aspect >= 3 then
+        if LEVERS["SGN_WAK3"].aspect >= 3 and self.aspect >= 3 then
             return 4
-        elseif LEVERS["SGN_WAK3"].aspect >= 2 then
+        elseif LEVERS["SGN_WAK3"].aspect >= 2 and self.aspect >= 2 then
             return 3
         else
             return 2
@@ -481,7 +481,7 @@ signal_track = ["SGN_WAK3T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_WAK2"].aspect >= 2 then
+        if LEVERS["SGN_WAK2"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -499,7 +499,7 @@ signal_track = ["SGN_WAK2T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_WAK1"].aspect >= 2 then
+        if LEVERS["SGN_WAK1"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -517,7 +517,7 @@ signal_track = ["SGN_WAK1T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK4L"].aspect >= 2 then
+        if LEVERS["WAK4L"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -546,7 +546,7 @@ approach_lock_time = 40
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_SNH4"].aspect >= 2 then
+        if LEVERS["SGN_SNH4"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -575,7 +575,7 @@ approach_lock_time = 40
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_WAK5"].aspect >= 2 then
+        if LEVERS["SGN_WAK5"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -593,7 +593,7 @@ signal_track = ["SGN_SNH4T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_SNH3"].aspect >= 2 then
+        if LEVERS["SGN_SNH3"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -611,7 +611,7 @@ signal_track = ["SGN_SNH3T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_SNH2"].aspect >= 2 then
+        if LEVERS["SGN_SNH2"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -630,7 +630,7 @@ signal_track = ["SGN_SNH2T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_SNH1"].aspect >= 2 then
+        if LEVERS["SGN_SNH1"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -648,7 +648,7 @@ signal_track = ["SGN_SNH1T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SNH1R"].HR then
+        if LEVERS["SNH1R"].HR and self.aspect >= 2 then
             return 3
         else
             return 2
@@ -666,7 +666,7 @@ signal_track = ["SNH_SGN3T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SNH_SGN2"].aspect >= 2 then
+        if LEVERS["SNH_SGN2"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -684,7 +684,7 @@ signal_track = ["SNH_SGN2T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SNH_SGN1"].aspect >= 2 then
+        if LEVERS["SNH_SGN1"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -702,7 +702,7 @@ signal_track = ["SNH_SGN1T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN4L"].aspect >= 2 then
+        if LEVERS["SGN4L"].aspect >= 2 and self.aspect >= 2 then
             return 4
         else
             return 2
@@ -757,8 +757,10 @@ approach_lock_time = 15
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SNH_SGN3"].aspect >= 2 then
+        if LEVERS["SNH_SGN3"].aspect >= 4 and self.aspect >= 3 then
             return 4
+        elseif LEVERS["SNH_SGN3"].aspect >= 2 and self.aspect >= 2 then
+            return 3
         else
             return 2
         end
