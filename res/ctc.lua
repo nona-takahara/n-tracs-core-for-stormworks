@@ -131,7 +131,7 @@ end
 function SetCtcState()
     for k, _ in pairs(CTC_IN.SIG_TABLE) do
         local ctc_v = CTC_DATA.IN[k] or 0
-        local rst = Getbit(ctc_v, CTC_IN.RESET_TABLE[k]) == 1
+        local rst = Getbit(ctc_v, CTC_IN.RESET_TABLE[k] + 1) == 1
 
         for i, lvnm in pairs(CTC_IN.SIG_TABLE[k]) do
             ---@type Lever
@@ -146,6 +146,12 @@ function SetCtcState()
                 end
             end
         end
+    end
+end
+
+function MakeCtcData()
+    for k, _ in pairs(CTC_IN.SWITCH_TABLE) do
+        local ctc_v = CTC_DATA.IN[k] or 0
 
         for i, swnm in pairs(CTC_IN.SWITCH_TABLE[k]) do
             local sw = SWITCHES[swnm]
@@ -158,9 +164,7 @@ function SetCtcState()
             end
         end
     end
-end
 
-function MakeCtcData()
     for k, v in pairs(CTC_OUT.TRACK_TABLE_FULL) do
         local vv = CTC_DATA.OUT[k] or 0
         for i, n in pairs(v) do
