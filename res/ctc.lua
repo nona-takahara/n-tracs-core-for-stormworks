@@ -120,7 +120,10 @@ function GetCtcState()
 
         if ss then
             ---@diagnostic disable-next-line: param-type-mismatch
-            CTC_DATA.IN[k] = decode30(vv.value)
+            local dss, dv = decode30(vv.value)
+            if dss then
+                CTC_DATA.IN[k] = dv
+            end
         end
     end
 end
@@ -252,7 +255,7 @@ end
 
 --- 第1戻り値：指数部が有効かどうか
 ---@param n integer
----@return number
+---@return boolean, number
 ---@diagnostic disable-next-line: lowercase-global
 function decode30(n)
     local p, h = ('I3B'):unpack(('f'):pack(n))
@@ -260,6 +263,10 @@ function decode30(n)
     return v, v and (h - 66 >> 2 & 32 | h - 66 & 31) << 24 | p or 0
 end
 
+---comment
+---@param v integer
+---@param b integer
+---@return integer
 function Getbit(v, b)
     return (v >> (b - 1)) & 1
 end
