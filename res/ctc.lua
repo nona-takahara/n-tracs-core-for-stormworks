@@ -219,7 +219,7 @@ function MakeCtcData()
             local lv = LEVERS[n]
             if lv then
                 local ab = math.max(lv.aspect - 1, 0)
-                vv = Setbit(vv, i, lv.input and 1 or 0)
+                vv = Setbit(vv, i, lv.input)
                 vv = Setbit(vv, i + 1, (ab % 2) == 1)
                 vv = Setbit(vv, i + 2, (ab // 2) == 1)
             end
