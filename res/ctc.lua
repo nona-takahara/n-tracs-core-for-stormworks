@@ -82,7 +82,8 @@ CTC_OUT.SIGNAL_TABLE_G = {
         [23] = "NHB12R",
         [25] = "NHB13R"
     },
-    ["CTC70"] = { [19] = "SNH1R", [21] = "SNH13R", [23] = "SNH13RZ", [25] = "SNH13L", [27] = "SNH11R", [29] = "SNH12R" }
+    ["CTC70"] = { [19] = "SNH1R", [21] = "SNH13R", [23] = "SNH13RZ", [25] = "SNH13L", [27] = "SNH11R", [29] = "SNH12R" },
+    ["CTC71"] = { [10] = "SNH11L", [12] = "SNH12L", [14] = "SNH12LZ", [16] = "SNH4L", [18] = "SNH4LZ" }
 }
 
 -- 現示部2ビット
@@ -119,7 +120,7 @@ function GetCtcState()
 
         if ss then
             ---@diagnostic disable-next-line: param-type-mismatch
-            CTC_DATA.IN[k] = decode30(vv)
+            CTC_DATA.IN[k] = decode30(vv.value)
         end
     end
 end
@@ -240,14 +241,18 @@ function SendCtcData(SendingSign)
     end
 end
 
---
+---comments
+---@param p number
+---@return integer
 ---@diagnostic disable-next-line: lowercase-global
 function encode30(p)
     local n = ('f'):unpack(('I3B'):pack(p & 0xFFFFFF, 66 + 128 * (p >> 29 & 1) + (p >> 24 & 31)))
     return n
 end
 
--- 第1戻り値：指数部が有効かどうか
+--- 第1戻り値：指数部が有効かどうか
+---@param n integer
+---@return number
 ---@diagnostic disable-next-line: lowercase-global
 function decode30(n)
     local p, h = ('I3B'):unpack(('f'):pack(n))

@@ -27,7 +27,7 @@ COMMANDS["version"] = {
     auth = false,
     description = "Get version of N-TRACS Soya Express Wayside Signals",
     command = (function(_, is_admin, is_auth, peer_id)
-        Announce("N-TRACS Soya Express Wayside Signals v0.9.2", peer_id)
+        Announce("N-TRACS Soya Express Wayside Signals v0.9.3", peer_id)
     end)
 }
 
