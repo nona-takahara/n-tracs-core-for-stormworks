@@ -1,4 +1,5 @@
 -- N-TRACS 宗弥急行 Wayside Signal
+ADDON_VERSION = "v0.9.3a"
 
 -- 1. Load N-TRACS Core
 require("src.n_tracs_core")
