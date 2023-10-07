@@ -113,10 +113,11 @@ CTC_OUT.SIGNAL_TABLE_YY = {
 
 function GetCtcState()
     local v, ss = server.getVehicleButton(CTC, "Activate CTC")
-    CTC_ACTIVE = (ss and v) or false
+    CTC_ACTIVE = (ss and v.on) or false
 
     for k, _ in pairs(CTC_IN.SIG_TABLE) do
         local vv, ss = server.getVehicleDial(CTC, k)
+        CTC_DATA.IN[k] = 0
 
         if ss then
             ---@diagnostic disable-next-line: param-type-mismatch
