@@ -98,6 +98,15 @@ end
 ---@package
 ---@param lever Lever
 ---@return boolean
+function Track.isBookedTemporary(self, lever)
+    return (self.book == BookType.Temporary and self.relatedLever == lever) or
+        (self.book == BookType.RouteOver and self.direction == lever.direction)
+end
+
+---[package]
+---@package
+---@param lever Lever
+---@return boolean
 function Track.isRouteLock(self, lever)
     return self.relatedLever == lever and self.book == BookType.RouteLock
 end
@@ -143,8 +152,8 @@ function CheckUnlockRouteLock(item)
         --Track型が確定しているためエラー回避
         ---@diagnostic disable-next-line
         return Track.underRouteLock_n(item)
-    --クラス判別の必要があるため、内部データnameを取得
-    ---@diagnostic disable-next-line: invisible
+        --クラス判別の必要があるため、内部データnameを取得
+        ---@diagnostic disable-next-line: invisible
     elseif item.name == "Lever" then
         --Lever型が確定しているためエラー回避
         ---@diagnostic disable-next-line
