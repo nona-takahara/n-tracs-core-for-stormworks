@@ -1,4 +1,5 @@
 -- N-TRACS 宗弥急行 Wayside Signal
+ADDON_VERSION = "v0.9.4"
 
 -- 1. Load N-TRACS Core
 require("src.n_tracs_core")
@@ -15,6 +16,10 @@ require("res.switch")
 require("res.ctc")
 
 DEFAULT_AREA = AreaGetter("2")
+Lever.setInput(LEVERS["WAK1R"], true, false)
+Lever.setInput(LEVERS["WAK4L"], true, false)
+Lever.setInput(LEVERS["SGN1R"], true, false)
+Lever.setInput(LEVERS["SGN4L"], true, false)
 
 ---@type PointSetter[]
 POINTLIST = {}

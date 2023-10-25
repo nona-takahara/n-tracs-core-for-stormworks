@@ -95,14 +95,14 @@ end
 
 ---@private
 ---@return boolean
-function Lever.isReadyToBookTemporary(self)
+function Lever.isBookedTemporary(self)
     for _, value in ipairs(self.routeLock) do
-        if not Track.isReadyToBookTemporary(value, self) then
+        if not Track.isBookedTemporary(value, self) then
             return false
         end
     end
     for _, value in ipairs(self.overrunLock) do
-        if not Track.isReadyToBookTemporary(value, self) then
+        if not Track.isBookedTemporary(value, self) then
             return false
         end
     end
@@ -113,6 +113,17 @@ end
 ---@private
 ---@param self Lever
 function Lever.bookTemporary(self)
+    for _, value in ipairs(self.routeLock) do
+        if not Track.isReadyToBookTemporary(value, self) then
+            return
+        end
+    end
+    for _, value in ipairs(self.overrunLock) do
+        if not Track.isReadyToBookTemporary(value, self) then
+            return
+        end
+    end
+
     for _, value in ipairs(self.routeLock) do
         Track.bookTemporary(value, self)
     end
@@ -154,11 +165,15 @@ end
 ---isEnterRoute
 ---@private
 ---@return boolean
-function Lever.isEnterRoute(self, forTSSlR)
+function Lever.isEnterRoute(self)
     if self.routeLock[1] == nil then
-        return false
+        if self.signalTrack[1] ~= nil then
+            return Track.isShort(self.signalTrack[1])
+        else
+            return true
+        end
     else
-        if self.routeLock[2] == nil or not forTSSlR then
+        if self.routeLock[2] == nil then
             return Track.isShort(self.routeLock[1])
         else
             return Track.isShort(self.routeLock[1]) and Track.isShort(self.routeLock[2])
@@ -169,7 +184,7 @@ end
 ---isReserved
 ---@private
 ---@return boolean
-function Lever.isReserved(self)
+function Lever.isLocked(self)
     for _, value in ipairs(self.routeLock) do
         if not Track.isRouteLock(value, self) then
             return false
@@ -230,7 +245,7 @@ end
 ---継電連動装置の進路リレー相当の情報を返却します
 ---@return boolean
 function Lever.getInput(self)
-    return self.input and Lever.siteSwitchAssert(self)
+    return self.input
 end
 
 ---processを呼び出す前に呼び出してください。現在の状態を設定します
@@ -241,23 +256,24 @@ end
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
 function Lever.process(self, deltaTick)
-    if (Lever.getInput(self) and Lever.isReadyToBookTemporary(self)) then
-        for _, rswitch in ipairs(self.switches) do
-            SwitchRoute.moveToTarget(rswitch)
-        end
-        Lever.bookTemporary(self)
-    end
-    local ZR = Lever.getInput(self) and Lever.checkSwitches(self)
-
     if self.autoReset and self.TSSlR then
         self.input = false
         self.autoReset = false
     end
 
-    self.TSSlR =
-        (not self.HR) and (not self.ASR) and (Lever.isEnterRoute(self, true) or self.TSSlR)
+    if (Lever.getInput(self) and Lever.siteSwitchAssert(self)) then
+        for _, rswitch in ipairs(self.switches) do
+            SwitchRoute.moveToTarget(rswitch)
+        end
+    end
 
-    -- たぶん接近鎖錠条件が欠落している(TODO)
+    local ZR = Lever.getInput(self) and Lever.checkSwitches(self)
+    if ZR then
+        Lever.bookTemporary(self)
+    end
+
+    self.TSSlR = not (self.HR or self.ASR or Lever.isEnterRoute(self))
+
     self.ASR =
         (not self.HR) and (not ZR) and
         (Lever.isNoApproach(self) or self.TSSlR or self.ASR or Lever.isTimerEnd(self))
@@ -269,7 +285,7 @@ function Lever.process(self, deltaTick)
         (not self.HR) and
         (not ZR) and
         (not self.ASR) and
-        (not Lever.isEnterRoute(self, false)) and
+        (not Lever.isEnterRoute(self)) and
         ((not Lever.isTimerRunning(self)) or self.MSlR);
 
     if self.MSlR then
@@ -278,7 +294,7 @@ function Lever.process(self, deltaTick)
         self.timerCount = 0
     end
 
-    if not self.ASR then
+    if (not self.ASR) and Lever.isBookedTemporary(self) then
         -- 進路鎖錠の連鎖の始点は信号てこであるため、thisを代入する。
         ---@type Lever | Track
         local routeLockBefore = self
@@ -294,7 +310,7 @@ function Lever.process(self, deltaTick)
 
     self.HR =
         ZR and
-        Lever.isReserved(self) and
+        Lever.isLocked(self) and
         Lever.checkWLR(self) and
         (not Lever.TSSlR) and
         (not Lever.ASR) and

@@ -112,11 +112,14 @@ CTC_OUT.SIGNAL_TABLE_YY = {
 }
 
 function GetCtcState()
+    ---@diagnostic disable-next-line: param-type-mismatch
     local v, ss = server.getVehicleButton(CTC, "Activate CTC")
-    CTC_ACTIVE = (ss and v) or false
+    CTC_ACTIVE = (ss and v.on) or false
 
     for k, _ in pairs(CTC_IN.SIG_TABLE) do
+        ---@diagnostic disable-next-line: param-type-mismatch
         local vv, ss = server.getVehicleDial(CTC, k)
+        CTC_DATA.IN[k] = 0
 
         if ss then
             ---@diagnostic disable-next-line: param-type-mismatch
@@ -131,7 +134,7 @@ end
 function SetCtcState()
     for k, _ in pairs(CTC_IN.SIG_TABLE) do
         local ctc_v = CTC_DATA.IN[k] or 0
-        local rst = Getbit(ctc_v, CTC_IN.RESET_TABLE[k]) == 1
+        local rst = Getbit(ctc_v, CTC_IN.RESET_TABLE[k] + 1) == 1
 
         for i, lvnm in pairs(CTC_IN.SIG_TABLE[k]) do
             ---@type Lever
@@ -146,6 +149,12 @@ function SetCtcState()
                 end
             end
         end
+    end
+end
+
+function MakeCtcData()
+    for k, _ in pairs(CTC_IN.SWITCH_TABLE) do
+        local ctc_v = CTC_DATA.IN[k] or 0
 
         for i, swnm in pairs(CTC_IN.SWITCH_TABLE[k]) do
             local sw = SWITCHES[swnm]
@@ -158,11 +167,10 @@ function SetCtcState()
             end
         end
     end
-end
 
-function MakeCtcData()
     for k, v in pairs(CTC_OUT.TRACK_TABLE_FULL) do
         local vv = CTC_DATA.OUT[k] or 0
+        ---@diagnostic disable-next-line: param-type-mismatch
         for i, n in pairs(v) do
             local tr = TRACKS[n]
             if tr then
@@ -175,6 +183,7 @@ function MakeCtcData()
 
     for k, v in pairs(CTC_OUT.TRACK_TABLE_MIN) do
         local vv = CTC_DATA.OUT[k] or 0
+        ---@diagnostic disable-next-line: param-type-mismatch
         for i, n in pairs(v) do
             local tr = TRACKS[n]
             if tr then
@@ -186,10 +195,13 @@ function MakeCtcData()
 
     for k, v in pairs(CTC_OUT.SWITCH_TABLE) do
         local vv = CTC_DATA.OUT[k] or 0
+        ---@diagnostic disable-next-line: param-type-mismatch
         for i, n in pairs(v) do
             local sk = SWITCHES[n]
             if sk then
+                ---@diagnostic disable-next-line: invisible
                 vv = Setbit(vv, i, sk.K == TargetRoute.Normal)
+                ---@diagnostic disable-next-line: invisible
                 vv = Setbit(vv, i + 1, sk.K == TargetRoute.Reverse)
             end
         end
@@ -198,10 +210,12 @@ function MakeCtcData()
 
     for k, v in pairs(CTC_OUT.SIGNAL_TABLE_G) do
         local vv = CTC_DATA.OUT[k] or 0
+        ---@diagnostic disable-next-line: param-type-mismatch
         for i, n in pairs(v) do
             local lv = LEVERS[n]
             if lv then
-                vv = Setbit(vv, i, lv.input)
+                ---@diagnostic disable-next-line: param-type-mismatch
+                vv = Setbit(vv, i, Lever.getInput(lv))
                 vv = Setbit(vv, i + 1, lv.aspect > 0)
             end
         end
@@ -210,11 +224,13 @@ function MakeCtcData()
 
     for k, v in pairs(CTC_OUT.SIGNAL_TABLE_YG) do
         local vv = CTC_DATA.OUT[k] or 0
+        ---@diagnostic disable-next-line: param-type-mismatch
         for i, n in pairs(v) do
             local lv = LEVERS[n]
             if lv then
                 local ab = math.max(lv.aspect - 1, 0)
-                vv = Setbit(vv, i, lv.input and 1 or 0)
+                ---@diagnostic disable-next-line: param-type-mismatch
+                vv = Setbit(vv, i, Lever.getInput(lv))
                 vv = Setbit(vv, i + 1, (ab % 2) == 1)
                 vv = Setbit(vv, i + 2, (ab // 2) == 1)
             end
@@ -228,7 +244,8 @@ function MakeCtcData()
             local lv = LEVERS[n]
             if lv then
                 local ab = math.max(lv.aspect, 0)
-                vv = Setbit(vv, i, lv.input)
+                ---@diagnostic disable-next-line: param-type-mismatch
+                vv = Setbit(vv, i, Lever.getInput(lv))
                 vv = Setbit(vv, i + 1, (ab % 2) == 1)
                 vv = Setbit(vv, i + 2, (ab // 2) == 1)
             end
@@ -239,6 +256,7 @@ end
 
 function SendCtcData(SendingSign)
     for k, v in pairs(CTC_DATA.OUT) do
+        ---@diagnostic disable-next-line: param-type-mismatch
         server.setVehicleKeypad(CTC, k, encode30(v))
         CTC_DATA.OUT[k] = 0
     end
