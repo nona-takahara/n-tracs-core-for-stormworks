@@ -13,7 +13,7 @@
 VehicleTable = {}
 
 function onVehicleLoad(vehicle_id)
-	local vdata, s = server.getVehicleData(vehicle_id)
+	local vdata, s = oldGetVehicleData(vehicle_id)
 	if not s then return end
 
 	VehicleTable[vehicle_id] = {
@@ -32,7 +32,7 @@ end
 
 function onButtonPress(vehicle_id, peer_id, button_name)
 	if button_name == "N-TRACS RESET" then
-		local vdata, s = server.getVehicleData(vehicle_id)
+		local vdata, s = oldGetVehicleData(vehicle_id)
 		if not s then return end
 
 		VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
@@ -141,5 +141,30 @@ function SendBridge(vehicle_id, bridge)
 
 		local sending = Switch.getWLR(SWITCHES[point.switchName]) and 1 or 0
 		server.setVehicleKeypad(vehicle_id, point.switchName .. "WLR", sending * SendingSign)
+	end
+end
+
+---@return SWVehicleData | nil, boolean
+function oldGetVehicleData(vehicle_id)
+	local vd, ss1 = server.getVehicleData(vehicle_id)
+	local lvd, ss2 = server["getVehicleComponents"](vehicle_id)
+	if ss1 and ss2 then
+		---@type SWVehicleData
+		local r = {
+			tags_full = vd.tags_full,
+			tags = vd.tags,
+			filename = nil,
+			transform = vd.transform,
+			simulating = vd.simulating,
+			mass = lvd.mass,
+			voxels = vd.voxels,
+			editable = vd.editable,
+			invulnerable = vd.invulnerable,
+			static = vd.static,
+			components = lvd.components
+		}
+		return r, true
+	else
+		return nil, false
 	end
 end
