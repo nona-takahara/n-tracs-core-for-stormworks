@@ -332,15 +332,15 @@ end
 
 [WAK4L]
 start = "SGN_WAK1T"
-destination = "WAK12T"
+destination = "WAK_NHB2T"
 direction = "left"
 switches = [{ sw = "WAK11", t = "normal" }, { sw = "WAK12", t = "normal" }]
-route_lock = ["WAK4LT", "WAK11T"]                                           # 到着地点のためWAK12Tを省略
+route_lock = ["WAK4LT", "WAK11T", "WAK12T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["WAK4LT", "WAK11T", "WAK12T"]
+signal_track = ["WAK4LT", "WAK11T", "WAK12T", "WAK_NHB2T"]
 
 approach_track = ["SGN_WAK1T"]
 approach_lock_time = 40
@@ -386,8 +386,10 @@ signal_track = ["WAK_SGN3T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_SGN2"].aspect >= 2 and self.aspect >= 2 then
+        if LEVERS["WAK_SGN2"].aspect >= 3 and self.aspect >= 2 then
             return 4
+        elseif LEVERS["WAK_SGN2"].aspect >= 1 and self.aspect >= 2 then
+            return 3
         else
             return 2
         end
@@ -404,12 +406,12 @@ signal_track = ["WAK_SGN2T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["WAK_SGN1"].aspect >= 3 and self.aspect >= 3 then
+        if LEVERS["WAK_SGN1"].aspect >= 4 and self.aspect >= 3 then
             return 4
-        elseif LEVERS["WAK_SGN1"].aspect >= 2 and self.aspect >= 2 then
+        elseif LEVERS["WAK_SGN1"].aspect >= 2 and self.aspect >= 1 then
             return 3
         else
-            return 2
+            return 1
         end
     else
         return 0
@@ -443,8 +445,10 @@ signal_track = ["SGN_WAK5T"]
 update_callback = """
 function(self)
     if self.HR then
-        if LEVERS["SGN_WAK4"].aspect >= 2 and self.aspect >= 2 then
+        if LEVERS["SGN_WAK4"].aspect >= 3 and self.aspect >= 3 then
             return 4
+        elseif LEVERS["SGN_WAK4"].aspect >= 1 and self.aspect >= 2 then
+            return 3
         else
             return 2
         end
@@ -463,10 +467,10 @@ function(self)
     if self.HR then
         if LEVERS["SGN_WAK3"].aspect >= 3 and self.aspect >= 3 then
             return 4
-        elseif LEVERS["SGN_WAK3"].aspect >= 2 and self.aspect >= 2 then
+        elseif LEVERS["SGN_WAK3"].aspect >= 2 and self.aspect >= 1 then
             return 3
         else
-            return 2
+            return 1
         end
     else
         return 0

@@ -106,6 +106,11 @@ CTC_OUT.SIGNAL_TABLE_YG = {
     ["CTC71"] = { [1] = "SNH2L", [4] = "SNH3R", [7] = "SNH4R" }
 }
 
+CTC_OUT.SIGNAL_TABLE_YY_YG = {
+    ["WAK_SGN2"] = true,
+    ["SGN_WAK4"] = true
+}
+
 -- 将来に備えて用意
 CTC_OUT.SIGNAL_TABLE_YY = {
 
@@ -231,8 +236,13 @@ function MakeCtcData()
                 local ab = math.max(lv.aspect - 1, 0)
                 ---@diagnostic disable-next-line: param-type-mismatch
                 vv = Setbit(vv, i, Lever.getInput(lv))
-                vv = Setbit(vv, i + 1, (ab % 2) == 1)
-                vv = Setbit(vv, i + 2, (ab // 2) == 1)
+                if CTC_OUT.SIGNAL_TABLE_YY_YG[n] then
+                    vv = Setbit(vv, i + 1, lv.aspect == 1 or lv.aspect == 4) -- aspect=1(警戒),aspect=4(進行)
+                    vv = Setbit(vv, i + 2, (ab // 2) == 1)                   -- ab=3(進行),ab=2(減速)
+                else
+                    vv = Setbit(vv, i + 1, (ab % 2) == 1)                    -- ab=3(進行),ab=1(注意)
+                    vv = Setbit(vv, i + 2, (ab // 2) == 1)                   -- ab=3(進行),ab=2(減速)
+                end
             end
         end
         CTC_DATA.OUT[k] = vv
