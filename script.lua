@@ -13,6 +13,7 @@ require("res.area_track")
 require("res.signal")
 require("res.signal_alias")
 require("res.switch")
+require("res.crossing")
 require("res.ctc")
 
 DEFAULT_AREA = AreaGetter("2")
