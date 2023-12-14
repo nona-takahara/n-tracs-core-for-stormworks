@@ -1,6 +1,15 @@
+CreateTrack("SNH_DC", {})
+CreateTrack("SNH_UC", {})
+CreateTrack("OMR_DC", {})
+CreateTrack("OMR_UC", {})
 function BridgeCrossing(deltaTicks)
-    CrossingShionagihama(deltaTicks)
-    CrossingOhmori()
+    local r
+    r = CrossingShionagihama(deltaTicks)
+    TrackGetter("SNH_DC").isShort = r.right
+    TrackGetter("SNH_UC").isShort = r.left
+    r = CrossingOhmori()
+    TrackGetter("OMR_DC").isShort = r.right
+    TrackGetter("OMR_UC").isShort = r.left
 end
 
 ShortingTicks_SNH_CA1 = 0

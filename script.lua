@@ -120,6 +120,9 @@ function onTick()
 		for _, lever in pairs(LEVERS) do
 			SignalBase.process(lever, 6)
 		end
+
+		-- 特殊処理
+		BridgeCrossing(6)
 	elseif Phase == 5 then
 		-- Coreで処理したデータを配信用に加工するフェーズ
 		for _, area in pairs(AREAS) do
