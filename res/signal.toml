@@ -297,7 +297,7 @@ signal_track = ["SGN1RT"]
 approach_track = ["WAK_SGN1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_3rd_multi({"SGN1R"})'
+update_callback = 'StandardAspectCallback_3rd_multi({"SGN2R"})'
 
 [SGN2R]
 start = "SGN1RT"
@@ -399,7 +399,7 @@ signal_track = ["SGN5LT", "SGN21T", "SGN22T", "SGN_WAK6T"]
 approach_track = ["SNH_SGN1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN5")'
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK5")'
 
 ### 大熊・潮凪浜間 ###
 
