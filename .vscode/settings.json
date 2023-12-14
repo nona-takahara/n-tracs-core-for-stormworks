@@ -19,7 +19,7 @@
   "lifeboatapi.stormworks.minimizer.removeRedundancies": true,
   "lifeboatapi.stormworks.minimizer.shortenVariables": true,
   "lifeboatapi.stormworks.minimizer.shortenGlobals": true,
-  "lifeboatapi.stormworks.minimizer.shortenNumbers": true,
+  "lifeboatapi.stormworks.minimizer.shortenNumbers": false,
   "lifeboatapi.stormworks.minimizer.shortenStringDuplicates": false,
   "lifeboatapi.stormworks.minimizer.forceNCBoilerplate": true,
   "lifeboatapi.stormworks.minimizer.forceBoilerplate": true,

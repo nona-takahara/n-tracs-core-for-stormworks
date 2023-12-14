@@ -20,7 +20,8 @@ DEFAULT_AREA = AreaGetter(2)
 Lever.setInput(LEVERS["WAK1R"], true, false)
 Lever.setInput(LEVERS["WAK4L"], true, false)
 Lever.setInput(LEVERS["SGN1R"], true, false)
-Lever.setInput(LEVERS["SGN4L"], true, false)
+Lever.setInput(LEVERS["SGN2R"], true, false)
+Lever.setInput(LEVERS["SGN5L"], true, false)
 
 RecommendedSettings = property.checkbox("Start with no-wind, no-damage settings", true)
 
