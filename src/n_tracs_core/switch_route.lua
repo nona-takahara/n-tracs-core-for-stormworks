@@ -21,17 +21,17 @@ end
 ---開通方向が希望のものと同じか調べます
 ---@param self SwitchRoute
 ---@return boolean
-function SwitchRoute.isTargetRoute(self)
+function SwitchRoute:isTargetRoute()
     return Switch.getRealRoute(self.rswitch) == self.target
 end
 
 ---開通希望方向に転換します
-function SwitchRoute.moveToTarget(self)
+function SwitchRoute:moveToTarget()
     Switch.move(self.rswitch, self.target)
 end
 
 ---comment
 ---@return Switch
-function SwitchRoute.getRelatedSwitch(self)
+function SwitchRoute:getRelatedSwitch()
     return self.rswitch
 end

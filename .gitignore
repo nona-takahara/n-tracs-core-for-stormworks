@@ -1,7 +1,9 @@
-*.code-workspace
+/.vscode/
 /_build/
 !/_build/_buildactions.lua
 
+res/area_track.json
 res/area_track.lua
 
+res/signal.toml
 res/signal.lua
