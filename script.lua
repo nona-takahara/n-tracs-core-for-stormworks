@@ -1,5 +1,5 @@
 -- N-TRACS 宗弥急行 Wayside Signal
-ADDON_VERSION = "v0.9.6"
+ADDON_VERSION = "v0.9.7"
 
 -- 1. Load N-TRACS Core
 require("src.n_tracs_core")
@@ -13,13 +13,29 @@ require("res.area_track")
 require("res.signal")
 require("res.signal_alias")
 require("res.switch")
+require("res.crossing")
 require("res.ctc")
 
-DEFAULT_AREA = AreaGetter("2")
+DEFAULT_AREA = AreaGetter(2)
 Lever.setInput(LEVERS["WAK1R"], true, false)
 Lever.setInput(LEVERS["WAK4L"], true, false)
 Lever.setInput(LEVERS["SGN1R"], true, false)
-Lever.setInput(LEVERS["SGN4L"], true, false)
+Lever.setInput(LEVERS["SGN2R"], true, false)
+Lever.setInput(LEVERS["SGN5L"], true, false)
+
+RecommendedSettings = property.checkbox("Start with no wind and damage", true)
+
+function onCreate()
+	if RecommendedSettings then
+		server.setGameSetting("vehicle_damage", false)
+		server.setGameSetting("player_damage", false)
+		server.setGameSetting("npc_damage", false)
+		local starttile = server.getStartTile()
+		local weather = server.getWeather(matrix.translation(starttile.x, starttile.y, starttile.z))
+		server.setGameSetting("override_weather", true)
+		server.setWeather(weather.fog, weather.rain, 0)
+	end
+end
 
 ---@type PointSetter[]
 POINTLIST = {}
@@ -66,7 +82,7 @@ function onTick()
 		end
 
 		-- CTCデータ取得
-		if CTC then
+		if CTC_AVAILABLE and CTC then
 			GetCtcState()
 		end
 	elseif Phase == 2 then
@@ -80,7 +96,7 @@ function onTick()
 		end
 
 		-- CTC取得データの変換
-		if CTC_ACTIVE then
+		if CTC_AVAILABLE and CTC_ACTIVE then
 			SetCtcState()
 		end
 	elseif Phase == 3 then
@@ -105,6 +121,9 @@ function onTick()
 		for _, lever in pairs(LEVERS) do
 			SignalBase.process(lever, 6)
 		end
+
+		-- 特殊処理
+		BridgeCrossing(6)
 	elseif Phase == 5 then
 		-- Coreで処理したデータを配信用に加工するフェーズ
 		for _, area in pairs(AREAS) do
@@ -112,7 +131,7 @@ function onTick()
 		end
 
 		-- CTCデータ生成
-		if CTC then
+		if CTC_AVAILABLE and CTC then
 			MakeCtcData()
 		end
 	elseif Phase == 0 then
@@ -130,13 +149,15 @@ function onTick()
 			end
 		end
 
-		if CTC then
+		if CTC_AVAILABLE and CTC then
 			SendCtcData(SendingSign)
 		end
 
 		while #DELAY_ANNOUNE > 0 do
 			local calls = table.remove(DELAY_ANNOUNE, 1)
-			if type(calls) == "function" then calls() end
+			if type(calls) == "function" then
+				calls()
+			end
 		end
 	end
 end

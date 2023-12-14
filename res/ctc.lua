@@ -1,4 +1,5 @@
 CTC = nil
+CTC_AVAILABLE = true
 CTC_ACTIVE = false
 CTC_DATA = { IN = {}, OUT = {} }
 
@@ -11,7 +12,7 @@ CTC_IN.SIG_TABLE = {
         "NHB4R", "NHB11R", "NHB5R", "NHB12R", "NHB13R"
     },
     ["CTC3"] = {
-        "WAK1R", "WAK2R", "WAK3L", "WAK4L"
+        "WAK1R", "WAK2R", "WAK3R", "WAK4L", "WAK5L", "WAK11R", "WAK12R", "WAK11L", "WAK12L"
     },
     ["CTC5"] = {
         "SGN1R", "SGN2R", "SGN3L", "SGN4L"
@@ -22,20 +23,20 @@ CTC_IN.SIG_TABLE = {
     }
 }
 CTC_IN.RESET_TABLE = {
-    ["CTC1"] = 23, ["CTC3"] = 4, ["CTC5"] = 4, ["CTC7"] = 14
+    ["CTC1"] = 23, ["CTC3"] = 4, ["CTC5"] = 9, ["CTC7"] = 14
 }
 CTC_IN.SWITCH_TABLE = {
     ["CTC1"] = { [25] = "NHB21", [27] = "NHB22", [29] = "NHB31" },
     ["CTC3"] = { [6] = "WAK11", [8] = "WAK12" },
-    ["CTC5"] = { [6] = "SGN11", [8] = "SGN12" },
+    ["CTC5"] = { [11] = "SGN21", [13] = "SGN22" },
     ["CTC7"] = { [16] = "SNH21", [18] = "SNH22" },
 }
 
 
 CTC_OUT.TRACK_TABLE_FULL = {
     ["CTC10"] = { [1] = "NHB4LT", [3] = "NHB5LT", [5] = "NHB6LT", [7] = "NHB21T", [9] = "NHB22T", [11] = "NHB13RT" },
-    ["CTC30"] = { [1] = "WAK1RAT", [3] = "WAK1RBT", [5] = "WAK12T", [7] = "WAK11T", [9] = "WAK4LT" },
-    ["CTC50"] = { [1] = "SGN1RAT", [3] = "SGN1RBT", [5] = "SGN12T", [7] = "SGN11T", [9] = "SGN4LT" },
+    ["CTC30"] = { [1] = "WAK1RT", [5] = "WAK12T", [7] = "WAK11T", [9] = "WAK4LT" },
+    ["CTC50"] = { [1] = "SGN1RT", [3] = "SGN2RT", [5] = "SGN12T", [7] = "SGN11T", [9] = "SGN4LT", [11] = "SGN3RT", [13] = "SGN12RT" },
     ["CTC70"] = {
         [1] = "SNH1RT",
         [3] = "SNH22T",
@@ -52,7 +53,6 @@ CTC_OUT.TRACK_TABLE_MIN = {
     ["CTC40"] = { "WAK_SGN5T", "WAK_SGN4T", "WAK_SGN3T", "WAK_SGN2T", "WAK_SGN1T" },
     ["CTC41"] = { "SGN_WAK6T", "SGN_WAK5T", "SGN_WAK4T", "SGN_WAK3T", "SGN_WAK2T", "SGN_WAK1T" },
     ["CTC60"] = {
-        [1] = "SGN_SNH5T",
         [2] = "SGN_SNH4T",
         [3] = "SGN_SNH3T",
         [4] = "SGN_SNH2T",
@@ -67,7 +67,7 @@ CTC_OUT.TRACK_TABLE_MIN = {
 CTC_OUT.SWITCH_TABLE = {
     ["CTC10"] = { [25] = "NHB21", [27] = "NHB22", [29] = "NHB31" },
     ["CTC30"] = { [11] = "WAK11", [13] = "WAK12" },
-    ["CTC50"] = { [11] = "SGN11", [13] = "SGN12" },
+    ["CTC50"] = { [17] = "SGN21", [19] = "SGN22" },
     ["CTC70"] = { [15] = "SNH21", [17] = "SNH22" }
 }
 
@@ -82,6 +82,7 @@ CTC_OUT.SIGNAL_TABLE_G = {
         [23] = "NHB12R",
         [25] = "NHB13R"
     },
+    ["CTC51"] = { [16] = "SGN11R", [18] = "SGN12R", [20] = "SGN11L", [22] = "SGN12L" },
     ["CTC70"] = { [19] = "SNH1R", [21] = "SNH13R", [23] = "SNH13RZ", [25] = "SNH13L", [27] = "SNH11R", [29] = "SNH12R" },
     ["CTC71"] = { [10] = "SNH11L", [12] = "SNH12L", [14] = "SNH12LZ", [16] = "SNH4L", [18] = "SNH4LZ" }
 }
@@ -93,9 +94,8 @@ CTC_OUT.SIGNAL_TABLE_YG = {
     ["CTC30"] = { [15] = "WAK1R", [18] = "WAK2R", [21] = "WAK3L", [24] = "WAK4L" },
     ["CTC40"] = { [6] = "WAK_SGN4", [9] = "WAK_SGN3", [12] = "WAK_SGN2", [15] = "WAK_SGN1" },
     ["CTC41"] = { [7] = "SGN_WAK5", [10] = "SGN_WAK4", [13] = "SGN_WAK3", [16] = "SGN_WAK2", [19] = "SGN_WAK1" },
-    ["CTC50"] = { [15] = "SGN1R", [18] = "SGN2R", [21] = "SGN3L", [24] = "SGN4L" },
+    ["CTC51"] = { [1] = "SGN1R", [4] = "SGN2R", [7] = "SGN3R", [10] = "SGN4L", [13] = "SGN5L" },
     ["CTC60"] = {
-        [6] = "SGN_SNH4",
         [9] = "SGN_SNH3",
         [12] = "SGN_SNH2",
         [15] = "SGN_SNH1",
@@ -106,15 +106,9 @@ CTC_OUT.SIGNAL_TABLE_YG = {
     ["CTC71"] = { [1] = "SNH2L", [4] = "SNH3R", [7] = "SNH4R" }
 }
 
-CTC_OUT.SIGNAL_TABLE_YY_YG = {
-    ["WAK_SGN2"] = true,
-    ["SGN_WAK4"] = true
-}
-
 -- 将来に備えて用意
-CTC_OUT.SIGNAL_TABLE_YY = {
-
-}
+CTC_OUT.SIGNAL_TABLE_YY_YG = {}
+CTC_OUT.SIGNAL_TABLE_YY = {}
 
 function GetCtcState()
     ---@diagnostic disable-next-line: param-type-mismatch
@@ -149,8 +143,7 @@ function SetCtcState()
                 if rst then
                     Lever.setInput(lv, false, false)
                 elseif Getbit(ctc_v, i) == 1 then
-                    Lever.setInput(lv, true,
-                        not (lvnm == "WAK1R" or lvnm == "WAK4L" or lvnm == "SGN1R" or lvnm == "SGN4L"))
+                    Lever.setInput(lv, true, true)
                 end
             end
         end
