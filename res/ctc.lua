@@ -1,4 +1,5 @@
 CTC = nil
+CTC_AVAILABLE = true
 CTC_ACTIVE = false
 CTC_DATA = { IN = {}, OUT = {} }
 

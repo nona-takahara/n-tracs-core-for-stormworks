@@ -14,7 +14,7 @@ require("res.signal")
 require("res.signal_alias")
 require("res.switch")
 require("res.crossing")
-require("res.ctc")
+--require("res.ctc")
 
 DEFAULT_AREA = AreaGetter("2")
 Lever.setInput(LEVERS["WAK1R"], true, false)
@@ -67,7 +67,7 @@ function onTick()
 		end
 
 		-- CTCデータ取得
-		if CTC then
+		if CTC_AVAILABLE and CTC then
 			GetCtcState()
 		end
 	elseif Phase == 2 then
@@ -81,7 +81,7 @@ function onTick()
 		end
 
 		-- CTC取得データの変換
-		if CTC_ACTIVE then
+		if CTC_AVAILABLE and CTC_ACTIVE then
 			SetCtcState()
 		end
 	elseif Phase == 3 then
@@ -113,7 +113,7 @@ function onTick()
 		end
 
 		-- CTCデータ生成
-		if CTC then
+		if CTC_AVAILABLE and CTC then
 			MakeCtcData()
 		end
 	elseif Phase == 0 then
@@ -131,7 +131,7 @@ function onTick()
 			end
 		end
 
-		if CTC then
+		if CTC_AVAILABLE and CTC then
 			SendCtcData(SendingSign)
 		end
 
