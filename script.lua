@@ -16,7 +16,7 @@ require("res.switch")
 require("res.crossing")
 --require("res.ctc")
 
-DEFAULT_AREA = AreaGetter("2")
+DEFAULT_AREA = AreaGetter(2)
 Lever.setInput(LEVERS["WAK1R"], true, false)
 Lever.setInput(LEVERS["WAK4L"], true, false)
 Lever.setInput(LEVERS["SGN1R"], true, false)

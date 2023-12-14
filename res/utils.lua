@@ -252,3 +252,11 @@ function StandardATS_multi(trackName, relatedLevers, direction, up, other)
         end
     end)
 end
+
+function error(message)
+    debug.log("[N-TRACS] ERROR: " .. tostring(message))
+end
+
+function Dbglog(message)
+    debug.log("[N-TRACS] DEBUG: " .. tostring(message))
+end
