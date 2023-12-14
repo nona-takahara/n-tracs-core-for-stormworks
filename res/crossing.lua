@@ -1,32 +1,101 @@
--- 連動と踏切が絡む場所の制御
+-- 連動が関連する踏切
+CreateTrack("SNH_DC", {})
+CreateTrack("SNH_UC", {})
+CreateTrack("OMR_DC", {})
+CreateTrack("OMR_UC", {})
 
+-- メインループから呼び出される関数
+function BridgeCrossing(deltaTicks)
+    local r
+    r = CrossingShionagihama(deltaTicks)
+    TrackGetter("SNH_DC").isShort = r.right
+    TrackGetter("SNH_UC").isShort = r.left
+    r = CrossingOhmori()
+    TrackGetter("OMR_DC").isShort = r.right
+    TrackGetter("OMR_UC").isShort = r.left
+end
 
--- 潮凪浜駅構内踏切
--- 下り本線（SNH_CA2）
--- 下り本線-右行（時素）
---  SNH_CA1 (45 s) and SNH1RTをSNH1Rで予約
--- 下り本線-右行（継続）
---  (SNH_CA1 and (SNH3R or SNH11R))
--- 下り本線-左行（継続）
---  (SNH_CA3 and SNH11L) or (SNH21AT and SNH21ATをSNH11Lで予約)
+ShortingTicks_SNH_CA1 = 0
+ShortingTicks_SNH_CB1 = 0
+function CrossingShionagihama(deltaTicks)
+    local t_ca1 = TrackGetter("SNH_CA1")
+    local t_ca2 = TrackGetter("SNH_CA2")
+    local t_ca3 = TrackGetter("SNH_CA3")
 
--- 上り本線（SNH_CB2）
--- 下り本線-右行（時素）
---  SNH_CB1 (45 s) and (SNH22TをSNH13Rで予約 or SNH4LTをSNH13Rで予約）
--- 下り本線-右行（継続）
---  (SNH_CB1 and (SNH4R or SNH12R))
--- 下り本線-左行（継続）
--- (メモ：4L・4LZ・12L・12LZ)
---  SNH21BTが左行で予約 and
---   (
---    SNH21BT or
---    (SNH21反位 and (SNH21AT or SNH_CA3)) or
---    (SNH21定位 and SNH_CB3)
---   )
+    local t_cb1 = TrackGetter("SNH_CB1")
+    local t_cb2 = TrackGetter("SNH_CB2")
+    -- local t_cb3 = TrackGetter("SNH_CB3")
 
--- 大森踏切(SNH21AT or SNH21BT右行かつ在線 or (SNH21BT左行 and SNH_OC))
--- 下り
---  3R, 11R, 4R, 12R
--- 上り
---  11L, 12L, 12LZ, 4LZ
---  4Lかつ接近
+    local t_21a = TrackGetter("SNH21AT")
+    local t_21b = TrackGetter("SNH21BT")
+    local t_22 = TrackGetter("SNH22T")
+    local t_4L = TrackGetter("SNH4LT")
+
+    -- 右行（時間条件あり）下本
+    local dr1 = false
+    if t_ca1.isShort and t_ca1.relatedLever == LEVERS["SNH1R"] then
+        dr1 = ShortingTicks_SNH_CA1 < (45 * 60)
+        ShortingTicks_SNH_CA1 = ShortingTicks_SNH_CA1 + deltaTicks
+    else
+        ShortingTicks_SNH_CA1 = 0
+    end
+
+    -- 右行（時間条件あり）上本
+    local dr2 = false
+    if t_cb1.isShort and (t_22.relatedLever == LEVERS["SNH13R"] or t_4L.relatedLever == LEVERS["SNH13R"]) then
+        dr2 = ShortingTicks_SNH_CB1 < (45 * 60)
+        ShortingTicks_SNH_CB1 = ShortingTicks_SNH_CB1 + deltaTicks
+    else
+        ShortingTicks_SNH_CB1 = 0
+    end
+
+    -- 右行（時間条件なし）下本
+    local dr3 = t_ca1.isShort and (LEVERS["SNH3R"].HR or LEVERS["SNH11R"].HR)
+
+    -- 右行（時間条件なし）上本
+    local dr4 = t_cb1.isShort and (LEVERS["SNH4R"].HR or LEVERS["SNH12R"].HR)
+
+    -- 左行 引き上げ線停車中
+    local dl1 = (t_ca3.isShort and (LEVERS["SNH11L"].HR or LEVERS["SNH12L"].HR or LEVERS["SNH12LZ"].HR))
+
+    -- 左行 わたり線上
+    local dl2 =
+        (t_21a.isShort and t_21a.direction == RouteDirection.Left) or
+        (t_21b.isShort and t_21b.direction == RouteDirection.Left)
+
+    -- 4Lの制御
+    local dl3 = false
+
+    local unknown_train = t_cb2.isShort or t_ca2.isShort
+
+    local rets = {left = dl1 or dl2 or dl3, right = dr1 or dr2 or dr3 or dr4}
+    if rets.left or rets.right then
+        return rets
+    else
+        return {left = unknown_train, right = unknown_train}
+    end
+end
+
+function CrossingOhmori()
+    local t_21a = TrackGetter("SNH21AT")
+    local t_21b = TrackGetter("SNH21BT")
+    local t_oc = TrackGetter("SNH_OC")
+
+    local l = LEVERS["SNH11L"].HR or LEVERS["SNH12L"].HR or LEVERS["SNH12LZ"].HR or LEVERS["SNH4LZ"].HR
+    l =
+        l or (t_21a.isShort and t_21a.direction == RouteDirection.Left) or
+        (t_oc.isShort and t_21b.direction == RouteDirection.Left)
+    -- 4L進行での接近条件がまだ入っていない。
+
+    local r = LEVERS["SNH3R"].HR or LEVERS["SNH4R"].HR or LEVERS["SNH11R"].HR or LEVERS["SNH12R"].HR
+    r =
+        r or (t_21a.isShort and t_21a.direction == RouteDirection.Right) or
+        (t_21b.isShort and t_21b.direction == RouteDirection.Right)
+
+    local unknown_train = (not (l or r)) and (t_oc.isShort or t_21a.isShort)
+
+    return {
+        left = l or unknown_train,
+        right = r or unknown_train
+    }
+end
