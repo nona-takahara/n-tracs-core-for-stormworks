@@ -13,20 +13,8 @@ signal_track = ["NHB21T", "NHB_WAK1T"]
 approach_track = ["NHB4LT"]
 approach_lock_time = 20
 
-update_callback = """
-function(self)
-    if self.HR then
---        if LEVERS["WAK1R"].aspect >= 2 or LEVERS["WAK2R"].aspect >= 2 then
-        if LEVERS["WAK1R"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK1R")'
+# StandardAspectCallback_3rd_multi({"WAK1R","WAK2R"})
 
 [NHB5R]
 start = "NHB5LT"
@@ -43,20 +31,8 @@ signal_track = ["NHB21T", "NHB_WAK1T"]
 approach_track = ["NHB5LT"]
 approach_lock_time = 20
 
-update_callback = """
-function(self)
-    if self.HR then
---        if LEVERS["WAK1R"].aspect >= 2 or LEVERS["WAK2R"].aspect >= 2 then
-        if LEVERS["WAK1R"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK1R")'
+# StandardAspectCallback_3rd_multi({"WAK1R","WAK2R"})
 
 [NHB11R]
 start = "NHB4LT"
@@ -73,15 +49,7 @@ signal_track = ["NHB21T", "NHB22T", "NHB13RT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [NHB12R]
 start = "NHB5LT"
@@ -98,15 +66,7 @@ signal_track = ["NHB21T", "NHB22T", "NHB13RT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [NHB13R]
 start = "NHB6LT"
@@ -123,15 +83,7 @@ signal_track = ["NHB22T", "NHB13RT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [NHB4L]
 start = "WAK_NHB1T"
@@ -148,15 +100,7 @@ signal_track = ["NHB13RT", "NHB22T", "NHB21T", "NHB4LT"]
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 2
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(2)'
 
 [NHB5L]
 start = "WAK_NHB1T"
@@ -173,15 +117,7 @@ signal_track = ["NHB13RT", "NHB22T", "NHB21T", "NHB5LT"]
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 2
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(2)'
 
 [NHB6L]
 start = "WAK_NHB1T"
@@ -198,15 +134,7 @@ signal_track = ["NHB13RT", "NHB22T", "NHB6LT"]
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 2
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(2)'
 
 [NHB11L]
 start = "NHB13RT"
@@ -223,15 +151,7 @@ signal_track = ["NHB22T", "NHB21T", "NHB4LT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [NHB12L]
 start = "NHB13RT"
@@ -248,15 +168,7 @@ signal_track = ["NHB22T", "NHB21T", "NHB5LT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [NHB13L]
 start = "NHB13RT"
@@ -273,33 +185,7 @@ signal_track = ["NHB22T", "NHB6LT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
-
-[WAK_NHB1]
-auto = true
-direction = "left"
-signal_track = ["WAK_NHB1T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if (LEVERS["NHB4L"].aspect >= 2 or LEVERS["NHB5L"].aspect >= 2 or LEVERS["NHB6L"].aspect >= 2) and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [WAK1R]
 start = "NHB_WAK1T"
@@ -316,20 +202,9 @@ signal_track = ["WAK1RAT", "WAK1RBT", "WAK_SGN5T"]
 approach_track = ["NHB_WAK1T"]
 approach_lock_time = 40
 
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["WAK_SGN4"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN4")'
 
+# NEED CHANGE
 [WAK4L]
 start = "SGN_WAK1T"
 destination = "WAK_NHB2T"
@@ -345,192 +220,63 @@ signal_track = ["WAK4LT", "WAK11T", "WAK12T", "WAK_NHB2T"]
 approach_track = ["SGN_WAK1T"]
 approach_lock_time = 40
 
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["WAK_NHB1"].aspect >= 3 and self.aspect >= 3 then
-            return 4
-        elseif LEVERS["WAK_NHB1"].aspect >= 2 and self.aspect >= 2 then
-            return 3
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_multi({"NHB4L","NHB5L","NHB6L"})'
 
 [WAK_SGN4]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN4T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["WAK_SGN3"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN3")'
 
 [WAK_SGN3]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN3T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["WAK_SGN2"].aspect >= 3 and self.aspect >= 2 then
-            return 4
-        elseif LEVERS["WAK_SGN2"].aspect >= 1 and self.aspect >= 2 then
-            return 3
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN2")'
 
 [WAK_SGN2]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN2T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["WAK_SGN1"].aspect >= 4 and self.aspect >= 3 then
-            return 4
-        elseif LEVERS["WAK_SGN1"].aspect >= 2 and self.aspect >= 1 then
-            return 3
-        else
-            return 1
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN1")'
 
 [WAK_SGN1]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN1T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN1R"].aspect >= 2 and self.aspect >= 2 then
---        if LEVERS["SGN1R"].aspect >= 2 or LEVERS["SGN2R"].aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN1R")'
 
 [SGN_WAK5]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK5T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_WAK4"].aspect >= 3 and self.aspect >= 3 then
-            return 4
-        elseif LEVERS["SGN_WAK4"].aspect >= 1 and self.aspect >= 2 then
-            return 3
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK4")'
 
 [SGN_WAK4]
 auto = true
 direction = "right"
 signal_track = ["SGN_WAK4T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_WAK3"].aspect >= 3 and self.aspect >= 3 then
-            return 4
-        elseif LEVERS["SGN_WAK3"].aspect >= 2 and self.aspect >= 1 then
-            return 3
-        else
-            return 1
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK3")'
 
 [SGN_WAK3]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK3T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_WAK2"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK2")'
 
 [SGN_WAK2]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK2T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_WAK1"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK1")'
 
 [SGN_WAK1]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK1T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["WAK4L"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK4L")'
+
+#############################################################################
 
 [SGN1R]
 start = "WAK_SGN1T"
@@ -576,74 +322,23 @@ signal_track = ["SGN4LT", "SGN11T", "SGN12T", "SGN_WAK6T"]
 approach_track = ["SNH_SGN1T"]
 approach_lock_time = 40
 
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_WAK5"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN5")'
 
-[SGN_SNH4]
-auto = true
-direction = "right"
-signal_track = ["SGN_SNH4T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_SNH3"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+########################################################################
 
 [SGN_SNH3]
 auto = true
 direction = "right"
 signal_track = ["SGN_SNH3T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_SNH2"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH2")'
 
 
 [SGN_SNH2]
 auto = true
 direction = "right"
 signal_track = ["SGN_SNH2T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN_SNH1"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH1")'
+
 
 [SGN_SNH1]
 auto = true
@@ -667,55 +362,19 @@ end
 auto = true
 direction = "left"
 signal_track = ["SNH_SGN3T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SNH_SGN2"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN2")'
 
 [SNH_SGN2]
 auto = true
 direction = "left"
 signal_track = ["SNH_SGN2T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SNH_SGN1"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN1")'
 
 [SNH_SGN1]
 auto = true
 direction = "left"
 signal_track = ["SNH_SGN1T"]
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SGN4L"].aspect >= 2 and self.aspect >= 2 then
-            return 4
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN4L")'
 
 [SNH1R]
 start = "SGN_SNH1T"
@@ -732,15 +391,7 @@ signal_track = ["SNH1RT"]
 approach_track = ["SGN_SNH1T"]
 approach_lock_time = 20
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 
 [SNH2L]
@@ -758,21 +409,7 @@ signal_track = ["SNH22T", "SNH_SGN4T"]
 approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        if LEVERS["SNH_SGN3"].aspect >= 4 and self.aspect >= 3 then
-            return 4
-        elseif LEVERS["SNH_SGN3"].aspect >= 2 and self.aspect >= 2 then
-            return 3
-        else
-            return 2
-        end
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN3")'
 
 
 [SNH11R]
@@ -790,15 +427,7 @@ signal_track = ["SNH21AT", "SNH3RT"]
 approach_track = ["SNH1RT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [SNH11L]
 start = "SNH3RT"
@@ -815,16 +444,7 @@ signal_track = ["SNH21AT", "SNH1RT"]
 approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
-
+update_callback = 'StandardAspectCallback_2nd(1)'
 [SNH12R]
 start = "SNH4LT"
 destination = "SNH3RT"
@@ -840,15 +460,7 @@ signal_track = ["SNH21BT", "SNH21AT", "SNH3RT"]
 approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 
 [SNH12L]
@@ -866,15 +478,7 @@ signal_track = ["SNH21AT", "SNH21BT", "SNH4LT"]
 approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [SNH12LZ]
 start = "SNH3RT"
@@ -891,15 +495,7 @@ signal_track = ["SNH21AT", "SNH21BT"]
 approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR and TRACKS["SNH4LT"].isShort then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [SNH13R]
 start = "SNH13LT"
@@ -916,15 +512,7 @@ signal_track = ["SNH22T", "SNH4LT"]
 approach_track = ["SNH13LT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [SNH13RZ]
 start = "SNH13LT"
@@ -941,15 +529,7 @@ signal_track = ["SNH22T"]
 approach_track = ["SNH13LT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR and TRACKS["SNH4LT"].isShort  then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'
 
 [SNH13L]
 start = "SNH4LT"
@@ -966,12 +546,4 @@ signal_track = ["SNH22T", "SNH13LT"]
 approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
-update_callback = """
-function(self)
-    if self.HR then
-        return 1
-    else
-        return 0
-    end
-end
-"""
+update_callback = 'StandardAspectCallback_2nd(1)'

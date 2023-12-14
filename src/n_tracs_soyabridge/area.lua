@@ -12,7 +12,6 @@ Area = Area or {}
 ---@field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
 ---@field updateCallback function
 ---@field cbdata any @コールバック関数で使えるデータ
-
 function Area.overWrite(baseObject, name, vertexs, leftVertexId, nodeToArea, updateCallback)
     baseObject = baseObject or {}
     baseObject.name = "Area"

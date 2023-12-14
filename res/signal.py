@@ -69,7 +69,7 @@ def auto_lever_lua_code(name, data):
     return rets
 
 
-with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w") as lua_f):
+with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf-8") as lua_f):
     data = tomllib.load(toml_f)
     for k, v in data.items():
         print(lever_lua_code(k, v), file=lua_f)
