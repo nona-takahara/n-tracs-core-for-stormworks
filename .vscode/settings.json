@@ -1,73 +1,68 @@
 {
-    "[lua]": {
-        "editor.formatOnSave": true,
-    },
-    "[python]": {
-        "editor.formatOnSave": true,
-    },
-    "[toml]": {
-        "editor.formatOnSave": true,
-    },
-    "[json]": {
-        "editor.formatOnSave": true,
-    },
-    "lifeboatapi.stormworks.isMicrocontrollerProject": false,
-    "lifeboatapi.stormworks.isAddonProject": true,
-    "lifeboatapi.stormworks.minimizer.removeComments": true,
-    "lifeboatapi.stormworks.minimizer.reduceAllWhitespace": true,
-    "lifeboatapi.stormworks.minimizer.reduceNewlines": true,
-    "lifeboatapi.stormworks.minimizer.removeRedundancies": true,
-    "lifeboatapi.stormworks.minimizer.shortenVariables": true,
-    "lifeboatapi.stormworks.minimizer.shortenGlobals": true,
-    "lifeboatapi.stormworks.minimizer.shortenNumbers": true,
-    "lifeboatapi.stormworks.minimizer.shortenStringDuplicates": false,
-    "lifeboatapi.stormworks.minimizer.forceNCBoilerplate": true,
-    "lifeboatapi.stormworks.minimizer.forceBoilerplate": true,
-    "Lua.diagnostics.disable": [
-        "duplicate-doc-field",
-        "duplicate-doc-alias"
-    ],
-    "Lua.diagnostics.globals": [
-        "__simulator",
-        "print",
-        "simulator",
-        "onVehicleLoad",
-        "onVehicleDespawn",
-        "onButtonPress"
-    ],
-    "Lua.runtime.version": "Lua 5.3",
-    "Lua.runtime.builtin": {
-        "coroutine": "enable",
-        "bit32": "enable",
-        "bit": "enable",
-        "builtin": "enable",
-        "utf8": "enable",
-        "package": "enable",
-        "os": "enable",
-        "jit": "enable",
-        "io": "enable",
-        "ffi": "enable",
-        "debug": "enable",
-        "basic": "enable"
-    },
-    "Lua.workspace.ignoreDir": [
-        ".vscode",
-        "/_build/",
-        "!/_build/libs/",
-        "!/_build/_buildactions.lua"
-    ],
-    "Lua.runtime.path": [
-        "?.lua",
-        "?/init.lua"
-    ],
-    "Lua.runtime.pathStrict": true,
-    "lifeboatapi.stormworks.libs.gitLibraries": [
-        {
-            "name": "LifeBoatAPI",
-            "gitUrl": "https://github.com/nameouschangey/Stormworks_LifeBoatAPI_Addon.git"
-        }
-    ],
-    "lifeboatapi.stormworks.minimizer.skipCombinedFileOutput": true,
-    "lifeboatapi.stormworks.user.authorName": "Nona Takahara, Teinishi",
-    "lifeboatapi.stormworks.user.githubLink": "https://github.com/nona-takahara/n-tracs-soya-express"
+  "[lua]": {
+    "editor.formatOnSave": true
+  },
+  "[python]": {
+    "editor.formatOnSave": true
+  },
+  "[toml]": {
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.formatOnSave": true
+  },
+  "lifeboatapi.stormworks.isMicrocontrollerProject": false,
+  "lifeboatapi.stormworks.isAddonProject": true,
+  "lifeboatapi.stormworks.minimizer.removeComments": true,
+  "lifeboatapi.stormworks.minimizer.reduceAllWhitespace": true,
+  "lifeboatapi.stormworks.minimizer.reduceNewlines": true,
+  "lifeboatapi.stormworks.minimizer.removeRedundancies": true,
+  "lifeboatapi.stormworks.minimizer.shortenVariables": true,
+  "lifeboatapi.stormworks.minimizer.shortenGlobals": true,
+  "lifeboatapi.stormworks.minimizer.shortenNumbers": true,
+  "lifeboatapi.stormworks.minimizer.shortenStringDuplicates": false,
+  "lifeboatapi.stormworks.minimizer.forceNCBoilerplate": true,
+  "lifeboatapi.stormworks.minimizer.forceBoilerplate": true,
+  "Lua.diagnostics.disable": ["duplicate-doc-field", "duplicate-doc-alias"],
+  "Lua.diagnostics.globals": [
+    "__simulator",
+    "print",
+    "simulator",
+    "onVehicleLoad",
+    "onVehicleDespawn",
+    "onButtonPress",
+    "onCreate"
+  ],
+  "Lua.runtime.version": "Lua 5.3",
+  "Lua.runtime.builtin": {
+    "coroutine": "enable",
+    "bit32": "enable",
+    "bit": "enable",
+    "builtin": "enable",
+    "utf8": "enable",
+    "package": "enable",
+    "os": "enable",
+    "jit": "enable",
+    "io": "enable",
+    "ffi": "enable",
+    "debug": "enable",
+    "basic": "enable"
+  },
+  "Lua.workspace.ignoreDir": [
+    ".vscode",
+    "/_build/",
+    "!/_build/libs/",
+    "!/_build/_buildactions.lua"
+  ],
+  "Lua.runtime.path": ["?.lua", "?/init.lua"],
+  "Lua.runtime.pathStrict": true,
+  "lifeboatapi.stormworks.libs.gitLibraries": [
+    {
+      "name": "LifeBoatAPI",
+      "gitUrl": "https://github.com/nameouschangey/Stormworks_LifeBoatAPI_Addon.git"
+    }
+  ],
+  "lifeboatapi.stormworks.minimizer.skipCombinedFileOutput": true,
+  "lifeboatapi.stormworks.user.authorName": "Nona Takahara, Teinishi",
+  "lifeboatapi.stormworks.user.githubLink": "https://github.com/nona-takahara/n-tracs-soya-express"
 }

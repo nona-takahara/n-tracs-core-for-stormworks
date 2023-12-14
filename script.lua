@@ -22,6 +22,20 @@ Lever.setInput(LEVERS["WAK4L"], true, false)
 Lever.setInput(LEVERS["SGN1R"], true, false)
 Lever.setInput(LEVERS["SGN4L"], true, false)
 
+RecommendedSettings = property.checkbox("Start with no-wind, no-damage settings", true)
+
+function onCreate()
+	if RecommendedSettings then
+		server.setGameSetting("vehicle_damage", false)
+		server.setGameSetting("player_damage", false)
+		server.setGameSetting("npc_damage", false)
+		local starttile = server.getStartTile()
+		local weather = server.getWeather(matrix.translation(starttile.x, starttile.y, starttile.z))
+		server.setGameSetting("override_weather", true)
+		server.setWeather(weather.fog, weather.rain, 0)
+	end
+end
+
 ---@type PointSetter[]
 POINTLIST = {}
 for _, data in pairs(BRIDGE_SWITCH) do
@@ -137,7 +151,9 @@ function onTick()
 
 		while #DELAY_ANNOUNE > 0 do
 			local calls = table.remove(DELAY_ANNOUNE, 1)
-			if type(calls) == "function" then calls() end
+			if type(calls) == "function" then
+				calls()
+			end
 		end
 	end
 end
