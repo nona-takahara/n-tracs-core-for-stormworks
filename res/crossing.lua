@@ -1,7 +1,10 @@
+-- 連動が関連する踏切
 CreateTrack("SNH_DC", {})
 CreateTrack("SNH_UC", {})
 CreateTrack("OMR_DC", {})
 CreateTrack("OMR_UC", {})
+
+-- メインループから呼び出される関数
 function BridgeCrossing(deltaTicks)
     local r
     r = CrossingShionagihama(deltaTicks)
@@ -65,7 +68,7 @@ function CrossingShionagihama(deltaTicks)
 
     local unknown_train = t_cb2.isShort or t_ca2.isShort
 
-    local rets = {left = dl1 or dl2 or dl3, right = dr1 or dr2 or dr3}
+    local rets = {left = dl1 or dl2 or dl3, right = dr1 or dr2 or dr3 or dr4}
     if rets.left or rets.right then
         return rets
     else
