@@ -89,6 +89,7 @@ function LoadBridgeDatas(vehicle_id, vdata)
 		end
 	end
 
+	-- 駅の実装負担軽減：宛先ペインタブルが無くても送信
 	for _, button in ipairs(vdata.components.buttons) do
 		local v, _ = (button.name):gsub("_ASPECT", "")
 		if BRIDGE_LEVER_ALIAS[v] then
@@ -144,7 +145,8 @@ function SendBridge(vehicle_id, bridge)
 	end
 end
 
----@return SWVehicleData | nil, boolean
+---@return SWVehicleData, boolean
+---@diagnostic disable-next-line: lowercase-global
 function oldGetVehicleData(vehicle_id)
 	local vd, ss1 = server.getVehicleData(vehicle_id)
 	local lvd, ss2 = server["getVehicleComponents"](vehicle_id)
@@ -153,6 +155,7 @@ function oldGetVehicleData(vehicle_id)
 		local r = {
 			tags_full = vd.tags_full,
 			tags = vd.tags,
+			---@diagnostic disable-next-line: assign-type-mismatch
 			filename = nil,
 			transform = vd.transform,
 			simulating = vd.simulating,
@@ -165,6 +168,7 @@ function oldGetVehicleData(vehicle_id)
 		}
 		return r, true
 	else
+		---@diagnostic disable-next-line: return-type-mismatch
 		return nil, false
 	end
 end

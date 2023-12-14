@@ -195,6 +195,8 @@ function Track.process(self, deltaTick)
             self.book = BookType.NoBook
         end
     else
-        error("Book mode is wrong")
+        if self.itemName then
+            error("Book mode is wrong: " .. tostring(self.itemName))
+        end
     end
 end

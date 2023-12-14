@@ -21,11 +21,12 @@ end
 ---@type Track[]
 TRACKS = TRACKS or {}
 function TrackGetter(name)
-    if not TRACKS[name] then
+    local n = tostring(name)
+    if not TRACKS[n] then
         ---@diagnostic disable-next-line: missing-fields
-        TRACKS[name] = { name = "N/A" }
+        TRACKS[n] = { name = "N/A" }
     end
-    return TRACKS[name]
+    return TRACKS[n]
 end
 
 ---@type Area[]
@@ -36,6 +37,14 @@ function AreaGetter(name)
         AREAS[name] = { name = "N/A" }
     end
     return AREAS[name]
+end
+
+function AreasGetter(name)
+    local r = {}
+    for i, v in ipairs(name) do
+        r[i] = AreaGetter(v)
+    end
+    return r
 end
 
 ---@type TrackBridge[]
@@ -125,18 +134,129 @@ function GetRightTrackArea(trackName, area)
     return nil
 end
 
+---@param aspect number
+---@return function
+function StandardAspectCallback_2nd(aspect)
+    return (function(self)
+        if self.HR then
+            return aspect
+        else
+            return 0
+        end
+    end)
+end
+
+---@param nextSignal string
+---@return function
+function StandardAspectCallback_3rd_G_Y_R(nextSignal)
+    return (function(self)
+        if self.HR then
+            if LEVERS[nextSignal].aspect >= 2 and self.aspect >= 2 then
+                return 4
+            else
+                return 2
+            end
+        else
+            return 0
+        end
+    end)
+end
+
+---@param nextSignals string[]
+---@return function
+function StandardAspectCallback_3rd_multi(nextSignals)
+    return (function(self)
+        if self.HR then
+            if self.aspect >= 2 then
+                for _, s in ipairs(nextSignals) do
+                    if LEVERS[s].aspect >= 2 then
+                        return 4
+                    end
+                end
+            end
+            return 2
+        else
+            return 0
+        end
+    end)
+end
+
+---@alias ATStable number[]
+
+---@type ATStable
 ATS_Gh = { 110, 4 }
+---@type ATStable
 ATS_G = { 100, 4 }
+---@type ATStable
 ATS_YGh = { 80, 4 }
+---@type ATStable
 ATS_YG = { 70, 4 }
+---@type ATStable
 ATS_Y = { 50, 4 }
+---@type ATStable
 ATS_YY = { 30, 4 }
+---@type ATStable
 ATS_T = { 15, 4 }
+---@type ATStable
 ATS_R = { 0, 4 }
+---@type ATStable
 ATS_N = { 0, 0 }
+---@type ATStable
 ATS_E = { -1, 14 }
 
+---@type ATStable
 ATS_P60 = { 17, 18 }
+---@type ATStable
 ATS_P40 = { 14, 17 }
+---@type ATStable
 ATS_P25 = { 12, 16 }
+---@type ATStable
 ATS_PEP = { 6, 15 }
+
+---@param trackName string
+---@param relatedLever string
+---@param direction RouteDirection
+---@param up ATStable
+---@param other ATStable
+---@return function
+function StandardATS(trackName, relatedLever, direction, up, other)
+    return (function(self)
+        local lv, dd, ff, book = TrackInformation(trackName, self, direction)
+        if ff then
+            if LEVERS[relatedLever].aspect >= 2 then
+                SendRightAxle(self, up)
+            else
+                SendRightAxle(self, other)
+            end
+        end
+    end)
+end
+
+---@param trackName string
+---@param relatedLevers string[]
+---@param direction RouteDirection
+---@param up ATStable
+---@param other ATStable
+---@return function
+function StandardATS_multi(trackName, relatedLevers, direction, up, other)
+    return (function(self)
+        local lv, dd, ff, book = TrackInformation(trackName, self, direction)
+        if ff then
+            for _, v in ipairs(relatedLevers) do
+                if LEVERS[v].aspect >= 2 then
+                    SendRightAxle(self, up)
+                    return
+                end
+            end
+            SendRightAxle(self, other)
+        end
+    end)
+end
+
+function error(message)
+    debug.log("[N-TRACS] ERROR: " .. tostring(message))
+end
+
+function Dbglog(message)
+    debug.log("[N-TRACS] DEBUG: " .. tostring(message))
+end

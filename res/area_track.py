@@ -10,14 +10,14 @@ def area_track_lua_code(area, vertexes):
     listVertex = "{" + ",".join(
         ["{" + f"x={vertexes[id]['x']},z={vertexes[id]['z']}" + "}" for id in area["vertexes"]]) + "}"
     # listVertex = "{" + ",".join([f"V[{id}]" for id in area["vertexes"]]) + "}"
-    listRelated = "{" + ",".join(
-        [f"AreaGetter(\"{str(id).replace('Area_','')}\")" for id in area["related"]]) + "}"
-    return f"Area.overWrite(AreaGetter(\"{str(area['name']).replace('Area_','')}\"),\"{str(area['name']).replace('Area_','')}\",{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
+    listRelated = "AreasGetter({" + ",".join(
+        [str(id).replace('Area_', '') for id in area["related"]]) + "})"
+    return f"Area.overWrite(AreaGetter({str(area['name']).replace('Area_','')}),\"{str(area['name']).replace('Area_','')}\",{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
 
 
 def track_lua_code(track):
-    arealist = "{" + ",".join(
-        [f"AreaGetter(\"{id['name'].replace('Area_','')}\")" for id in track["areas"]]) + "}"
+    arealist = "AreasGetter({" + ",".join(
+        [id['name'].replace('Area_', '') for id in track["areas"]]) + "})"
     return f"CreateTrack(\"{track['name']}\",{arealist})"
 
 # {"name":"NHB4LT",
@@ -32,7 +32,7 @@ def track_lua_code(track):
 # @field nodeToArea Area[] @隣り合うエリア・ポリゴンへの参照
 
 
-with (open("area_track.json", "rb") as json_f, open("area_track.lua", "w") as lua_f):
+with (open("area_track.json", "rb") as json_f, open("area_track.lua", "w", encoding="utf-8") as lua_f):
     data = json.load(json_f)
     v = data["vertexes"]
 

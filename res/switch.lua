@@ -2,7 +2,7 @@ CreateSwitch("NHB21", { "NHB21" }, { TrackGetter("NHB21T") })
 CreateSwitch("NHB22", { "NHB22a", "NHB22b" }, { TrackGetter("NHB21T"), TrackGetter("NHB22T") })
 CreateSwitch("NHB31", { "NHB31" }, { TrackGetter("NHB22T") }, true)
 
-CreateSwitch("WAK11", { "WAK11" }, { TrackGetter("WAK1RBT"), TrackGetter("WAK11T") })
+CreateSwitch("WAK11", { "WAK11" }, { TrackGetter("WAK1RT"), TrackGetter("WAK11T") })
 CreateSwitch("WAK12", { "WAK12" }, { TrackGetter("WAK12T") })
 
 CreateSwitch("SGN21", { "SGN21" }, { TrackGetter("SGN1RT"), TrackGetter("SGN21T") })
