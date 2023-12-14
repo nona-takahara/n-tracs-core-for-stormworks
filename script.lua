@@ -1,5 +1,5 @@
 -- N-TRACS 宗弥急行 Wayside Signal
-ADDON_VERSION = "v0.9.6"
+ADDON_VERSION = "v0.9.7"
 
 -- 1. Load N-TRACS Core
 require("src.n_tracs_core")
@@ -14,7 +14,7 @@ require("res.signal")
 require("res.signal_alias")
 require("res.switch")
 require("res.crossing")
---require("res.ctc")
+require("res.ctc")
 
 DEFAULT_AREA = AreaGetter(2)
 Lever.setInput(LEVERS["WAK1R"], true, false)
@@ -23,7 +23,7 @@ Lever.setInput(LEVERS["SGN1R"], true, false)
 Lever.setInput(LEVERS["SGN2R"], true, false)
 Lever.setInput(LEVERS["SGN5L"], true, false)
 
-RecommendedSettings = property.checkbox("Start with no-wind, no-damage settings", true)
+RecommendedSettings = property.checkbox("Start with no wind and damage", true)
 
 function onCreate()
 	if RecommendedSettings then
