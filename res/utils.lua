@@ -220,13 +220,15 @@ ATS_PEP = { 6, 15 }
 ---@param other ATStable
 ---@return function
 function StandardATS(trackName, relatedLever, direction, up, other)
+    local sendAxle = SendRightAxle
+    if direction == RouteDirection.Left then sendAxle = SendLeftAxle end
     return (function(self)
         local lv, dd, ff, book = TrackInformation(trackName, self, direction)
         if ff then
             if LEVERS[relatedLever].aspect >= 2 then
-                SendRightAxle(self, up)
+                sendAxle(self, up)
             else
-                SendRightAxle(self, other)
+                sendAxle(self, other)
             end
         end
     end)
@@ -239,16 +241,18 @@ end
 ---@param other ATStable
 ---@return function
 function StandardATS_multi(trackName, relatedLevers, direction, up, other)
+    local sendAxle = SendRightAxle
+    if direction == RouteDirection.Left then sendAxle = SendLeftAxle end
     return (function(self)
         local lv, dd, ff, book = TrackInformation(trackName, self, direction)
         if ff then
             for _, v in ipairs(relatedLevers) do
                 if LEVERS[v].aspect >= 2 then
-                    SendRightAxle(self, up)
+                    sendAxle(self, up)
                     return
                 end
             end
-            SendRightAxle(self, other)
+            sendAxle(self, other)
         end
     end)
 end
