@@ -15,7 +15,7 @@ CTC_IN.SIG_TABLE = {
         "WAK1R", "WAK2R", "WAK3R", "WAK4L", "WAK5L", "WAK11R", "WAK12R", "WAK11L", "WAK12L"
     },
     ["CTC5"] = {
-        "SGN1R", "SGN2R", "SGN3L", "SGN4L"
+        "SGN1R", "SGN2R", "SGN3R", "SGN4L", "SGN5L"
     },
     ["CTC7"] = {
         "SNH1R", "SNH13R", "SNH13RZ", "SNH13L", "SNH11R", "SNH12R", "SNH2L",
@@ -36,7 +36,7 @@ CTC_IN.SWITCH_TABLE = {
 CTC_OUT.TRACK_TABLE_FULL = {
     ["CTC10"] = { [1] = "NHB4LT", [3] = "NHB5LT", [5] = "NHB6LT", [7] = "NHB21T", [9] = "NHB22T", [11] = "NHB13RT" },
     ["CTC30"] = { [1] = "WAK1RT", [5] = "WAK12T", [7] = "WAK11T", [9] = "WAK4LT" },
-    ["CTC50"] = { [1] = "SGN1RT", [3] = "SGN2RT", [5] = "SGN12T", [7] = "SGN11T", [9] = "SGN4LT", [11] = "SGN3RT", [13] = "SGN12RT" },
+    ["CTC50"] = { [1] = "SGN1RT", [3] = "SGN2RT", [5] = "SGN22T", [7] = "SGN21T", [9] = "SGN5LT", [11] = "SGN3RT", [13] = "SGN12RT" },
     ["CTC70"] = {
         [1] = "SNH1RT",
         [3] = "SNH22T",
