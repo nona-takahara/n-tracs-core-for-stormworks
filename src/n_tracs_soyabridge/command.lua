@@ -91,7 +91,7 @@ COMMANDS["reset"] = {
 COMMANDS["debug"] = {
     admin = true,
     auth = false,
-    description = "Reset signal",
+    description = "Get N-TRACS item information for debug",
     command = (function(args, is_admin, is_auth, peer_id)
         local nm = args[2]
         if LEVERS[nm] then
@@ -103,6 +103,39 @@ COMMANDS["debug"] = {
             table.insert(DELAY_ANNOUNE, function()
                 Announce("Switch \"" .. nm .. "\" route: " .. tostring(Switch.getRealRoute(SWITCHES[nm])), peer_id)
             end)
+        end
+    end)
+}
+
+COMMANDS["ctc"] = {
+    admin = false,
+    auth = false,
+    description = "Get version of CTC for this add-on",
+    command = (function(_, is_admin, is_auth, peer_id)
+        Announce("N-TRACS Soya Express Wayside Signals, CTC " .. CTC_VERSION, peer_id)
+    end)
+}
+
+COMMANDS["register"] = {
+    admin = false,
+    auth = true,
+    description = "Manually register the vehicle you are sitting in in N-TRACS",
+    command = (function(_, is_admin, is_auth, peer_id)
+        local object_id, is_success = server.getPlayerCharacterID(peer_id)
+        if is_success then
+            onVehicleLoad(server.getCharacterVehicle(object_id))
+        end
+    end)
+}
+
+COMMANDS["unregister"] = {
+    admin = true,
+    auth = false,
+    description = "Manually remove the vehicle you are sitting in from the system (DANGEROUS!)",
+    command = (function(_, is_admin, is_auth, peer_id)
+        local object_id, is_success = server.getPlayerCharacterID(peer_id)
+        if is_admin and is_success then
+            onVehicleDespawn(server.getCharacterVehicle(object_id))
         end
     end)
 }
