@@ -76,6 +76,9 @@ function onTick()
 					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
 					if ss then
 						setter.set(dial.value)
+						--else
+						--ARCを実装したら 0 にするようにする。
+						--setter.set(0)
 					end
 				end
 			end
