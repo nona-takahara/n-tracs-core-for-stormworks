@@ -1,5 +1,5 @@
 -- N-TRACS 宗弥急行 Wayside Signal
-ADDON_VERSION = "v0.9.8"
+ADDON_VERSION = "v0.9.9"
 CTC_VERSION = "SoyaWS-2"
 
 -- 1. Load N-TRACS Core
@@ -24,10 +24,21 @@ Lever.setInput(LEVERS["SGN1R"], true, false)
 Lever.setInput(LEVERS["SGN2R"], true, false)
 Lever.setInput(LEVERS["SGN5L"], true, false)
 
-RecommendedSettings = property.checkbox("Start with no wind and damage", true)
+-- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
+fake_property = [[	
+g_savedata = {
+	recommendedSettings = property.checkbox("Start with no wind and damage", true),
+	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
+}
+--]]
 
-function onCreate()
-	if RecommendedSettings then
+_ENV["g_savedata"] = {
+	recommendedSettings = property.checkbox("Start with no wind and damage", true),
+	cheatBattery = property.checkbox("Enable cheat_battery feature", true)
+}
+
+function onCreate(is_world_create)
+	if is_world_create and _ENV["g_savedata"].recommendedSettings then
 		server.setGameSetting("vehicle_damage", false)
 		server.setGameSetting("player_damage", false)
 		server.setGameSetting("npc_damage", false)
@@ -52,10 +63,16 @@ end
 function onTick()
 	TickCounter = (TickCounter or 0) + 1
 
-	-- 毎Tick実行
-	for vehicle_id, _ in pairs(VehicleTable) do
-		server.setVehicleBattery(vehicle_id, "signal_bat", 3)
-		server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
+	-- 毎Tick実行しないとsignal_batを3に充電できない
+	if _ENV["g_savedata"].cheatBattery then
+		for vehicle_id, _ in pairs(VehicleTable) do
+			server.setVehicleBattery(vehicle_id, "signal_bat", 3)
+			server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
+		end
+	else
+		for vehicle_id, _ in pairs(VehicleTable) do
+			server.setVehicleBattery(vehicle_id, "signal_bat", 3)
+		end
 	end
 
 	Phase = ((Phase or 0) + 1) % 6

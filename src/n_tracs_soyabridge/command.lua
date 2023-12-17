@@ -140,6 +140,25 @@ COMMANDS["unregister"] = {
     end)
 }
 
+COMMANDS["enable_cheat_battery"] = {
+    admin = true,
+    auth = false,
+    description = "Enable constant full charge to cheat_battery",
+    command = (function(_, is_admin, is_auth, peer_id)
+        _ENV["g_savedata"].cheatBattery = true
+    end)
+}
+
+COMMANDS["disable_cheat_battery"] = {
+    admin = true,
+    auth = false,
+    description = "Disable constant full charge to cheat_battery",
+    command = (function(_, is_admin, is_auth, peer_id)
+        _ENV["g_savedata"].cheatBattery = false
+    end)
+}
+
+
 function Announce(message, peer_id)
     server.announce("[Soya Express WS]", message, peer_id)
 end

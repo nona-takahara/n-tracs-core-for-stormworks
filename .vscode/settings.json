@@ -31,7 +31,8 @@
     "onVehicleLoad",
     "onVehicleDespawn",
     "onButtonPress",
-    "onCreate"
+    "onCreate",
+    "g_savedata"
   ],
   "Lua.runtime.version": "Lua 5.3",
   "Lua.runtime.builtin": {
