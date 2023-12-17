@@ -180,6 +180,8 @@ function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
             if (not cmd.admin or (cmd.admin and is_admin)) and (not cmd.auth or (cmd.auth and is_auth)) then
                 cmd.command(args, is_admin, is_auth, peer_id)
             end
+        else
+            Announce(ADDON_SHORT_NAME .. " command '" .. tostring(args[1]) .. "' is not found", peer_id)
         end
     end
 
