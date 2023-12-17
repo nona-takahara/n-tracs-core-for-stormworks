@@ -574,7 +574,16 @@ signal_track = ["SNH21AT", "SNH21BT"]
 approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
+update_callback = """
 update_callback = 'StandardAspectCallback_2nd(1)'
+function(self)
+    if self.HR and TRACKS["SNH4LT"].isShort then
+        return 1
+    else
+        return 0
+    end
+end
+"""
 
 [SNH13R]
 start = "SNH13LT"
@@ -608,7 +617,16 @@ signal_track = ["SNH22T"]
 approach_track = ["SNH13LT"]
 approach_lock_time = 15
 
+update_callback = """
 update_callback = 'StandardAspectCallback_2nd(1)'
+function(self)
+    if self.HR and TRACKS["SNH4LT"].isShort  then
+        return 1
+    else
+        return 0
+    end
+end
+"""
 
 [SNH13L]
 start = "SNH4LT"
