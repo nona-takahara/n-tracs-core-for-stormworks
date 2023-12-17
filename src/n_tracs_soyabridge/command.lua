@@ -12,7 +12,7 @@ DELAY_ANNOUNE = {}
 COMMANDS["help"] = {
     admin = false,
     auth = false,
-    description = "Get help for usage of N-TRACS Soya Express Wayside Signals",
+    description = "Get help for usage of " .. ADDON_NAME,
     command = (function(_, is_admin, is_auth, peer_id)
         for key, cmd in pairs(COMMANDS) do
             if (not cmd.admin or (cmd.admin and is_admin)) and (not cmd.auth or (cmd.auth and is_auth)) then
@@ -25,9 +25,9 @@ COMMANDS["help"] = {
 COMMANDS["version"] = {
     admin = false,
     auth = false,
-    description = "Get version of N-TRACS Soya Express Wayside Signals",
+    description = "Get version of " .. ADDON_SHORT_NAME,
     command = (function(_, is_admin, is_auth, peer_id)
-        Announce("N-TRACS Soya Express Wayside Signals " .. ADDON_VERSION, peer_id)
+        Announce(ADDON_NAME .. " " .. ADDON_VERSION, peer_id)
     end)
 }
 
@@ -91,7 +91,7 @@ COMMANDS["reset"] = {
 COMMANDS["debug"] = {
     admin = true,
     auth = false,
-    description = "Get N-TRACS item information for debug",
+    description = "Get " .. ADDON_SHORT_NAME .. " item information for debug",
     command = (function(args, is_admin, is_auth, peer_id)
         local nm = args[2]
         if LEVERS[nm] then
@@ -110,20 +110,23 @@ COMMANDS["debug"] = {
 COMMANDS["ctc"] = {
     admin = false,
     auth = false,
-    description = "Get version of CTC for this add-on",
+    description = "Get version of CTC " .. ADDON_SHORT_NAME,
     command = (function(_, is_admin, is_auth, peer_id)
-        Announce("N-TRACS Soya Express Wayside Signals, CTC " .. CTC_VERSION, peer_id)
+        Announce(ADDON_NAME .. " CTC " .. CTC_VERSION, peer_id)
     end)
 }
 
 COMMANDS["register"] = {
     admin = false,
     auth = true,
-    description = "Manually register the vehicle you are sitting in in N-TRACS",
+    description = "Manually register the vehicle you are sitting in in " .. ADDON_SHORT_NAME,
     command = (function(_, is_admin, is_auth, peer_id)
         local object_id, is_success = server.getPlayerCharacterID(peer_id)
         if is_success then
             onVehicleLoad(server.getCharacterVehicle(object_id))
+            Announce("Your train is registered", peer_id)
+        else
+            Announce("Something went wrong and it's not completed", peer_id)
         end
     end)
 }
@@ -136,6 +139,9 @@ COMMANDS["unregister"] = {
         local object_id, is_success = server.getPlayerCharacterID(peer_id)
         if is_admin and is_success then
             onVehicleDespawn(server.getCharacterVehicle(object_id))
+            Announce("Your train is deleted", peer_id)
+        else
+            Announce("Something went wrong and it's not completed", peer_id)
         end
     end)
 }
@@ -146,6 +152,7 @@ COMMANDS["enable_cheat_battery"] = {
     description = "Enable constant full charge to cheat_battery",
     command = (function(_, is_admin, is_auth, peer_id)
         _ENV["g_savedata"].cheatBattery = true
+        Announce("cheat_battery by " .. ADDON_SHORT_NAME .. " is enabled", peer_id)
     end)
 }
 
@@ -155,12 +162,13 @@ COMMANDS["disable_cheat_battery"] = {
     description = "Disable constant full charge to cheat_battery",
     command = (function(_, is_admin, is_auth, peer_id)
         _ENV["g_savedata"].cheatBattery = false
+        Announce("cheat_battery by " .. ADDON_SHORT_NAME .. " is disabled", peer_id)
     end)
 }
 
 
 function Announce(message, peer_id)
-    server.announce("[Soya Express WS]", message, peer_id)
+    server.announce("[" .. ADDON_SHORT_NAME .. "]", message, peer_id)
 end
 
 ---@diagnostic disable-next-line: lowercase-global

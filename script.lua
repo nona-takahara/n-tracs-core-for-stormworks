@@ -1,4 +1,5 @@
--- N-TRACS 宗弥急行 Wayside Signal
+ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
+ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v0.9.9"
 CTC_VERSION = "SoyaWS-2"
 
