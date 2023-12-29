@@ -1,6 +1,6 @@
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
-ADDON_VERSION = "v0.9.10"
+ADDON_VERSION = "v0.9.11"
 CTC_VERSION = "SoyaWS-2"
 
 -- 1. Load N-TRACS Core
