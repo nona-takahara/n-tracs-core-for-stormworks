@@ -316,73 +316,73 @@ approach_lock_time = 0
 
 update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
 
-[SGN11R]
-start = "SGN1RT"
-destination = "SGN3RT"
-direction = "right"
-switches = [{ sw = "SGN21", t = "reverse" }, { sw = "SGN22", t = "reverse" }]
-route_lock = ["SGN2RT", "SGN21T"]
-
-overrun_lock = []
-overrun_lock_time = 0
-
-signal_track = ["SGN2RT", "SGN21T", "SGN3RT"]
-
-approach_track = []
-approach_lock_time = 0
-
-update_callback = 'StandardAspectCallback_2nd(1)'
-
-[SGN11L]
-start = "SGN3RT"
-destination = "SGN1RT"
-direction = "left"
-switches = [{ sw = "SGN21", t = "reverse" }, { sw = "SGN22", t = "reverse" }]
-route_lock = ["SGN21T", "SGN2RT"]
-
-overrun_lock = []
-overrun_lock_time = 0
-
-signal_track = ["SGN21T", "SGN2RT", "SGN1RT"]
-
-approach_track = []
-approach_lock_time = 0
-
-update_callback = 'StandardAspectCallback_2nd(1)'
-
-[SGN12R]
-start = "SGN_WAK6T"
-destination = "SGN12RT"
-direction = "right"
-switches = [{ sw = "SGN22", t = "reverse" }]
-route_lock = ["SGN22T"]
-
-overrun_lock = []
-overrun_lock_time = 0
-
-signal_track = ["SGN22T", "SGN12RT"]
-
-approach_track = []
-approach_lock_time = 0
-
-update_callback = 'StandardAspectCallback_2nd(1)'
-
-[SGN12L]
-start = "SGN12RT"
-destination = "SGN_WAK6T"
-direction = "right"
-switches = [{ sw = "SGN22", t = "reverse" }]
-route_lock = ["SGN22T"]
-
-overrun_lock = []
-overrun_lock_time = 0
-
-signal_track = ["SGN22T", "SGN_WAK6T"]
-
-approach_track = []
-approach_lock_time = 0
-
-update_callback = 'StandardAspectCallback_2nd(1)'
+#[SGN11R]
+#start = "SGN1RT"
+#destination = "SGN3RT"
+#direction = "right"
+#switches = [{ sw = "SGN21", t = "reverse" }, { sw = "SGN22", t = "reverse" }]
+#route_lock = ["SGN2RT", "SGN21T"]
+#
+#overrun_lock = []
+#overrun_lock_time = 0
+#
+#signal_track = ["SGN2RT", "SGN21T", "SGN3RT"]
+#
+#approach_track = []
+#approach_lock_time = 0
+#
+#update_callback = 'StandardAspectCallback_2nd(1)'
+#
+#[SGN11L]
+#start = "SGN3RT"
+#destination = "SGN1RT"
+#direction = "left"
+#switches = [{ sw = "SGN21", t = "reverse" }, { sw = "SGN22", t = "reverse" }]
+#route_lock = ["SGN21T", "SGN2RT"]
+#
+#overrun_lock = []
+#overrun_lock_time = 0
+#
+#signal_track = ["SGN21T", "SGN2RT", "SGN1RT"]
+#
+#approach_track = []
+#approach_lock_time = 0
+#
+#update_callback = 'StandardAspectCallback_2nd(1)'
+#
+#[SGN12R]
+#start = "SGN_WAK6T"
+#destination = "SGN12RT"
+#direction = "right"
+#switches = [{ sw = "SGN22", t = "reverse" }]
+#route_lock = ["SGN22T"]
+#
+#overrun_lock = []
+#overrun_lock_time = 0
+#
+#signal_track = ["SGN22T", "SGN12RT"]
+#
+#approach_track = []
+#approach_lock_time = 0
+#
+#update_callback = 'StandardAspectCallback_2nd(1)'
+#
+#[SGN12L]
+#start = "SGN12RT"
+#destination = "SGN_WAK6T"
+#direction = "right"
+#switches = [{ sw = "SGN22", t = "reverse" }]
+#route_lock = ["SGN22T"]
+#
+#overrun_lock = []
+#overrun_lock_time = 0
+#
+#signal_track = ["SGN22T", "SGN_WAK6T"]
+#
+#approach_track = []
+#approach_lock_time = 0
+#
+#update_callback = 'StandardAspectCallback_2nd(1)'
 
 [SGN5L]
 start = "SNH_SGN1T"
@@ -575,7 +575,6 @@ approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
 update_callback = """
-update_callback = 'StandardAspectCallback_2nd(1)'
 function(self)
     if self.HR and TRACKS["SNH4LT"].isShort then
         return 1
@@ -618,7 +617,6 @@ approach_track = ["SNH13LT"]
 approach_lock_time = 15
 
 update_callback = """
-update_callback = 'StandardAspectCallback_2nd(1)'
 function(self)
     if self.HR and TRACKS["SNH4LT"].isShort  then
         return 1
