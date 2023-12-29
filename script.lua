@@ -26,7 +26,7 @@ Lever.setInput(LEVERS["SGN2R"], true, false)
 Lever.setInput(LEVERS["SGN5L"], true, false)
 
 -- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
-fake_property = [[	
+fake_property = [[
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
 	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
