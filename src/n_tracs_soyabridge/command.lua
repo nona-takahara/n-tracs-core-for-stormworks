@@ -43,7 +43,7 @@ COMMANDS["aspect"] = {
                 Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(LEVERS[nm].aspect), peer_id)
             end)
         else
-            Announce("Singal \"" .. nm .. "\" is not found", peer_id)
+            Announce("ERROR! " .. "Singal \"" .. nm .. "\" is not found", peer_id)
         end
     end)
 }
@@ -60,10 +60,10 @@ COMMANDS["set"] = {
                 Lever.setInput(LEVERS[nm], true, not (nm == "WAK1R" or nm == "WAK4L" or nm == "SGN1R" or nm == "SGN4L"))
                 Announce("Singal \"" .. nm .. "\" has set", peer_id)
             else
-                Announce("Singal \"" .. nm .. "\" cannot set", peer_id)
+                Announce("WARNING " .. "Singal \"" .. nm .. "\" cannot set", peer_id)
             end
         else
-            Announce("Singal \"" .. nm .. "\" is not found", peer_id)
+            Announce("ERROR! " .. "Singal \"" .. nm .. "\" is not found", peer_id)
         end
     end)
 }
@@ -80,10 +80,10 @@ COMMANDS["reset"] = {
                 Lever.setInput(LEVERS[nm], false, false)
                 Announce("Singal \"" .. nm .. "\" has reset", peer_id)
             else
-                Announce("Singal \"" .. nm .. "\" cannot reset", peer_id)
+                Announce("WARNING " .. "Singal \"" .. nm .. "\" cannot reset", peer_id)
             end
         else
-            Announce("Singal \"" .. nm .. "\" is not found", peer_id)
+            Announce("ERROR! " .. "Singal \"" .. nm .. "\" is not found", peer_id)
         end
     end)
 }
@@ -126,7 +126,7 @@ COMMANDS["register"] = {
             onVehicleLoad(server.getCharacterVehicle(object_id))
             Announce("Your train is registered", peer_id)
         else
-            Announce("Something went wrong and it's not completed", peer_id)
+            Announce("ERROR! Something went wrong and it's not completed", peer_id)
         end
     end)
 }
@@ -141,7 +141,7 @@ COMMANDS["unregister"] = {
             onVehicleDespawn(server.getCharacterVehicle(object_id))
             Announce("Your train is deleted", peer_id)
         else
-            Announce("Something went wrong and it's not completed", peer_id)
+            Announce("ERROR! Something went wrong and it's not completed", peer_id)
         end
     end)
 }
@@ -181,7 +181,7 @@ function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
                 cmd.command(args, is_admin, is_auth, peer_id)
             end
         else
-            Announce(ADDON_SHORT_NAME .. " command '" .. tostring(args[1]) .. "' is not found", peer_id)
+            Announce("ERROR! " .. ADDON_SHORT_NAME .. " command '" .. tostring(args[1]) .. "' is not found", peer_id)
         end
     end
 
