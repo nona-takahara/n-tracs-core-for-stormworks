@@ -200,7 +200,7 @@ route_lock = ["WAK1RT"]
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["WAK1AT", "WAK_SGN5T"]
+signal_track = ["WAK1RT", "WAK_SGN5T"]
 
 approach_track = ["NHB_WAK1T"]
 approach_lock_time = 40
