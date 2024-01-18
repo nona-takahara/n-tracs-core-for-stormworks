@@ -16,6 +16,8 @@ N-TRACS Soya Express Wayside Signals は、Stormworks Lua with LifeBoatAPI 用�
 ## Release Note
 - v1.0.0
     - 正式リリース
+- v1.0.1
+    - 一部の信号機の設定ミスを修正
 
 ## How to Build a Coding Environment
 本ソフトウェアの開発・ビルド環境は以下の通りです。過不足があれば修正されます。
