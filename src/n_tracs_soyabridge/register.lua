@@ -70,7 +70,7 @@ function LoadBridgeDatas(vehicle_id, vdata)
 			table.insert(bridges.alias, v)
 		end
 	end
-if not f then return nil end
+    if not f then return nil end
 
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
