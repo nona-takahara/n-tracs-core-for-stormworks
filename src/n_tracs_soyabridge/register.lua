@@ -81,8 +81,6 @@ function LoadBridgeDatas(vehicle_id, vdata)
 		return nil
 	end
 
-	---@type VehicleBridge
-	local bridges = {tracks = {}, levers = {}, points = {}, arc_send = false, alias = {}}
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
 			table.insert(bridges.tracks, TRACKS[sign.name])
