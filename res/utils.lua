@@ -3,7 +3,7 @@ LEVERS = LEVERS or {}
 function LeverGetter(name)
     if not LEVERS[name] then
         ---@diagnostic disable-next-line: missing-fields
-        LEVERS[name] = { name = "N/A" }
+        LEVERS[name] = {name = "N/A"}
     end
     return LEVERS[name]
 end
@@ -13,7 +13,7 @@ SWITCHES = SWITCHES or {}
 function SwitchGetter(name)
     if not SWITCHES[name] then
         ---@diagnostic disable-next-line: missing-fields
-        SWITCHES[name] = { name = "N/A" }
+        SWITCHES[name] = {name = "N/A"}
     end
     return SWITCHES[name]
 end
@@ -24,7 +24,7 @@ function TrackGetter(name)
     local n = tostring(name)
     if not TRACKS[n] then
         ---@diagnostic disable-next-line: missing-fields
-        TRACKS[n] = { name = "N/A" }
+        TRACKS[n] = {name = "N/A"}
     end
     return TRACKS[n]
 end
@@ -34,7 +34,7 @@ AREAS = AREAS or {}
 function AreaGetter(name)
     if not AREAS[name] then
         ---@diagnostic disable-next-line: missing-fields
-        AREAS[name] = { name = "N/A" }
+        AREAS[name] = {name = "N/A"}
     end
     return AREAS[name]
 end
@@ -121,7 +121,9 @@ end
 function GetLeftTrackArea(trackName, area)
     local trackArea = BRIDGE_TRACK[trackName].areas
     for i = 0, #trackArea - 1 do
-        if trackArea[i + 1] == area then return trackArea[i] end
+        if trackArea[i + 1] == area then
+            return trackArea[i]
+        end
     end
     return nil
 end
@@ -129,7 +131,9 @@ end
 function GetRightTrackArea(trackName, area)
     local trackArea = BRIDGE_TRACK[trackName].areas
     for i = 1, #trackArea - 1 do
-        if trackArea[i] == area then return trackArea[i + 1] end
+        if trackArea[i] == area then
+            return trackArea[i + 1]
+        end
     end
     return nil
 end
@@ -184,34 +188,34 @@ end
 ---@alias ATStable number[]
 
 ---@type ATStable
-ATS_Gh = { 110, 4 }
+ATS_Gh = {110, 4, 13}
 ---@type ATStable
-ATS_G = { 100, 4 }
+ATS_G = {100, 4, 12}
 ---@type ATStable
-ATS_YGh = { 80, 4 }
+ATS_YGh = {80, 4, 11}
 ---@type ATStable
-ATS_YG = { 70, 4 }
+ATS_YG = {70, 4, 10}
 ---@type ATStable
-ATS_Y = { 50, 4 }
+ATS_Y = {50, 4, 8}
 ---@type ATStable
-ATS_YY = { 30, 4 }
+ATS_YY = {30, 4, 6}
 ---@type ATStable
-ATS_T = { 15, 4 }
+ATS_T = {15, 4, 4}
 ---@type ATStable
-ATS_R = { 0, 4 }
+ATS_R = {0, 4, 2}
 ---@type ATStable
-ATS_N = { 0, 0 }
+ATS_N = {0, 0, 0}
 ---@type ATStable
-ATS_E = { -1, 14 }
+ATS_E = {-1, 14, 0}
 
 ---@type ATStable
-ATS_P60 = { 17, 18 }
+ATS_P60 = {17, 18, 10}
 ---@type ATStable
-ATS_P40 = { 14, 17 }
+ATS_P40 = {14, 17, 8}
 ---@type ATStable
-ATS_P25 = { 12, 16 }
+ATS_P25 = {12, 16, 6}
 ---@type ATStable
-ATS_PEP = { 6, 15 }
+ATS_PEP = {6, 15, 4}
 
 ---@param trackName string
 ---@param relatedLever string
@@ -221,7 +225,9 @@ ATS_PEP = { 6, 15 }
 ---@return function
 function StandardATS(trackName, relatedLever, direction, up, other)
     local sendAxle = SendRightAxle
-    if direction == RouteDirection.Left then sendAxle = SendLeftAxle end
+    if direction == RouteDirection.Left then
+        sendAxle = SendLeftAxle
+    end
     return (function(self)
         local lv, dd, ff, book = TrackInformation(trackName, self, direction)
         if ff then
@@ -242,7 +248,9 @@ end
 ---@return function
 function StandardATS_multi(trackName, relatedLevers, direction, up, other)
     local sendAxle = SendRightAxle
-    if direction == RouteDirection.Left then sendAxle = SendLeftAxle end
+    if direction == RouteDirection.Left then
+        sendAxle = SendLeftAxle
+    end
     return (function(self)
         local lv, dd, ff, book = TrackInformation(trackName, self, direction)
         if ff then

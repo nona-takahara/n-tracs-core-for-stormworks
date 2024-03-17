@@ -1,6 +1,6 @@
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
-ADDON_VERSION = "v1.0.1"
+ADDON_VERSION = "v1.0.2"
 CTC_VERSION = "SoyaWS-2"
 
 -- 1. Load N-TRACS Core
@@ -26,7 +26,8 @@ Lever.setInput(LEVERS["SGN2R"], true, false)
 Lever.setInput(LEVERS["SGN5L"], true, false)
 
 -- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
-fake_property = [[
+fake_property =
+	[[
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
 	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
@@ -95,9 +96,9 @@ function onTick()
 					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
 					if ss then
 						setter.set(dial.value)
-						--else
-						--ARCを実装したら 0 にするようにする。
-						--setter.set(0)
+					--else
+					--ARCを実装したら 0 にするようにする。
+					--setter.set(0)
 					end
 				end
 			end
