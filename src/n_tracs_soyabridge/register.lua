@@ -14,7 +14,9 @@ VehicleTable = {}
 
 function onVehicleLoad(vehicle_id)
 	local vdata, s = oldGetVehicleData(vehicle_id)
-	if not s then return end
+	if not s then
+		return
+	end
 
 	VehicleTable[vehicle_id] = {
 		axles = LoadAxles(vehicle_id, vdata, false),
@@ -33,7 +35,9 @@ end
 function onButtonPress(vehicle_id, peer_id, button_name)
 	if button_name == "N-TRACS RESET" then
 		local vdata, s = oldGetVehicleData(vehicle_id)
-		if not s then return end
+		if not s then
+			return
+		end
 
 		VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
 		VehicleTable[vehicle_id].bridges = LoadBridgeDatas(vehicle_id, vdata)
@@ -49,22 +53,36 @@ end
 ---@param vdata SWVehicleData
 ---@return VehicleBridge | nil
 function LoadBridgeDatas(vehicle_id, vdata)
-	if not vdata then return nil end
+	if not vdata then
+		return nil
+	end
 	local f = false
+	---@type VehicleBridge
+	local bridges = {tracks = {}, levers = {}, points = {}, arc_send = false, alias = {}}
 
 	for _, button in ipairs(vdata.components.buttons) do
 		if button.name == "Activate CTC" then
 			CTC = vehicle_id
 		end
+
 		if button.name == "N-TRACS RESET" then
 			f = true
-			break
+		end
+
+		-- 駅の実装負担軽減：宛先ペインタブルが無くても送信
+		local v, _ = (button.name):gsub("_ASPECT", "")
+		if BRIDGE_LEVER_ALIAS[v] then
+			f = true
+			table.insert(bridges.alias, v)
 		end
 	end
-	if not f then return nil end
+
+	if not f then
+		return nil
+	end
 
 	---@type VehicleBridge
-	local bridges = { tracks = {}, levers = {}, points = {}, arc_send = false, alias = {} }
+	local bridges = {tracks = {}, levers = {}, points = {}, arc_send = false, alias = {}}
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
 			table.insert(bridges.tracks, TRACKS[sign.name])
@@ -89,13 +107,6 @@ function LoadBridgeDatas(vehicle_id, vdata)
 		end
 	end
 
-	-- 駅の実装負担軽減：宛先ペインタブルが無くても送信
-	for _, button in ipairs(vdata.components.buttons) do
-		local v, _ = (button.name):gsub("_ASPECT", "")
-		if BRIDGE_LEVER_ALIAS[v] then
-			table.insert(bridges.alias, v)
-		end
-	end
 	return bridges
 end
 
