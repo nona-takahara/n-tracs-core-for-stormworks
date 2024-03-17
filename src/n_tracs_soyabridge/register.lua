@@ -14,9 +14,7 @@ VehicleTable = {}
 
 function onVehicleLoad(vehicle_id)
 	local vdata, s = oldGetVehicleData(vehicle_id)
-	if not s then
-		return
-	end
+	if not s then return end
 
 	VehicleTable[vehicle_id] = {
 		axles = LoadAxles(vehicle_id, vdata, false),
@@ -35,9 +33,7 @@ end
 function onButtonPress(vehicle_id, peer_id, button_name)
 	if button_name == "N-TRACS RESET" then
 		local vdata, s = oldGetVehicleData(vehicle_id)
-		if not s then
-			return
-		end
+		if not s then return end
 
 		VehicleTable[vehicle_id] = VehicleTable[vehicle_id] or {}
 		VehicleTable[vehicle_id].bridges = LoadBridgeDatas(vehicle_id, vdata)
@@ -53,9 +49,7 @@ end
 ---@param vdata SWVehicleData
 ---@return VehicleBridge | nil
 function LoadBridgeDatas(vehicle_id, vdata)
-	if not vdata then
-		return nil
-	end
+	if not vdata then return nil end
 	local f = false
 	---@type VehicleBridge
 	local bridges = {tracks = {}, levers = {}, points = {}, arc_send = false, alias = {}}
@@ -76,10 +70,7 @@ function LoadBridgeDatas(vehicle_id, vdata)
 			table.insert(bridges.alias, v)
 		end
 	end
-
-	if not f then
-		return nil
-	end
+if not f then return nil end
 
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
