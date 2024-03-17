@@ -31,7 +31,7 @@ function Axle.new(vehicle_id, name, voxelPos)
         name = "Axle",
         itemName = name,
         voxel_pos = voxelPos,
-        real_pos = { x = 0, z = 0 },
+        real_pos = {x = 0, z = 0},
         area = DEFAULT_AREA,
         arc = 0
     }
@@ -53,7 +53,7 @@ function Axle.initializeForProcess(self)
 
     if ss then
         local x, y, z = matrix.position(mtx)
-        self.real_pos = { x = x, z = z }
+        self.real_pos = {x = x, z = z}
     end
 
     ---@type SWVehicleDialData
@@ -121,20 +121,26 @@ function LoadAxles(vehicle_id, vdata, forceRegister)
     local axles = {}
     for _, sign in ipairs(vdata.components.signs) do
         if sign.name:find("TRAIN") == 1 then
-            table.insert(axles,
-                Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
+            table.insert(axles, Axle.new(vehicle_id, sign.name, {x = sign.pos.x, y = sign.pos.y, z = sign.pos.z}))
         end
     end
 
     if forceRegister and #axles == 0 then
-        axles = { [1] = Axle.new(vehicle_id, "", nil) }
+        axles = {[1] = Axle.new(vehicle_id, "", nil)}
     end
     return axles
 end
 
 function Axle.send(self)
-    local sending = self.sending or { 0, 0 }
+    local sending = self.sending or {0, 0, 0}
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * SendingSign)
-    self.sending = { 0, 0 }
+    if sending[2] == 0 or sending[2] == 14 then
+        server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", 0)
+    else
+        server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1] or 1)
+    end
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", SendingSign)
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[3])
+    self.sending = {0, 0, 0}
 end
