@@ -1,0 +1,19 @@
+{
+  "name": "n-tracs-soya-express",
+  "version": "1.0.2",
+  "description": "A Stormworks train traffic system for Sawyer Island electric railway project \"Soya Express\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nona-takahara/n-tracs-soya-express.git"
+  },
+  "author": "Nona Takahara, Teinishi, Asme Nanaha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nona-takahara/n-tracs-soya-express/issues"
+  },
+  "homepage": "https://github.com/nona-takahara/n-tracs-soya-express#readme"
+}
