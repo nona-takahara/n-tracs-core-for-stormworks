@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/nona-takahara/n-tracs-soya-express/issues"
   },
-  "homepage": "https://github.com/nona-takahara/n-tracs-soya-express#readme"
+  "homepage": "https://github.com/nona-takahara/n-tracs-soya-express#readme",
+  "devDependencies": {
+    "luamin": "^1.0.4",
+    "luaparse": "^0.3.1",
+    "toml": "^3.0.0"
+  }
 }
