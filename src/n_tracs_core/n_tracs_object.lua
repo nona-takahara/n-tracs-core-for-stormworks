@@ -1,3 +1,5 @@
+---@alias NtracsSymbol string
+
 ---@class NtracsObject
 ---@field name string クラス名です
 ---@field itemName string
