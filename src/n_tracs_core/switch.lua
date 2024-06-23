@@ -21,7 +21,8 @@ Switch = Switch or {}
 ---@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
 function Switch.new(itemName, isSite, relatedTracks)
-    return Switch.overWrite({}, itemName, isSite, relatedTracks)
+    local obj = CreateInstance(NtracsObject.new(), Switch)
+    return Switch.overWrite(obj, itemName, isSite, relatedTracks)
 end
 
 ---転てつ器情報を作成します
@@ -60,7 +61,7 @@ end
 ---@return boolean
 function Switch.getWLR(self)
     for _, value in ipairs(self.relatedTracks) do
-        if Track.isShort(value) or Track.isLocked(value, not self.isSite) then
+        if value:isShort() or value:isLocked(not self.isSite) then
             return false
         end
     end

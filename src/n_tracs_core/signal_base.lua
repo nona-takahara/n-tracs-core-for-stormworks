@@ -18,22 +18,15 @@ RouteDirection = {
 ---@field cbdata any
 SignalBase = SignalBase or {}
 
+function SignalBase.new()
+    local obj = CreateInstance(NtracsObject.new(), SignalBase)
+    return obj
+end
+
 function SignalBase.process(self, deltaTick)
-    if self.name == "Lever" then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        Lever.process(self, deltaTick)
-    elseif self.name == "AutoSignal" then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        AutoSignal.process(self, deltaTick)
-    end
+    error("Abstract Class SignalBase")
 end
 
 function SignalBase.beforeProcess(self)
-    if self.name == "Lever" then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        Lever.beforeProcess(self)
-    elseif self.name == "AutoSignal" then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        AutoSignal.beforeProcess(self)
-    end
+    error("Abstract Class SignalBase")
 end

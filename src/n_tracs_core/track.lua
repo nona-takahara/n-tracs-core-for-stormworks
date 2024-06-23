@@ -24,7 +24,8 @@ Track = Track or {}
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.new(itemName)
-    return Track.overWrite({}, itemName)
+    local obj = CreateInstance(NtracsObject.new(), Track)
+    return Track.overWrite(obj, itemName)
 end
 
 ---抽象軌道回路データを作成します

@@ -20,7 +20,8 @@ AutoSignal = AutoSignal or {}
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
 function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
-    return AutoSignal.overWrite({}, itemName, signalTrack, direction, updateCallback)
+    local obj = CreateInstance(SignalBase.new(), AutoSignal)
+    return AutoSignal.overWrite(obj, itemName, signalTrack, direction, updateCallback)
 end
 
 ---てこ構造体のインスタンスを作成します
@@ -52,8 +53,8 @@ function AutoSignal.beforeProcess(self)
 end
 
 function AutoSignal.isNoShort(self)
-    for _, value in ipairs(self.signalTrack) do
-        if Track.isShort(value) then
+    for _, track in ipairs(self.signalTrack) do
+        if track:isShort() then
             return false
         end
     end
@@ -63,8 +64,8 @@ end
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
 function AutoSignal.process(self, deltaTick)
-    self.HR = AutoSignal.isNoShort(self)
-    self.nextAspect = self.updateCallback(self, deltaTick)
+    self.HR = self:isNoShort()
+    self.nextAspect = self:updateCallback(deltaTick)
     if not self.HR then
         self.nextAspect = 0
     end
