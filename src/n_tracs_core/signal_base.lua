@@ -20,6 +20,7 @@ SignalBase = SignalBase or {}
 
 function SignalBase.new()
     local obj = CreateInstance(NtracsObject.new(), SignalBase)
+    obj.name = "SignalBase"
     return obj
 end
 

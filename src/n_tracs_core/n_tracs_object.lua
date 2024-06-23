@@ -15,7 +15,7 @@ end
 ---@return T
 function CreateInstance(target, classObj)
     for k, v in pairs(classObj) do
-        if k ~= "new" and k ~= "overWrite" and type(v) == "function" then
+        if k ~= "new" and type(v) == "function" then
             target[k] = v
         end
     end

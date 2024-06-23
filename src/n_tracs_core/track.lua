@@ -21,11 +21,11 @@ BookType = {
 Track = Track or {}
 
 ---抽象軌道回路データを作成します
----@param itemName string 抽象軌道回路名称です
 ---@return Track
-function Track.new(itemName)
+function Track.new()
     local obj = CreateInstance(NtracsObject.new(), Track)
-    return Track.overWrite(obj, itemName)
+    obj.name = "Track"
+    return obj
 end
 
 ---抽象軌道回路データを作成します

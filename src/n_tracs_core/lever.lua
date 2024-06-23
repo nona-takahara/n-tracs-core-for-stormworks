@@ -20,24 +20,11 @@
 Lever = Lever or {}
 
 ---てこ構造体のインスタンスを作成します
----@param itemName string てこ名称
----@param startTrack Track 進路てこ区間の始点
----@param destination Track 進路てこ区間の終点
----@param switches SwitchRoute[] 関連する転てつ器と開通方向の組み合わせ情報
----@param routeLock Track[] 進路鎖錠を行う抽象軌道回路
----@param overrunLock Track[] 過走防護を行う抽象軌道回路
----@param signalTrack Track[] 信号現示に関連する抽象軌道回路
----@param direction RouteDirection 進路てこの方向
----@param approachTrack Track[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
----@param lockTime number 接近・保留鎖錠の時間(Tick)
----@param overrunTime number 過走防護鎖錠の時間(Tick)
----@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
-                   signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+function Lever.new()
     local obj = CreateInstance(NtracsObject.new(), Lever)
-    return Lever.overWrite(obj, itemName, startTrack, destination, switches, routeLock, overrunLock,
-        signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+    obj.name = "Lever"
+    return obj
 end
 
 ---てこ構造体のインスタンスを作成します
@@ -57,6 +44,7 @@ end
 ---@return Lever
 function Lever.overWrite(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock,
                          signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+    baseObject = CreateInstance(baseObject, Lever)
     baseObject.name = "Lever"
     baseObject.itemName = itemName
     baseObject.input = false

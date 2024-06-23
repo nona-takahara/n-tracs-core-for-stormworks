@@ -14,14 +14,11 @@ RouteDirection = {
 AutoSignal = AutoSignal or {}
 
 ---てこ構造体のインスタンスを作成します
----@param itemName string てこ名称
----@param signalTrack Track[] 信号現示に関連する抽象軌道回路
----@param direction RouteDirection 進路てこの方向
----@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
----@return Lever
-function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
+---@return AutoSignal
+function AutoSignal.new()
     local obj = CreateInstance(SignalBase.new(), AutoSignal)
-    return AutoSignal.overWrite(obj, itemName, signalTrack, direction, updateCallback)
+    obj.name = "AutoSignal"
+    return obj
 end
 
 ---てこ構造体のインスタンスを作成します
@@ -31,6 +28,7 @@ end
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
 function AutoSignal.overWrite(baseObject, itemName, signalTrack, direction, updateCallback)
+    baseObject = CreateInstance(baseObject, AutoSignal)
     baseObject.name = "AutoSignal"
     baseObject.itemName = itemName
     baseObject.aspect = 0

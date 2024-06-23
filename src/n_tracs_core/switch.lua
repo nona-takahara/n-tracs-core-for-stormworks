@@ -20,9 +20,10 @@ Switch = Switch or {}
 ---@param isSite boolean 現場扱いの転てつ器ならばtrue
 ---@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
-function Switch.new(itemName, isSite, relatedTracks)
+function Switch.new()
     local obj = CreateInstance(NtracsObject.new(), Switch)
-    return Switch.overWrite(obj, itemName, isSite, relatedTracks)
+    obj.name = "Switch"
+    return obj
 end
 
 ---転てつ器情報を作成します
