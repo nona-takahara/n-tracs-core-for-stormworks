@@ -22,6 +22,7 @@ function AutoSignal.new()
 end
 
 ---てこ構造体のインスタンスを作成します
+---@param self SignalBase
 ---@param itemName string てこ名称
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向

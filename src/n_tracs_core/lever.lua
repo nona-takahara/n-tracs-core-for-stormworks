@@ -28,6 +28,7 @@ function Lever.new()
 end
 
 ---てこ構造体のインスタンスを作成します
+---@param self SignalBase
 ---@param itemName string てこ名称
 ---@param startTrack Track 進路てこ区間の始点
 ---@param destination Track 進路てこ区間の終点
