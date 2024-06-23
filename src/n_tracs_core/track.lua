@@ -29,19 +29,18 @@ function Track.new()
 end
 
 ---抽象軌道回路データを作成します
----@param baseObject table ベースとなるオブジェクト
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
-function Track.overWrite(baseObject, itemName)
-    baseObject = baseObject or {}
-    baseObject.name = "Track"
-    baseObject.itemName = itemName
-    baseObject.relatedLever = nil
-    baseObject.book = BookType.NoBook
-    baseObject.direction = RouteDirection.None
-    baseObject.timer = 0
-    baseObject.beforeRouteLockItem = nil
-    return baseObject
+function Track.overWrite(self, itemName)
+    self = self or {}
+    self.name = "Track"
+    self.itemName = itemName
+    self.relatedLever = nil
+    self.book = BookType.NoBook
+    self.direction = RouteDirection.None
+    self.timer = 0
+    self.beforeRouteLockItem = nil
+    return self
 end
 
 ---[package]

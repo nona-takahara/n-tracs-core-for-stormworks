@@ -28,7 +28,6 @@ function Lever.new()
 end
 
 ---てこ構造体のインスタンスを作成します
----@param baseObject table ベースとなるオブジェクト
 ---@param itemName string てこ名称
 ---@param startTrack Track 進路てこ区間の始点
 ---@param destination Track 進路てこ区間の終点
@@ -42,32 +41,32 @@ end
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.overWrite(baseObject, itemName, startTrack, destination, switches, routeLock, overrunLock,
+function Lever.overWrite(self, itemName, startTrack, destination, switches, routeLock, overrunLock,
                          signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
-    baseObject = CreateInstance(baseObject, Lever)
-    baseObject.name = "Lever"
-    baseObject.itemName = itemName
-    baseObject.input = false
-    baseObject.ASR = true
-    baseObject.MSlR = false
-    baseObject.timerCount = 0
-    baseObject.TSSlR = false
-    baseObject.HR = false
-    baseObject.aspect = 0
-    baseObject.nextAspect = 0
-    baseObject.startTrack = startTrack
-    baseObject.destination = destination
-    baseObject.switches = switches
-    baseObject.approachTrack = approachTrack
-    baseObject.routeLock = routeLock
-    baseObject.overrunLock = overrunLock
-    baseObject.signalTrack = signalTrack
-    baseObject.direction = direction
-    baseObject.lockTime = lockTime
-    baseObject.overrunTime = overrunTime
-    baseObject.updateCallback = updateCallback
-    baseObject.autoReset = false
-    return baseObject
+    self = CreateInstance(self, Lever)
+    self.name = "Lever"
+    self.itemName = itemName
+    self.input = false
+    self.ASR = true
+    self.MSlR = false
+    self.timerCount = 0
+    self.TSSlR = false
+    self.HR = false
+    self.aspect = 0
+    self.nextAspect = 0
+    self.startTrack = startTrack
+    self.destination = destination
+    self.switches = switches
+    self.approachTrack = approachTrack
+    self.routeLock = routeLock
+    self.overrunLock = overrunLock
+    self.signalTrack = signalTrack
+    self.direction = direction
+    self.lockTime = lockTime
+    self.overrunTime = overrunTime
+    self.updateCallback = updateCallback
+    self.autoReset = false
+    return self
 end
 
 ---現場扱いのてこが正当方向に転換しているか調べます

@@ -22,21 +22,21 @@ function AutoSignal.new()
 end
 
 ---てこ構造体のインスタンスを作成します
----@param baseObject table ベースとなるオブジェクト---@param itemName string てこ名称
+---@param itemName string てこ名称
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
----@return Lever
-function AutoSignal.overWrite(baseObject, itemName, signalTrack, direction, updateCallback)
-    baseObject = CreateInstance(baseObject, AutoSignal)
-    baseObject.name = "AutoSignal"
-    baseObject.itemName = itemName
-    baseObject.aspect = 0
-    baseObject.nextAspect = 0
-    baseObject.signalTrack = signalTrack
-    baseObject.direction = direction
-    baseObject.updateCallback = updateCallback
-    return baseObject
+---@return AutoSignal
+function AutoSignal.overWrite(self, itemName, signalTrack, direction, updateCallback)
+    self = CreateInstance(self, AutoSignal)
+    self.name = "AutoSignal"
+    self.itemName = itemName
+    self.aspect = 0
+    self.nextAspect = 0
+    self.signalTrack = signalTrack
+    self.direction = direction
+    self.updateCallback = updateCallback
+    return self
 end
 
 ---信号現示を返します
