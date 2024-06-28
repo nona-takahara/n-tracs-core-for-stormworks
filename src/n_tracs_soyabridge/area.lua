@@ -3,7 +3,13 @@ require('src.utils.complex')
 ---@class Area
 Area = Area or {}
 
----@class Area
+function Area.new()
+    local obj = CreateInstance(NtracsObject.new(), Area)
+    obj.name = "Area"
+    return obj
+end
+
+---@class Area:NtracsObject
 ---@field name string
 ---@field itemName string
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
