@@ -47,7 +47,7 @@ end
 BRIDGE_TRACK = BRIDGE_TRACK or {}
 function CreateTrack(name, arealist)
     BRIDGE_TRACK[name] = TrackBridge.overWrite(BRIDGE_TRACK[name], name, arealist)
-    TRACKS[name] = TRACKS[name]:overWrite(name)
+    TRACKS[name] = (TRACKS[name] or Track.new()):overWrite(name)
 end
 
 ---@type SwitchBridge[]

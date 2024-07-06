@@ -61,7 +61,7 @@ end
 ---@return boolean
 function Switch.getWLR(self)
     for _, value in ipairs(self.relatedTracks) do
-        if value:isShort() or value:isLocked(not self.isSite) then
+        if value.isShort or value:isLocked(not self.isSite) then
             return false
         end
     end
