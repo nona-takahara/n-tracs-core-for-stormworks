@@ -1,3 +1,4 @@
+require("src.n_tracs_core.n_tracs_object")
 require("src.n_tracs_core.signal_base")
 require("src.n_tracs_core.lever")
 require("src.n_tracs_core.auto_signal")

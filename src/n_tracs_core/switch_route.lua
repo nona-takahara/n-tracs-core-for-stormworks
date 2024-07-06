@@ -1,7 +1,7 @@
 -- N-TRACS Core [SwitchRoute]
 
 ---転てつ器と開通方向の情報セットを扱います
----@class SwitchRoute
+---@class SwitchRoute:NtracsObject
 ---@field private rswitch Switch 関連転てつ器
 ---@field private target TargetRoute 開通希望方向
 SwitchRoute = SwitchRoute or {}
@@ -11,23 +11,23 @@ SwitchRoute = SwitchRoute or {}
 ---@param target TargetRoute
 ---@return SwitchRoute
 function SwitchRoute.new(rswitch, target)
-    return {
-        name = "SwitchRoute",
-        rswitch = rswitch,
-        target = target
-    }
+    local obj = CreateInstance(NtracsObject.new(), SwitchRoute)
+    obj.name = "SwitchRoute"
+    obj.rswitch = rswitch
+    obj.target = target
+    return obj
 end
 
 ---開通方向が希望のものと同じか調べます
 ---@param self SwitchRoute
 ---@return boolean
 function SwitchRoute.isTargetRoute(self)
-    return Switch.getRealRoute(self.rswitch) == self.target
+    return (self.rswitch):getRealRoute() == self.target
 end
 
 ---開通希望方向に転換します
 function SwitchRoute.moveToTarget(self)
-    Switch.move(self.rswitch, self.target)
+    (self.rswitch):move(self.target)
 end
 
 ---comment

@@ -2,8 +2,7 @@
 LEVERS = LEVERS or {}
 function LeverGetter(name)
     if not LEVERS[name] then
-        ---@diagnostic disable-next-line: missing-fields
-        LEVERS[name] = {name = "N/A"}
+        LEVERS[name] = SignalBase.new()
     end
     return LEVERS[name]
 end
@@ -12,8 +11,7 @@ end
 SWITCHES = SWITCHES or {}
 function SwitchGetter(name)
     if not SWITCHES[name] then
-        ---@diagnostic disable-next-line: missing-fields
-        SWITCHES[name] = {name = "N/A"}
+        SWITCHES[name] = Switch.new()
     end
     return SWITCHES[name]
 end
@@ -23,8 +21,7 @@ TRACKS = TRACKS or {}
 function TrackGetter(name)
     local n = tostring(name)
     if not TRACKS[n] then
-        ---@diagnostic disable-next-line: missing-fields
-        TRACKS[n] = {name = "N/A"}
+        TRACKS[n] = Track.new()
     end
     return TRACKS[n]
 end
@@ -33,8 +30,7 @@ end
 AREAS = AREAS or {}
 function AreaGetter(name)
     if not AREAS[name] then
-        ---@diagnostic disable-next-line: missing-fields
-        AREAS[name] = {name = "N/A"}
+        AREAS[name] = Area.new()
     end
     return AREAS[name]
 end
@@ -51,7 +47,7 @@ end
 BRIDGE_TRACK = BRIDGE_TRACK or {}
 function CreateTrack(name, arealist)
     BRIDGE_TRACK[name] = TrackBridge.overWrite(BRIDGE_TRACK[name], name, arealist)
-    TRACKS[name] = Track.overWrite(TRACKS[name], name)
+    TRACKS[name] = (TRACKS[name] or Track.new()):overWrite(name)
 end
 
 ---@type SwitchBridge[]
@@ -188,34 +184,34 @@ end
 ---@alias ATStable number[]
 
 ---@type ATStable
-ATS_Gh = {110, 4, 13}
+ATS_Gh = { 110, 4, 13 }
 ---@type ATStable
-ATS_G = {100, 4, 12}
+ATS_G = { 100, 4, 12 }
 ---@type ATStable
-ATS_YGh = {80, 4, 11}
+ATS_YGh = { 80, 4, 11 }
 ---@type ATStable
-ATS_YG = {70, 4, 10}
+ATS_YG = { 70, 4, 10 }
 ---@type ATStable
-ATS_Y = {50, 4, 8}
+ATS_Y = { 50, 4, 8 }
 ---@type ATStable
-ATS_YY = {30, 4, 6}
+ATS_YY = { 30, 4, 6 }
 ---@type ATStable
-ATS_T = {15, 4, 4}
+ATS_T = { 15, 4, 4 }
 ---@type ATStable
-ATS_R = {0, 4, 2}
+ATS_R = { 0, 4, 2 }
 ---@type ATStable
-ATS_N = {0, 0, 0}
+ATS_N = { 0, 0, 0 }
 ---@type ATStable
-ATS_E = {-1, 14, 0}
+ATS_E = { -1, 14, 0 }
 
 ---@type ATStable
-ATS_P60 = {17, 18, 10}
+ATS_P60 = { 17, 18, 10 }
 ---@type ATStable
-ATS_P40 = {14, 17, 8}
+ATS_P40 = { 14, 17, 8 }
 ---@type ATStable
-ATS_P25 = {12, 16, 6}
+ATS_P25 = { 12, 16, 6 }
 ---@type ATStable
-ATS_PEP = {6, 15, 4}
+ATS_PEP = { 6, 15, 4 }
 
 ---@param trackName string
 ---@param relatedLever string

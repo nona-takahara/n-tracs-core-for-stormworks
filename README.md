@@ -23,6 +23,9 @@ N-TRACS Soya Express Wayside Signals は、Stormworks Lua with LifeBoatAPI 用�
 - v1.0.2
   - 駅アドオンの進行信号現示反応標識との連携を改善
   - ATS の移行準備機能を追加
+- v1.1.0
+  - オブジェクトの持ち方を変更（今後全体を新しいオブジェクトの持ち方に移行予定）
+  - マップ用マーカーを追加
 
 ## How to Build a Coding Environment
 
