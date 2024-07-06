@@ -52,7 +52,7 @@ function LoadBridgeDatas(vehicle_id, vdata)
 	if not vdata then return nil end
 	local f = false
 	---@type VehicleBridge
-	local bridges = {tracks = {}, levers = {}, points = {}, arc_send = false, alias = {}}
+	local bridges = { tracks = {}, levers = {}, points = {}, arc_send = false, alias = {} }
 
 	for _, button in ipairs(vdata.components.buttons) do
 		if button.name == "Activate CTC" then
@@ -64,13 +64,15 @@ function LoadBridgeDatas(vehicle_id, vdata)
 		end
 
 		-- 駅の実装負担軽減：宛先ペインタブルが無くても送信
-		local v, _ = (button.name):gsub("_ASPECT", "")
-		if BRIDGE_LEVER_ALIAS[v] then
-			f = true
-			table.insert(bridges.alias, v)
+		if button.name then
+			local v, _ = (button.name):gsub("_ASPECT", "")
+			if BRIDGE_LEVER_ALIAS[v] then
+				f = true
+				table.insert(bridges.alias, v)
+			end
 		end
 	end
-    if not f then return nil end
+	if not f then return nil end
 
 	for _, sign in ipairs(vdata.components.signs) do
 		if TRACKS[sign.name] then
