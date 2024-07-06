@@ -166,6 +166,24 @@ COMMANDS["disable_cheat_battery"] = {
     end)
 }
 
+COMMANDS["remap_markers"] = {
+    admin = false,
+    auth = false,
+    description = "Redraw map markers",
+    command = (function(_, is_admin, is_auth, peer_id)
+        local playerlist = server.getPlayers()
+        local ui_id = _ENV["g_savedata"].ui_id
+        if ui_id then
+            for _, v in pairs(playerlist) do
+                server.removeMapID(v.id, ui_id)
+            end
+        end
+        _ENV["g_savedata"].ui_id = nil
+        for _, v in pairs(playerlist) do
+            AddMapLabels(v.id)
+        end
+    end)
+}
 
 function Announce(message, peer_id)
     server.announce("[" .. ADDON_SHORT_NAME .. "]", message, peer_id)
