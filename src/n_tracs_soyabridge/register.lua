@@ -116,7 +116,7 @@ function SendBridge(vehicle_id, bridge)
 	end
 
 	for _, track in ipairs(bridge.tracks) do
-		local sending = 1 - (track.isShort and 1 or 0)
+		local sending = 1 - (track.short and 1 or 0)
 		server.setVehicleKeypad(vehicle_id, track.itemName .. "R", sending * SendingSign)
 		if bridge.arc_send then
 			local right_arc = nil

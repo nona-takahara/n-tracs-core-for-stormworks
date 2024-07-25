@@ -8,11 +8,11 @@ CreateTrack("OMR_UC", {})
 function BridgeCrossing(deltaTicks)
     local r
     r = CrossingShionagihama(deltaTicks)
-    TrackGetter("SNH_DC").isShort = r.right
-    TrackGetter("SNH_UC").isShort = r.left
+    TrackGetter("SNH_DC").short = r.right
+    TrackGetter("SNH_UC").short = r.left
     r = CrossingOhmori()
-    TrackGetter("OMR_DC").isShort = r.right
-    TrackGetter("OMR_UC").isShort = r.left
+    TrackGetter("OMR_DC").short = r.right
+    TrackGetter("OMR_UC").short = r.left
 end
 
 ShortingTicks_SNH_CA1 = 0
@@ -34,7 +34,7 @@ function CrossingShionagihama(deltaTicks)
 
     -- 右行（時間条件あり）下本
     local dr1 = false
-    if t_ca1.isShort and t_1R.relatedLever == LEVERS["SNH1R"] then
+    if t_ca1.short and t_1R.relatedLever == LEVERS["SNH1R"] then
         dr1 = ShortingTicks_SNH_CA1 < (45 * 60)
         ShortingTicks_SNH_CA1 = ShortingTicks_SNH_CA1 + deltaTicks
     else
@@ -43,7 +43,7 @@ function CrossingShionagihama(deltaTicks)
 
     -- 右行（時間条件あり）上本
     local dr2 = false
-    if t_cb1.isShort and (t_22.relatedLever == LEVERS["SNH13R"] or t_4L.relatedLever == LEVERS["SNH13R"]) then
+    if t_cb1.short and (t_22.relatedLever == LEVERS["SNH13R"] or t_4L.relatedLever == LEVERS["SNH13R"]) then
         dr2 = ShortingTicks_SNH_CB1 < (45 * 60)
         ShortingTicks_SNH_CB1 = ShortingTicks_SNH_CB1 + deltaTicks
     else
@@ -51,27 +51,27 @@ function CrossingShionagihama(deltaTicks)
     end
 
     -- 右行（時間条件なし）下本
-    local dr3 = t_ca1.isShort and (
+    local dr3 = t_ca1.short and (
     --LEVERS["SNH3R"].HR or
         LEVERS["SNH11R"].HR)
 
     -- 右行（時間条件なし）上本
-    local dr4 = t_cb1.isShort and (
+    local dr4 = t_cb1.short and (
     --LEVERS["SNH4R"].HR or
         LEVERS["SNH12R"].HR)
 
     -- 左行 引き上げ線停車中
-    local dl1 = (t_ca3.isShort and (LEVERS["SNH11L"].HR or LEVERS["SNH12L"].HR or LEVERS["SNH12LZ"].HR))
+    local dl1 = (t_ca3.short and (LEVERS["SNH11L"].HR or LEVERS["SNH12L"].HR or LEVERS["SNH12LZ"].HR))
 
     -- 左行 わたり線上
     local dl2 =
-        (t_21a.isShort and t_21a.direction == RouteDirection.Left) or
-        (t_21b.isShort and t_21b.direction == RouteDirection.Left)
+        (t_21a.short and t_21a.direction == RouteDirection.Left) or
+        (t_21b.short and t_21b.direction == RouteDirection.Left)
 
     -- 4Lの制御
     local dl3 = false
 
-    local unknown_train = t_cb2.isShort or t_ca2.isShort
+    local unknown_train = t_cb2.short or t_ca2.short
 
     local rets = { left = dl1 or dl2 or dl3, right = dr1 or dr2 or dr3 or dr4 }
     if rets.left or rets.right then
@@ -88,16 +88,16 @@ function CrossingOhmori()
 
     local l = LEVERS["SNH11L"].HR or LEVERS["SNH12L"].HR or LEVERS["SNH12LZ"].HR -- or LEVERS["SNH4LZ"].HR
     l =
-        l or (t_21a.isShort and t_21a.direction == RouteDirection.Left) or
-        (t_oc.isShort and t_21b.direction == RouteDirection.Left)
+        l or (t_21a.short and t_21a.direction == RouteDirection.Left) or
+        (t_oc.short and t_21b.direction == RouteDirection.Left)
     -- 4L進行での接近条件がまだ入っていない。
 
     local r = LEVERS["SNH11R"].HR or LEVERS["SNH12R"].HR --or LEVERS["SNH3R"].HR or LEVERS["SNH4R"].HR
     r =
-        r or (t_21a.isShort and t_21a.direction == RouteDirection.Right) or
-        (t_21b.isShort and t_21b.direction == RouteDirection.Right)
+        r or (t_21a.short and t_21a.direction == RouteDirection.Right) or
+        (t_21b.short and t_21b.direction == RouteDirection.Right)
 
-    local unknown_train = (not (l or r)) and (t_oc.isShort or t_21a.isShort)
+    local unknown_train = (not (l or r)) and (t_oc.short or t_21a.short)
 
     return {
         left = l or unknown_train,
