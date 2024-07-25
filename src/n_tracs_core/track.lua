@@ -17,7 +17,7 @@ BookType = {
 ---@field direction RouteDirection
 ---@field private timer number
 ---@field private beforeRouteLockItem Track | Lever | nil
----@field isShort boolean
+---@field private short boolean
 Track = Track or {}
 
 ---抽象軌道回路データを作成します
@@ -32,7 +32,7 @@ end
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.overWrite(self, itemName)
-    self = self or {}
+    self = self or CreateInstance(self, Track)
     self.name = "Track"
     self.itemName = itemName
     self.relatedLever = nil
@@ -165,26 +165,26 @@ end
 ---抽象軌道回路内に在線があればtrueを返却します
 ---@return boolean
 function Track.isShort(self)
-    return self.isShort
+    return self.short
 end
 
 ---processを呼び出す前に実行してください。状態を設定します
 ---@param isShort boolean
 function Track.beforeProcess(self, isShort)
-    self.isShort = isShort
+    self.short = isShort
 end
 
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
 function Track.process(self, deltaTick)
     if self.book == BookType.RouteLock or self.book == BookType.RouteOver then
-        if (not self.isShort) and CheckUnlockRouteLock(self.beforeRouteLockItem) then
+        if (not self.short) and CheckUnlockRouteLock(self.beforeRouteLockItem) then
             self.book = BookType.NoBook
         end
     elseif self.book == BookType.Destination then
         if CheckUnlockRouteLock(self.beforeRouteLockItem) then
             self.timer = math.max(self.timer - deltaTick, -1)
-            if not self.isShort then
+            if not self.short then
                 self.book = BookType.NoBook
             end
         end

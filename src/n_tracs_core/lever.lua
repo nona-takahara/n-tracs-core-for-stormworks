@@ -157,15 +157,15 @@ end
 function Lever.isEnterRoute(self)
     if self.routeLock[1] == nil then
         if self.signalTrack[1] ~= nil then
-            return (self.signalTrack[1]):isShort()
+            return (self.signalTrack[1]).short
         else
             return true
         end
     else
         if self.routeLock[2] == nil then
-            return (self.routeLock[1]):isShort()
+            return (self.routeLock[1]).short
         else
-            return (self.routeLock[1]):isShort() and (self.routeLock[2]):isShort()
+            return (self.routeLock[1]).short and (self.routeLock[2]).short
         end
     end
 end
@@ -205,7 +205,7 @@ end
 ---@return boolean
 function Lever.isNoShort(self)
     for _, value in ipairs(self.signalTrack) do
-        if value:isShort() then
+        if value.short then
             return false
         end
     end
@@ -216,7 +216,7 @@ end
 ---@return boolean
 function Lever.isNoApproach(self)
     for _, value in ipairs(self.approachTrack) do
-        if value:isShort() then
+        if value.short then
             return false
         end
     end

@@ -172,7 +172,7 @@ function MakeCtcData()
         for i, n in pairs(v) do
             local tr = TRACKS[n]
             if tr then
-                vv = Setbit(vv, i, tr.isShort)
+                vv = Setbit(vv, i, tr.short)
                 vv = Setbit(vv, i + 1, Track.isLocked(tr, true))
             end
         end
@@ -185,7 +185,7 @@ function MakeCtcData()
         for i, n in pairs(v) do
             local tr = TRACKS[n]
             if tr then
-                vv = Setbit(vv, i, tr.isShort)
+                vv = Setbit(vv, i, tr.short)
             end
         end
         CTC_DATA.OUT[k] = vv
