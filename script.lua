@@ -106,13 +106,13 @@ function onTick()
 	if Phase == 1 then
 		-- データの初期化及びビークルデータの取得フェーズ
 		for _, area in pairs(AREAS) do
-			Area.initializeForProcess(area)
+			area:initializeForProcess()
 		end
 
 		for vehicle_id, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
-					Axle.initializeForProcess(axle)
+					axle:initializeForProcess()
 				end
 			end
 
@@ -138,7 +138,7 @@ function onTick()
 		for _, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
-					Axle.search(axle)
+					axle:search()
 				end
 			end
 		end
@@ -149,25 +149,27 @@ function onTick()
 		end
 	elseif Phase == 3 then
 		for _, data in pairs(BRIDGE_TRACK) do
-			Track.beforeProcess(TRACKS[data.itemName], TrackBridge.isInAxle(data))
+			TRACKS[data.itemName]:beforeProcess(TrackBridge.isInAxle(data))
+			-- TRACKS[data.itemName]:beforeProcess(data:isInAxle())
 		end
 
 		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
 		for _, data in pairs(BRIDGE_SWITCH) do
-			Switch.beforeProcess(SWITCHES[data.itemName], SwitchBridge.getState(data))
+			SWITCHES[data.itemName]:beforeProcess(SwitchBridge.getState(data))
+			-- SWITCHES[data.itemName]:beforeProcess(data:getState())
 		end
 
 		for _, data in pairs(LEVERS) do
-			SignalBase.beforeProcess(data)
+			data:beforeProcess()
 		end
 	elseif Phase == 4 then
 		-- Coreで処理するフェーズ
 		for _, track in pairs(TRACKS) do
-			Track.process(track, 6)
+			track:process(6)
 		end
 
 		for _, lever in pairs(LEVERS) do
-			SignalBase.process(lever, 6)
+			lever:process(6)
 		end
 
 		-- 特殊処理
@@ -188,7 +190,7 @@ function onTick()
 		for vehicle_id, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
-					Axle.send(axle)
+					axle:send()
 				end
 			end
 
