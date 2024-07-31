@@ -112,7 +112,8 @@ function onTick()
 		for vehicle_id, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
-					axle:initializeForProcess()
+					Axle.initializeForProcess(axle)
+					--axle:initializeForProcess()
 				end
 			end
 
@@ -138,7 +139,8 @@ function onTick()
 		for _, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
-					axle:search()
+					Axle.search(axle)
+					--axle:search()
 				end
 			end
 		end
@@ -190,7 +192,8 @@ function onTick()
 		for vehicle_id, data in pairs(VehicleTable) do
 			if data.axles then
 				for _, axle in ipairs(data.axles) do
-					axle:send()
+					Axle.send(axle)
+					--axle:send()
 				end
 			end
 
