@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "A Stormworks train traffic system for Sawyer Island electric railway project \"Soya Express\"",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,6 +21,8 @@
     "luamin": "^1.0.4",
     "luaparse": "^0.3.1",
     "source-map": "^0.7.4",
-    "toml": "^3.0.0"
-  }
+    "toml": "^3.0.0",
+    "storm-lua-minify": "^0.1.1"
+  },
+  "dependencies": {}
 }
