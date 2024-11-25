@@ -1,7 +1,9 @@
 *.code-workspace
-/_build/
-!/_build/_buildactions.lua
-
 res/area_track.lua
-
 res/signal.lua
+
+/node_modules/
+/temp/
+
+*.map
+*.min.*
