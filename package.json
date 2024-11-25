@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,11 +18,11 @@
   },
   "homepage": "https://github.com/nona-takahara/n-tracs-soya-express#readme",
   "devDependencies": {
+    "dotenv": "^16.4.5",
     "luamin": "^1.0.4",
     "luaparse": "^0.3.1",
     "source-map": "^0.7.4",
-    "toml": "^3.0.0",
-    "storm-lua-minify": "^0.1.1"
-  },
-  "dependencies": {}
+    "storm-lua-minify": "^0.1.1",
+    "toml": "^3.0.0"
+  }
 }
