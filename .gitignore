@@ -5,5 +5,5 @@ res/signal.lua
 /node_modules/
 /temp/
 
-*/*.map
-*/*.min.*
+*.map
+*.min.*
