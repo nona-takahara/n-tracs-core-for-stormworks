@@ -5,11 +5,11 @@ require('dotenv').config();
 
 process.chdir(__dirname);
 
-if (fs.statSync("res/area_track.json").mtime > fs.statSync("res/area_track.lua").mtime) {
+if (!fs.existsSync("res/area_track.lua") || fs.statSync("res/area_track.json").mtime > fs.statSync("res/area_track.lua").mtime) {
     console.log(execSync("python res/area_track.py").toString());
 }
 
-if (fs.statSync("res/signal.toml").mtime > fs.statSync("res/signal.lua").mtime) {
+if (!fs.existsSync("res/signal.lua") || fs.statSync("res/signal.toml").mtime > fs.statSync("res/signal.lua").mtime) {
     console.log(execSync("python res/signal.py").toString());
 }
 
