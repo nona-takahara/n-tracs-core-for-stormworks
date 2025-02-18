@@ -13,7 +13,7 @@ if (!fs.existsSync("res/signal.lua") || fs.statSync("res/signal.toml").mtime > f
     console.log(execSync("python res/signal.py").toString());
 }
 
-console.log(execSync("npx storm-lua-minify script.lua").toString());
+console.log(execSync("npx storm-lua-minify -m script.lua").toString());
 if (!fs.existsSync("dist")) {
     fs.mkdirSync("dist");
 }
