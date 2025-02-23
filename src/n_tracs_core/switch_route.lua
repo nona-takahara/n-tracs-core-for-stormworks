@@ -4,12 +4,12 @@ local NtracsObject = require "src.n_tracs_core.n_tracs_object"
 ---転てつ器と開通方向の情報セットを扱います
 ---@class SwitchRoute:NtracsObject
 ---@field private rswitch Switch 関連転てつ器
----@field private target TargetRoute 開通希望方向
+---@field private target SetRoute 開通希望方向
 local SwitchRoute = {}
 
 ---転てつ器と開通方向の情報セットを作成します
 ---@param rswitch Switch
----@param target TargetRoute
+---@param target SetRoute
 ---@return SwitchRoute
 function SwitchRoute.new(rswitch, target)
     local obj = NtracsObject.createInstance(NtracsObject.new(), SwitchRoute)

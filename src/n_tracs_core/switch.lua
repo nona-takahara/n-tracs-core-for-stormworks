@@ -1,11 +1,11 @@
 -- N-TRACS Core [Switch]
 local NtracsObject = require "src.n_tracs_core.n_tracs_object"
-local TargetRoute  = require "src.n_tracs_core.target_route"
+local SetRoute     = require "src.n_tracs_core.set_route"
 
 ---転てつ器に関する情報です
 ---@class Switch:NtracsObject
----@field W TargetRoute
----@field private K TargetRoute
+---@field W SetRoute
+---@field private K SetRoute
 ---@field isSite boolean
 ---@field private relatedTracks Track[]
 local Switch       = {}
@@ -30,22 +30,22 @@ function Switch.overWrite(self, itemName, isSite, relatedTracks)
     self = self or {}
     self.name = "Switch"
     self.itemName = itemName
-    self.W = TargetRoute.Indefinite
-    self.K = TargetRoute.Indefinite
+    self.W = SetRoute.Indefinite
+    self.K = SetRoute.Indefinite
     self.isSite = isSite
     self.relatedTracks = relatedTracks
     return self
 end
 
 ---現在の開通方向を取得します
----@return TargetRoute
+---@return SetRoute
 function Switch.getRealRoute(self)
     return self.K
 end
 
 ---[package]
 ---@package
----@param target TargetRoute
+---@param target SetRoute
 function Switch.move(self, target)
     if Switch.getWLR(self) then
         self.W = target
@@ -64,10 +64,10 @@ function Switch.getWLR(self)
 end
 
 ---processの実行前に呼び出してください。現在の状態を設定します
----@param currentState TargetRoute 現在の開通方向
+---@param currentState SetRoute 現在の開通方向
 function Switch.beforeProcess(self, currentState)
     self.K = currentState
-    self.W = TargetRoute.Indefinite
+    self.W = SetRoute.Indefinite
 end
 
 ---毎ループごとに呼び出してください

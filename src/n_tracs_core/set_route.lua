@@ -1,4 +1,4 @@
----@enum TargetRoute
+---@enum SetRoute
 local t = {
     Normal = 1,
     Reverse = -1,

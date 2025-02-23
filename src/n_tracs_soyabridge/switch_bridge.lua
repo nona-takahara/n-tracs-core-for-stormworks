@@ -5,7 +5,7 @@ local SwitchBridge = {}
 ---@class SwitchBridge
 ---@field name string
 ---@field itemName string
----@field pointAndRoute table<string,TargetRoute>
+---@field pointAndRoute table<string,SetRoute>
 
 ---@class PointSetter
 ---@field name string
@@ -53,9 +53,9 @@ end
 
 ---comments
 ---@param self SwitchBridge
----@return TargetRoute
+---@return SetRoute
 function SwitchBridge.getState(self)
-    ---@type TargetRoute | nil
+    ---@type SetRoute | nil
     local s = nil
     for _, value in pairs(self.pointAndRoute) do
         if s == nil then s = value end
