@@ -29,8 +29,6 @@ function Track.new(itemName)
     return obj
 end
 
----[package]
----@package
 ---@param lever Lever
 function Track:bookTemporary(lever)
     if self.book ~= BookType.RouteOver then
@@ -40,8 +38,6 @@ function Track:bookTemporary(lever)
     end
 end
 
----[package]
----@package
 ---@param lever Lever
 function Track:bookRouteLock(lever, routeLockBefore)
     self.relatedLever = lever
@@ -50,8 +46,6 @@ function Track:bookRouteLock(lever, routeLockBefore)
     self.direction = lever.direction
 end
 
----[package]
----@package
 ---@param lever Lever
 function Track:bookDestination(lever, routeLockBefore)
     self.relatedLever = lever
@@ -61,8 +55,6 @@ function Track:bookDestination(lever, routeLockBefore)
     self.timer = lever.overrunTime
 end
 
----[package]
----@package
 ---@param lever Lever
 function Track:bookOverrun(lever)
     self.relatedLever = lever
@@ -71,8 +63,6 @@ function Track:bookOverrun(lever)
     self.direction = lever.direction
 end
 
----[package]
----@package
 ---@param lever Lever
 ---@return boolean
 function Track:isReadyToBookTemporary(lever)
@@ -80,8 +70,6 @@ function Track:isReadyToBookTemporary(lever)
         (self.book == BookType.RouteOver and self.direction == lever.direction)
 end
 
----[package]
----@package
 ---@param lever Lever
 ---@return boolean
 function Track:isBookedTemporary(lever)
@@ -89,16 +77,12 @@ function Track:isBookedTemporary(lever)
         (self.book == BookType.RouteOver and self.direction == lever.direction)
 end
 
----[package]
----@package
 ---@param lever Lever
 ---@return boolean
 function Track:isRouteLock(lever)
     return self.relatedLever == lever and self.book == BookType.RouteLock
 end
 
----[package]
----@package
 ---@param lever Lever
 ---@return boolean
 function Track:isOverrunLock(lever)
@@ -106,8 +90,6 @@ function Track:isOverrunLock(lever)
         (self.book == BookType.RouteLock and self.direction == lever.direction)
 end
 
----[package]
----@package
 ---@param temporaryIsNotLocked boolean
 ---@return boolean
 function Track:isLocked(temporaryIsNotLocked)
@@ -118,10 +100,8 @@ function Track:isLocked(temporaryIsNotLocked)
     end
 end
 
----[package]
----@package
 ---@return boolean
-function Track:underRouteLock_n()
+function Track:underRouteLock_b()
     return (self.book == BookType.Destination and self.timer < 0) or
         (self.book == BookType.NoBook or self.book == BookType.Temporary)
 end
@@ -139,7 +119,7 @@ function CheckUnlockRouteLock(item)
     if item_name == "Track" then
         --Track型が確定しているためエラー回避
         ---@diagnostic disable-next-line
-        return Track.underRouteLock_n(item)
+        return Track.underRouteLock_b(item)
     elseif item_name == "Lever" then
         --Lever型が確定しているためエラー回避
         ---@diagnostic disable-next-line

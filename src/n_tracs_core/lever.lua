@@ -6,7 +6,7 @@
 ---@field private autoReset boolean てこを自動復位するかフラグ
 ---@field private ASR boolean
 ---@field private MSlR boolean
----@field private timerCount number
+---@field private timerTick number
 ---@field private TSSlR boolean
 ---@field startTrack Track 進路てこ区間の始点
 ---@field destination Track 進路てこ区間の終点
@@ -44,7 +44,7 @@ function Lever.new(itemName, startTrack, destination, switches, routeLock, overr
     obj.input = false
     obj.ASR = true
     obj.MSlR = false
-    obj.timerCount = 0
+    obj.timerTick = 0
     obj.TSSlR = false
     obj.HR = false
     obj.aspect = 0
@@ -76,6 +76,7 @@ function Lever:siteSwitchAssert()
     return true
 end
 
+---進路鎖錠と過走防護区間が正常に予約できたか確認します
 ---@private
 ---@return boolean
 function Lever:isBookedTemporary()
@@ -92,7 +93,7 @@ function Lever:isBookedTemporary()
     return true
 end
 
----BookTemporary
+---予約できる限り仮予約します
 ---@private
 ---@param self Lever
 function Lever:bookTemporary()
@@ -115,7 +116,7 @@ function Lever:bookTemporary()
     end
 end
 
----CheckSwitches
+---すべてのSwitchが正当な方向に転換しているか確認します
 ---@private
 ---@return boolean
 function Lever:checkSwitches()
@@ -130,13 +131,13 @@ end
 ---@private
 ---@return boolean
 function Lever:isTimerRunning()
-    return self.MSlR and self.timerCount < self.lockTime
+    return self.MSlR and self.timerTick < self.lockTime
 end
 
 ---@private
 ---@return boolean
 function Lever:isTimerEnd()
-    return self.MSlR and self.timerCount >= self.lockTime
+    return self.MSlR and self.timerTick >= self.lockTime
 end
 
 ---進路鎖錠が成立していたらfalseを返します
@@ -145,26 +146,26 @@ function Lever:underRouteLock_b()
     return self.ASR
 end
 
----isEnterRoute
+---列車が防護区間にに進入したか確認します
 ---@private
 ---@return boolean
 function Lever:isEnterRoute()
     if self.routeLock[1] == nil then
         if self.signalTrack[1] ~= nil then
-            return (self.signalTrack[1]).short
+            return (self.signalTrack[1]):isShort()
         else
             return true
         end
     else
         if self.routeLock[2] == nil then
-            return (self.routeLock[1]).short
+            return (self.routeLock[1]):isShort()
         else
-            return (self.routeLock[1]).short and (self.routeLock[2]).short
+            return (self.routeLock[1]):isShort() and (self.routeLock[2]):isShort()
         end
     end
 end
 
----isReserved
+---進路鎖錠と過走防護区間をロックできたか確認します
 ---@private
 ---@return boolean
 function Lever:isLocked()
@@ -181,7 +182,7 @@ function Lever:isLocked()
     return true
 end
 
----checkWLR
+---すべての転轍機が鎖錠できたか確認します
 ---@private
 ---@return boolean
 function Lever:checkWLR()
@@ -199,7 +200,7 @@ end
 ---@return boolean
 function Lever:isNoShort()
     for _, value in ipairs(self.signalTrack) do
-        if value.short then
+        if value:isShort() then
             return false
         end
     end
@@ -239,6 +240,7 @@ end
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
 function Lever:process(deltaTick)
+    -- 自動復位モードであり、かつ復位条件を満たす場合
     if self.autoReset and self.TSSlR then
         self.input = false
         self.autoReset = false
@@ -250,10 +252,12 @@ function Lever:process(deltaTick)
         end
     end
 
+    -- 進路鎖錠を行えるか確認
     local ZR = self:getInput() and self:checkSwitches()
     if ZR then
         self:bookTemporary()
     end
+    -- バックチェックは仮予約機能で代用
 
     self.TSSlR = not (self.HR or self.ASR or self:isEnterRoute())
 
@@ -272,9 +276,9 @@ function Lever:process(deltaTick)
         ((not self:isTimerRunning()) or self.MSlR);
 
     if self.MSlR then
-        self.timerCount = self.timerCount + deltaTick
+        self.timerTick = self.timerTick + deltaTick
     else
-        self.timerCount = 0
+        self.timerTick = 0
     end
 
     if (not self.ASR) and self:isBookedTemporary() then
@@ -282,10 +286,10 @@ function Lever:process(deltaTick)
         ---@type Lever | Track
         local routeLockBefore = self
         for _, track in ipairs(self.routeLock) do
-            track:bookRouteLock(self, routeLockBefore);
-            routeLockBefore = track;
+            track:bookRouteLock(self, routeLockBefore)
+            routeLockBefore = track
         end
-        (self.destination):bookDestination(self, routeLockBefore);
+        (self.destination):bookDestination(self, routeLockBefore)
         for _, track in ipairs(self.overrunLock) do
             track:bookOverrun(self)
         end
