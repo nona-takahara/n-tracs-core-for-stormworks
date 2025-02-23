@@ -48,7 +48,7 @@ end
 
 function AutoSignal.isNoShort(self)
     for _, track in ipairs(self.signalTrack) do
-        if track.short then
+        if track:isShort() then
             return false
         end
     end

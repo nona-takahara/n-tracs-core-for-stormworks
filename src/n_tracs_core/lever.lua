@@ -23,15 +23,6 @@ local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local SignalBase = require("src.n_tracs_core.signal_base")
 
 ---てこ構造体のインスタンスを作成します
----@return Lever
-function Lever.new()
-    local obj = NtracsObject.createInstance(SignalBase.new(), Lever)
-    obj.name = "Lever"
-    return obj
-end
-
----てこ構造体のインスタンスを作成します
----@param self SignalBase
 ---@param itemName string てこ名称
 ---@param startTrack Track 進路てこ区間の始点
 ---@param destination Track 進路てこ区間の終点
@@ -45,38 +36,38 @@ end
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Lever
-function Lever.overWrite(self, itemName, startTrack, destination, switches, routeLock, overrunLock,
-                         signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
-    self = CreateInstance(self, Lever)
-    self.name = "Lever"
-    self.itemName = itemName
-    self.input = false
-    self.ASR = true
-    self.MSlR = false
-    self.timerCount = 0
-    self.TSSlR = false
-    self.HR = false
-    self.aspect = 0
-    self.nextAspect = 0
-    self.startTrack = startTrack
-    self.destination = destination
-    self.switches = switches
-    self.approachTrack = approachTrack
-    self.routeLock = routeLock
-    self.overrunLock = overrunLock
-    self.signalTrack = signalTrack
-    self.direction = direction
-    self.lockTime = lockTime
-    self.overrunTime = overrunTime
-    self.updateCallback = updateCallback
-    self.autoReset = false
-    return self
+function Lever.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
+                   signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+    local obj = NtracsObject.createInstance(SignalBase.new(), Lever)
+    obj.name = "Lever"
+    obj.itemName = itemName
+    obj.input = false
+    obj.ASR = true
+    obj.MSlR = false
+    obj.timerCount = 0
+    obj.TSSlR = false
+    obj.HR = false
+    obj.aspect = 0
+    obj.nextAspect = 0
+    obj.startTrack = startTrack
+    obj.destination = destination
+    obj.switches = switches
+    obj.approachTrack = approachTrack
+    obj.routeLock = routeLock
+    obj.overrunLock = overrunLock
+    obj.signalTrack = signalTrack
+    obj.direction = direction
+    obj.lockTime = lockTime
+    obj.overrunTime = overrunTime
+    obj.updateCallback = updateCallback
+    obj.autoReset = false
+    return obj
 end
 
 ---現場扱いのてこが正当方向に転換しているか調べます
 ---@private
 ---@return boolean
-function Lever.siteSwitchAssert(self)
+function Lever:siteSwitchAssert()
     for _, switches in ipairs(self.switches) do
         if switches:getRelatedSwitch().isSite and not switches:isTargetRoute() then
             return false
@@ -87,7 +78,7 @@ end
 
 ---@private
 ---@return boolean
-function Lever.isBookedTemporary(self)
+function Lever:isBookedTemporary()
     for _, value in ipairs(self.routeLock) do
         if not value:isBookedTemporary(self) then
             return false
@@ -104,7 +95,7 @@ end
 ---BookTemporary
 ---@private
 ---@param self Lever
-function Lever.bookTemporary(self)
+function Lever:bookTemporary()
     for _, value in ipairs(self.routeLock) do
         if not value:isReadyToBookTemporary(self) then
             return
@@ -127,7 +118,7 @@ end
 ---CheckSwitches
 ---@private
 ---@return boolean
-function Lever.checkSwitches(self)
+function Lever:checkSwitches()
     for _, value in ipairs(self.switches) do
         if not value:isTargetRoute() then
             return false
@@ -138,26 +129,26 @@ end
 
 ---@private
 ---@return boolean
-function Lever.isTimerRunning(self)
+function Lever:isTimerRunning()
     return self.MSlR and self.timerCount < self.lockTime
 end
 
 ---@private
 ---@return boolean
-function Lever.isTimerEnd(self)
+function Lever:isTimerEnd()
     return self.MSlR and self.timerCount >= self.lockTime
 end
 
 ---進路鎖錠が成立していたらfalseを返します
 ---@return boolean
-function Lever.underRouteLock_n(self)
+function Lever:underRouteLock_b()
     return self.ASR
 end
 
 ---isEnterRoute
 ---@private
 ---@return boolean
-function Lever.isEnterRoute(self)
+function Lever:isEnterRoute()
     if self.routeLock[1] == nil then
         if self.signalTrack[1] ~= nil then
             return (self.signalTrack[1]).short
@@ -176,7 +167,7 @@ end
 ---isReserved
 ---@private
 ---@return boolean
-function Lever.isLocked(self)
+function Lever:isLocked()
     for _, value in ipairs(self.routeLock) do
         if not value:isRouteLock(self) then
             return false
@@ -193,7 +184,7 @@ end
 ---checkWLR
 ---@private
 ---@return boolean
-function Lever.checkWLR(self)
+function Lever:checkWLR()
     for _, value in ipairs(self.switches) do
         local rswitch = value:getRelatedSwitch()
         if rswitch:getWLR() then
@@ -206,7 +197,7 @@ end
 ---isNoShort
 ---@private
 ---@return boolean
-function Lever.isNoShort(self)
+function Lever:isNoShort()
     for _, value in ipairs(self.signalTrack) do
         if value.short then
             return false
@@ -217,9 +208,9 @@ end
 
 ---@private
 ---@return boolean
-function Lever.isNoApproach(self)
+function Lever:isNoApproach()
     for _, value in ipairs(self.approachTrack) do
-        if value.short then
+        if value:isShort() then
             return false
         end
     end
@@ -229,25 +220,25 @@ end
 ---継電連動装置の進路てこの物理的状態に相当する情報を設定します
 ---@param input boolean
 ---@param autoReset boolean
-function Lever.setInput(self, input, autoReset)
+function Lever:setInput(input, autoReset)
     self.input = input
     self.autoReset = input and (not (not autoReset))
 end
 
 ---継電連動装置の進路リレー相当の情報を返却します
 ---@return boolean
-function Lever.getInput(self)
+function Lever:getInput()
     return self.input
 end
 
 ---processを呼び出す前に呼び出してください。現在の状態を設定します
-function Lever.beforeProcess(self)
+function Lever:beforeProcess()
     self.aspect = self.nextAspect
 end
 
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
-function Lever.process(self, deltaTick)
+function Lever:process(deltaTick)
     if self.autoReset and self.TSSlR then
         self.input = false
         self.autoReset = false

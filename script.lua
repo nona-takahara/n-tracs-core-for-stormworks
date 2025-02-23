@@ -4,10 +4,10 @@ ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
 -- 1. Load N-TRACS Core
-require("src.n_tracs_core")
+--require("src.n_tracs_core")
 
 -- 2. Load bridge
-require("src.n_tracs_soyabridge")
+--require("src.n_tracs_soyabridge")
 
 -- 3. Load settings
 require("res.utils")

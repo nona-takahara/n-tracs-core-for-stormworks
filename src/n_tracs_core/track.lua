@@ -6,7 +6,7 @@ local Lever          = require "src.n_tracs_core.lever"
 
 ---軌道回路に関するものです
 ---@class Track:NtracsObject
----@field  relatedLever Lever | nil
+---@field relatedLever Lever | nil
 ---@field book BookType
 ---@field direction RouteDirection
 ---@field private timer number
@@ -15,32 +15,24 @@ local Lever          = require "src.n_tracs_core.lever"
 local Track          = {}
 
 ---抽象軌道回路データを作成します
----@return Track
-function Track.new()
-    local obj = NtracsObject.createInstance(NtracsObject.new(), Track)
-    obj.name = "Track"
-    return obj
-end
-
----抽象軌道回路データを作成します
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
-function Track.overWrite(self, itemName)
-    self = self or NtracsObject.createInstance(self, Track)
-    self.name = "Track"
-    self.itemName = itemName
-    self.relatedLever = nil
-    self.book = BookType.NoBook
-    self.direction = RouteDirection.None
-    self.timer = 0
-    self.beforeRouteLockItem = nil
-    return self
+function Track.new(itemName)
+    local obj = NtracsObject.createInstance(NtracsObject.new(), Track)
+    obj.name = "Track"
+    obj.itemName = itemName
+    obj.relatedLever = nil
+    obj.book = BookType.NoBook
+    obj.direction = RouteDirection.None
+    obj.timer = 0
+    obj.beforeRouteLockItem = nil
+    return obj
 end
 
 ---[package]
 ---@package
 ---@param lever Lever
-function Track.bookTemporary(self, lever)
+function Track:bookTemporary(lever)
     if self.book ~= BookType.RouteOver then
         self.relatedLever = lever
         self.book = BookType.Temporary
@@ -51,7 +43,7 @@ end
 ---[package]
 ---@package
 ---@param lever Lever
-function Track.bookRouteLock(self, lever, routeLockBefore)
+function Track:bookRouteLock(lever, routeLockBefore)
     self.relatedLever = lever
     self.beforeRouteLockItem = routeLockBefore
     self.book = BookType.RouteLock
@@ -61,7 +53,7 @@ end
 ---[package]
 ---@package
 ---@param lever Lever
-function Track.bookDestination(self, lever, routeLockBefore)
+function Track:bookDestination(lever, routeLockBefore)
     self.relatedLever = lever
     self.beforeRouteLockItem = routeLockBefore
     self.book = BookType.Destination
@@ -72,7 +64,7 @@ end
 ---[package]
 ---@package
 ---@param lever Lever
-function Track.bookOverrun(self, lever)
+function Track:bookOverrun(lever)
     self.relatedLever = lever
     self.beforeRouteLockItem = lever.destination
     self.book = BookType.RouteOver
@@ -83,7 +75,7 @@ end
 ---@package
 ---@param lever Lever
 ---@return boolean
-function Track.isReadyToBookTemporary(self, lever)
+function Track:isReadyToBookTemporary(lever)
     return (self.book == BookType.NoBook) or (self.book == BookType.Temporary and self.relatedLever == lever) or
         (self.book == BookType.RouteOver and self.direction == lever.direction)
 end
@@ -92,7 +84,7 @@ end
 ---@package
 ---@param lever Lever
 ---@return boolean
-function Track.isBookedTemporary(self, lever)
+function Track:isBookedTemporary(lever)
     return (self.book == BookType.Temporary and self.relatedLever == lever) or
         (self.book == BookType.RouteOver and self.direction == lever.direction)
 end
@@ -101,7 +93,7 @@ end
 ---@package
 ---@param lever Lever
 ---@return boolean
-function Track.isRouteLock(self, lever)
+function Track:isRouteLock(lever)
     return self.relatedLever == lever and self.book == BookType.RouteLock
 end
 
@@ -109,7 +101,7 @@ end
 ---@package
 ---@param lever Lever
 ---@return boolean
-function Track.isOverrunLock(self, lever)
+function Track:isOverrunLock(lever)
     return (self.relatedLever == lever and self.book == BookType.RouteOver) or
         (self.book == BookType.RouteLock and self.direction == lever.direction)
 end
@@ -118,7 +110,7 @@ end
 ---@package
 ---@param temporaryIsNotLocked boolean
 ---@return boolean
-function Track.isLocked(self, temporaryIsNotLocked)
+function Track:isLocked(temporaryIsNotLocked)
     if temporaryIsNotLocked then
         return (self.book ~= BookType.NoBook) and (self.book ~= BookType.Temporary)
     else
@@ -129,7 +121,7 @@ end
 ---[package]
 ---@package
 ---@return boolean
-function Track.underRouteLock_n(self)
+function Track:underRouteLock_n()
     return (self.book == BookType.Destination and self.timer < 0) or
         (self.book == BookType.NoBook or self.book == BookType.Temporary)
 end
@@ -142,35 +134,35 @@ function CheckUnlockRouteLock(item)
 
     --クラス判別の必要があるため、内部データnameを取得
     ---@diagnostic disable-next-line: invisible
-    if item.name == "Track" then
+    local item_name = item.name
+
+    if item_name == "Track" then
         --Track型が確定しているためエラー回避
         ---@diagnostic disable-next-line
         return Track.underRouteLock_n(item)
-        --クラス判別の必要があるため、内部データnameを取得
-        ---@diagnostic disable-next-line: invisible
-    elseif item.name == "Lever" then
+    elseif item_name == "Lever" then
         --Lever型が確定しているためエラー回避
         ---@diagnostic disable-next-line
-        return Lever.underRouteLock_n(item)
+        return Lever.underRouteLock_b(item)
     end
     return false
 end
 
 ---抽象軌道回路内に在線があればtrueを返却します
 ---@return boolean
-function Track.isShort(self)
+function Track:isShort()
     return self.short
 end
 
 ---processを呼び出す前に実行してください。状態を設定します
 ---@param isShort boolean
-function Track.beforeProcess(self, isShort)
+function Track:beforeProcess(isShort)
     self.short = isShort
 end
 
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
-function Track.process(self, deltaTick)
+function Track:process(deltaTick)
     if self.book == BookType.RouteLock or self.book == BookType.RouteOver then
         if (not self.short) and CheckUnlockRouteLock(self.beforeRouteLockItem) then
             self.book = BookType.NoBook
