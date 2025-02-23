@@ -1,5 +1,6 @@
+local TargetRoute = require "src.n_tracs_core.target_route"
 ---@class SwitchBridge
-SwitchBridge = SwitchBridge or {}
+local SwitchBridge = {}
 
 ---@class SwitchBridge
 ---@field name string
@@ -62,3 +63,5 @@ function SwitchBridge.getState(self)
     end
     return s or TargetRoute.Indefinite
 end
+
+return SwitchBridge

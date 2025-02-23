@@ -1,10 +1,9 @@
-require('src.utils.complex')
-
+local NtracsObject = require "src.n_tracs_core.n_tracs_object"
 ---@class Area
-Area = Area or {}
+local Area = {}
 
 function Area.new()
-    local obj = CreateInstance(NtracsObject.new(), Area)
+    local obj = NtracsObject.createInstance(NtracsObject.new(), Area)
     obj.name = "Area"
     return obj
 end
@@ -77,3 +76,5 @@ function Area.insertAxle(self, axle)
     end
     table.insert(self.axles, i + 1, axle)
 end
+
+return Area

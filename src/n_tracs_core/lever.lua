@@ -17,12 +17,15 @@
 ---@field private signalTrack Track[]
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
-Lever = Lever or {}
+local Lever = {}
+
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local SignalBase = require("src.n_tracs_core.signal_base")
 
 ---てこ構造体のインスタンスを作成します
 ---@return Lever
 function Lever.new()
-    local obj = CreateInstance(NtracsObject.new(), Lever)
+    local obj = NtracsObject.createInstance(SignalBase.new(), Lever)
     obj.name = "Lever"
     return obj
 end
@@ -310,3 +313,5 @@ function Lever.process(self, deltaTick)
         self.nextAspect = 0
     end
 end
+
+return Lever

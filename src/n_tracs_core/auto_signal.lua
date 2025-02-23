@@ -1,22 +1,17 @@
 -- N-TRACS Core [Auto Signal]
 
----列車・車両の進行方向を表現します
----@enum RouteDirection
-RouteDirection = {
-    None = 0,
-    Left = 1,
-    Right = 2
-}
+local NtracsOjbect = require "src.n_tracs_core.n_tracs_object"
+local SignalBase   = require "src.n_tracs_core.signal_base"
 
 ---てこに関する操作を行います
 ---@class AutoSignal:SignalBase
 ---@field private signalTrack Track[]
-AutoSignal = AutoSignal or {}
+AutoSignal         = AutoSignal or {}
 
 ---てこ構造体のインスタンスを作成します
 ---@return AutoSignal
 function AutoSignal.new()
-    local obj = CreateInstance(SignalBase.new(), AutoSignal)
+    local obj = NtracsOjbect.createInstance(SignalBase.new(), AutoSignal)
     obj.name = "AutoSignal"
     return obj
 end
@@ -29,7 +24,7 @@ end
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return AutoSignal
 function AutoSignal.overWrite(self, itemName, signalTrack, direction, updateCallback)
-    self = CreateInstance(self, AutoSignal)
+    self = NtracsOjbect.createInstance(self, AutoSignal)
     self.name = "AutoSignal"
     self.itemName = itemName
     self.aspect = 0
@@ -69,3 +64,5 @@ function AutoSignal.process(self, deltaTick)
         self.nextAspect = 0
     end
 end
+
+return AutoSignal

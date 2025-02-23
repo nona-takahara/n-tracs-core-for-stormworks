@@ -1,5 +1,5 @@
 ---@class Complex
-Complex = Complex or {}
+local Complex = {}
 
 ---複素数
 ---@class Complex
@@ -50,3 +50,5 @@ function Complex.halfArgument(a)
         im = sign * math.sqrt((-a.re + r) / 2)
     }
 end
+
+return Complex

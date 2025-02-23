@@ -3,10 +3,11 @@
 ---@class NtracsObject
 ---@field name string クラス名です
 ---@field itemName string
-NtracsObject = NtracsObject or {}
+local NtracsObject = {}
 
+---@return NtracsObject
 function NtracsObject.new()
-    local obj = CreateInstance({}, NtracsObject)
+    local obj = NtracsObject.createInstance({}, NtracsObject)
     obj.name = "NtracsObject"
     return obj
 end
@@ -15,7 +16,7 @@ end
 ---@param target any
 ---@param classObj T
 ---@return T
-function CreateInstance(target, classObj)
+function NtracsObject.createInstance(target, classObj)
     for k, v in pairs(classObj) do
         if k ~= "new" and type(v) == "function" then
             target[k] = v
@@ -23,3 +24,5 @@ function CreateInstance(target, classObj)
     end
     return target
 end
+
+return NtracsObject

@@ -1,14 +1,8 @@
 -- N-TRACS Core [Track]
-
----[package]予約ステートです
----@enum BookType
-BookType = {
-    NoBook = 0,
-    Temporary = 1,
-    RouteLock = 2,
-    Destination = 3,
-    RouteOver = 4
-}
+local NtracsObject   = require "src.n_tracs_core.n_tracs_object"
+local BookType       = require "src.n_tracs_core.book_type"
+local RouteDirection = require "src.n_tracs_core.route_direction"
+local Lever          = require "src.n_tracs_core.lever"
 
 ---軌道回路に関するものです
 ---@class Track:NtracsObject
@@ -18,12 +12,12 @@ BookType = {
 ---@field private timer number
 ---@field private beforeRouteLockItem Track | Lever | nil
 ---@field private short boolean
-Track = Track or {}
+local Track          = {}
 
 ---抽象軌道回路データを作成します
 ---@return Track
 function Track.new()
-    local obj = CreateInstance(NtracsObject.new(), Track)
+    local obj = NtracsObject.createInstance(NtracsObject.new(), Track)
     obj.name = "Track"
     return obj
 end
@@ -32,7 +26,7 @@ end
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.overWrite(self, itemName)
-    self = self or CreateInstance(self, Track)
+    self = self or NtracsObject.createInstance(self, Track)
     self.name = "Track"
     self.itemName = itemName
     self.relatedLever = nil
@@ -200,3 +194,5 @@ function Track.process(self, deltaTick)
         end
     end
 end
+
+return Track

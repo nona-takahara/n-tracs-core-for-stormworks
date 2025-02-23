@@ -1,5 +1,5 @@
 ---@class TrackBridge
-TrackBridge = TrackBridge or {}
+local TrackBridge = {}
 
 ---@class TrackBridge
 ---@field name string
@@ -36,3 +36,5 @@ function TrackBridge.isInAxle(self)
     end
     return false
 end
+
+return TrackBridge

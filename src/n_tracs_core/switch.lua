@@ -1,11 +1,6 @@
 -- N-TRACS Core [Switch]
-
----@enum TargetRoute
-TargetRoute = {
-    Normal = 1,
-    Reverse = -1,
-    Indefinite = 0
-}
+local NtracsObject = require "src.n_tracs_core.n_tracs_object"
+local TargetRoute  = require "src.n_tracs_core.target_route"
 
 ---転てつ器に関する情報です
 ---@class Switch:NtracsObject
@@ -13,7 +8,7 @@ TargetRoute = {
 ---@field private K TargetRoute
 ---@field isSite boolean
 ---@field private relatedTracks Track[]
-Switch = Switch or {}
+local Switch       = {}
 
 ---転てつ器情報を作成します
 ---@param itemName string 転てつ器名称
@@ -21,7 +16,7 @@ Switch = Switch or {}
 ---@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
 function Switch.new()
-    local obj = CreateInstance(NtracsObject.new(), Switch)
+    local obj = NtracsObject.createInstance(NtracsObject.new(), Switch)
     obj.name = "Switch"
     return obj
 end
@@ -79,3 +74,5 @@ end
 ---@param deltaTick number
 function Switch.process(self, deltaTick)
 end
+
+return Switch
