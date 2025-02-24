@@ -9,12 +9,12 @@ local Switch       = require("src.n_tracs_core.switch")
 local VehicleInfo  = require("src.n_tracs_soyabridge.vehicle_info")
 ---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
----@field areas Area[]
+---@field areas table<number, Area>
 ---@field leverAlias table<string, string> key: Alias to val: Real name
----@field trackBridge TrackBridge[]
----@field switchBridge SwitchBridge[]
----@field pointList PointSetter[]
----@field vehicleTable VehicleInfo[]
+---@field trackBridge table<string, TrackBridge>
+---@field switchBridge table<string, SwitchBridge>
+---@field pointList table<string, PointSetter>
+---@field vehicleTable table<number, VehicleInfo>
 ---@field defaultArea number
 local SoyaBridge   = {}
 
