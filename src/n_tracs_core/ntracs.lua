@@ -1,9 +1,9 @@
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 
----@class Ntracs
----@field levers SignalBase[]
----@field tracks Track[]
----@field switches Switch[]
+---@class Ntracs:NtracsObject
+---@field levers table<string,SignalBase>
+---@field tracks table<string,Track>
+---@field switches table<string,Switch>
 local Ntracs = {}
 
 function Ntracs.new()

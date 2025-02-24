@@ -57,6 +57,10 @@ function SoyaBridge:createSwitch(name, pointNames, relatedTracks, isSite)
     end
 end
 
+function SoyaBridge:setLeverAlias(alias, target)
+    self.leverAlias[alias] = target
+end
+
 function SoyaBridge:beforeDateUpdate()
     for _, area in pairs(self.areas) do
         area:initializeForProcess()
@@ -141,7 +145,7 @@ function SoyaBridge:despawnVehicle(vehicle_id)
 end
 
 function SoyaBridge:chargeBattery(isCheatBattery)
-    for _, vehicle in pairs(SYS.vehicleTable) do
+    for _, vehicle in pairs(self.vehicleTable) do
         vehicle:chargeBattery(isCheatBattery)
     end
 end
