@@ -10,6 +10,7 @@ local VehicleInfo  = require "src.n_tracs_soyabridge.vehicle_info"
 ---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
 ---@field areas Area[]
+---@field leverAlias table<string, string> key: Alias to val: Real name
 ---@field trackBridge TrackBridge[]
 ---@field switchBridge SwitchBridge[]
 ---@field pointList PointSetter[]
@@ -66,13 +67,13 @@ function SoyaBridge:getVehicleData()
     for vehicle_id, data in pairs(self.vehicleTable) do
         if data.axles then
             for _, axle in ipairs(data.axles) do
-                axle:initializeForProcess()
+                axle:getPosition()
             end
         end
 
-        if data.bridges then
+        if data.points then
             -- 個々の実装はbridge側に移すこと
-            for _, setter in ipairs(data.bridges.points) do
+            for _, setter in ipairs(data.points) do
                 local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
                 if ss then
                     setter.set(dial.value)
@@ -123,7 +124,7 @@ end
 
 function SoyaBridge:broadcast(sign)
     for _, data in pairs(self.vehicleTable) do
-        data:send(sign)
+        data:send(sign, self)
     end
 
     if CTC_AVAILABLE and CTC then
@@ -132,7 +133,7 @@ function SoyaBridge:broadcast(sign)
 end
 
 function SoyaBridge:loadVehicle(vehicle_id)
-    self.vehicleTable[vehicle_id] = VehicleInfo.new(vehicle_id)
+    self.vehicleTable[vehicle_id] = VehicleInfo.new(vehicle_id, self)
 end
 
 function SoyaBridge:despawnVehicle(vehicle_id)

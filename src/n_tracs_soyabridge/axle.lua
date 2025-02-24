@@ -41,7 +41,7 @@ end
 
 ---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle:initializeForProcess()
+function Axle:getPosition()
     ---@type SWMatrix
     local mtx
     ---@type boolean
