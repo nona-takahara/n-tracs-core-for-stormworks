@@ -1,5 +1,5 @@
 local NtracsObject = require "src.n_tracs_core.n_tracs_object"
----@class VehicleBridge
+---@class VehicleBridge:NtracsObject
 ---@field levers Lever[]
 ---@field tracks Track[]
 ---@field points PointSetter[]
@@ -10,16 +10,16 @@ local VehicleBridge = {}
 ---@param vehicle_id number
 ---@param vdata SWVehicleData
 ---@return VehicleBridge | nil
-function VehicleBridge.new(vehicle_id, vdata)
+function VehicleBridge.new(vdata)
     if not vdata then return nil end
     local f = false
     local bridges = NtracsObject.createInstance({ tracks = {}, levers = {}, points = {}, arc_send = false, alias = {} },
         VehicleBridge)
 
     for _, button in ipairs(vdata.components.buttons) do
-        if button.name == "Activate CTC" then
-            CTC = vehicle_id
-        end
+        --if button.name == "Activate CTC" then
+        --    CTC = vehicle_id
+        --end
 
         if button.name == "N-TRACS RESET" then
             f = true
@@ -107,3 +107,5 @@ function VehicleBridge:send(vehicle_id)
         server.setVehicleKeypad(vehicle_id, point.switchName .. "WLR", sending * SendingSign)
     end
 end
+
+return VehicleBridge

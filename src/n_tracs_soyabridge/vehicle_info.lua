@@ -1,8 +1,11 @@
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
----@class VehicleInfo
+local NtracsObject  = require "src.n_tracs_core.n_tracs_object"
+local VehicleBridge = require "src.n_tracs_soyabridge.vehicle_bridge"
+local Axle          = require "src.n_tracs_soyabridge.axle"
+---@class VehicleInfo:NtracsObject
+---@field vehicle_id number
 ---@field axles Axle[] | nil
 ---@field bridges VehicleBridge | nil
-local VehicleInfo = {}
+local VehicleInfo   = {}
 
 ---@return SWVehicleData, boolean
 ---@diagnostic disable-next-line: lowercase-global
@@ -54,10 +57,23 @@ end
 function VehicleInfo.new(vehicle_id)
     local vdata, s = oldGetVehicleData(vehicle_id)
     if not s then return nil end
+
     local obj = NtracsObject.createInstance({}, VehicleInfo)
     obj.axles = LoadAxles(vehicle_id, vdata, false)
-    obj.bridges = LoadBridgeDatas(vehicle_id, vdata)
+    obj.bridges = VehicleBridge.new(vdata)
+    obj.vehicle_id = vehicle_id
     return obj
+end
+
+function VehicleInfo:send(sign)
+    if self.axles then
+        for _, axle in pairs(self.axles) do
+            axle:send(sign)
+        end
+    end
+    if self.bridges then
+        self.bridges:send(self.vehicle_id)
+    end
 end
 
 return VehicleInfo

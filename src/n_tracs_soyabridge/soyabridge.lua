@@ -122,15 +122,7 @@ end
 
 function SoyaBridge:broadcast(sign)
     for vehicle_id, data in pairs(self.vehicleTable) do
-        if data.axles then
-            for _, axle in ipairs(data.axles) do
-                axle:send(sign)
-            end
-        end
-        if data.bridges then
-            -- 個々の実装はbridge側に移すこと
-            SendBridge(vehicle_id, data.bridges)
-        end
+        data:send(sign)
     end
 
     if CTC_AVAILABLE and CTC then
