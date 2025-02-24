@@ -105,6 +105,21 @@ function Axle:search(sys)
             end
         end
 
+        for _, adjacentArea in ipairs(targetArea.rightAreaIds) do
+            -- 重複チェック
+            local alreadyExist = false
+            for _, a in ipairs(queue) do
+                if a == adjacentArea then
+                    alreadyExist = true
+                    break
+                end
+            end
+
+            if not alreadyExist then
+                table.insert(queue, adjacentArea)
+            end
+        end
+
         front = front + 1
     end
 
