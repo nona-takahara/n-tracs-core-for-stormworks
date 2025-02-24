@@ -1,4 +1,4 @@
-local SetRoute = require("src.n_tracs_core.set_route")
+local SetRoute = require("src.n_tracs_core.switch.set_route")
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 ---@class SwitchBridge
 local SwitchBridge = {}

@@ -9,16 +9,26 @@ local Area         = {}
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
 ---@field leftVertexId number
 ---@field axles Axle[] @左から順に車軸情報
----@field nodeToArea number[] @隣り合うエリア・ポリゴンへの参照
----@field updateCallback function
+---@field leftAreaIds number[] @隣り合うエリア・ポリゴンへの参照
+---@field rightAreaIds number[] @隣り合うエリア・ポリゴンへの参照
+---@field updateCallback fun(self: Area, deltaTick?: number): any
 ---@field cbdata any @コールバック関数で使えるデータ
-function Area.new(name, vertexs, leftVertexId, nodeToArea, updateCallback)
+
+---@param name number
+---@param vertexs Vector2d[] @反時計回りにエリアの頂点を定義
+---@param leftVertexId number
+---@param leftAreaIds number[] @隣り合うエリア・ポリゴンへの参照
+---@param rightAreaIds number[] @隣り合うエリア・ポリゴンへの参照
+---@param updateCallback fun(self: Area, deltaTick?: number): any @コールバック関数で使えるデータ
+---@return Area
+function Area.new(name, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
     local obj = NtracsObject.createInstance(NtracsObject.new(), Area)
     obj.name = "Area"
     obj.itemName = name
     obj.vertexs = vertexs
     obj.leftVertexId = leftVertexId
-    obj.nodeToArea = nodeToArea
+    obj.leftAreaIds = leftAreaIds
+    obj.rightAreaIds = rightAreaIds
     obj.updateCallback = updateCallback
     return obj
 end
@@ -50,6 +60,9 @@ function Area:isInArea(pos)
     return prod.re < 0
 end
 
+---@param v1 Vector2d | Vector3d
+---@param v2 Vector2d | Vector3d
+---@return number
 local function len2(v1, v2)
     return (v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z)
 end

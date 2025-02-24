@@ -13,16 +13,18 @@ local SignalBase = {}
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 
 function SignalBase.new()
-    local obj = NtracsObject.createInstance(NtracsObject.new(), SignalBase)
+    local obj = NtracsObject.createInstance({}, SignalBase)
     obj.name = "SignalBase"
     return obj
 end
 
-function SignalBase.process(self, deltaTick)
+---@param deltaTick number
+---@param nt Ntracs
+function SignalBase:process(deltaTick, nt)
     error("Abstract Class SignalBase")
 end
 
-function SignalBase.beforeProcess(self)
+function SignalBase:beforeProcess()
     error("Abstract Class SignalBase")
 end
 

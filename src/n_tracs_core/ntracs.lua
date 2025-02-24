@@ -38,7 +38,7 @@ function Ntracs:process(deltaTicks)
     end
 
     for _, lever in pairs(self.levers) do
-        lever:process(deltaTicks)
+        lever:process(deltaTicks, self)
     end
 end
 

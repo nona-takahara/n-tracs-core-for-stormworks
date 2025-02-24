@@ -90,7 +90,7 @@ function Axle:search(sys)
         end
 
         -- 隣接エリアをキューに追加
-        for _, adjacentArea in ipairs(targetArea.nodeToArea) do
+        for _, adjacentArea in ipairs(targetArea.leftAreaIds) do
             -- 重複チェック
             local alreadyExist = false
             for _, a in ipairs(queue) do

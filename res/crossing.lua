@@ -1,4 +1,4 @@
-local RouteDirection = require "src.n_tracs_core.route_direction"
+local RouteDirection = require "src.n_tracs_core.lever.route_direction"
 -- 連動が関連する踏切
 ---@param sys SoyaBridge
 return function(sys)
