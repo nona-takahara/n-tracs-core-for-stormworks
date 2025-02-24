@@ -6,29 +6,17 @@ CTC_VERSION = "SoyaWS-2"
 SYS = require("src.n_tracs_soyabridge.soyabridge").new()
 require("res.area_track")(SYS)
 require("res.signal")(SYS)
-
--- 1. Load N-TRACS Core
---require("src.n_tracs_core")
-
--- 2. Load bridge
---require("src.n_tracs_soyabridge")
-
--- 3. Load settings
---require("res.utils")
---require("res.area_track")
---require("res.signal")
---require("res.signal_alias")
---require("res.switch")
---require("res.crossing")
---require("res.ctc")
-
+require("res.switch")(SYS)
+require("res.signal_alias")()
+require("res.crossing")()
+require("res.ctc")()
 
 DEFAULT_AREA = AreaGetter(2)
-Lever.setInput(LEVERS["WAK1R"], true, false)
-Lever.setInput(LEVERS["WAK4L"], true, false)
-Lever.setInput(LEVERS["SGN1R"], true, false)
-Lever.setInput(LEVERS["SGN2R"], true, false)
-Lever.setInput(LEVERS["SGN5L"], true, false)
+--Lever.setInput(LEVERS["WAK1R"], true, false)
+--Lever.setInput(LEVERS["WAK4L"], true, false)
+--Lever.setInput(LEVERS["SGN1R"], true, false)
+--Lever.setInput(LEVERS["SGN2R"], true, false)
+--Lever.setInput(LEVERS["SGN5L"], true, false)
 
 -- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
 fake_property =
@@ -69,14 +57,6 @@ function onDestroy()
 		end
 	end
 	_ENV["g_savedata"] = nil
-end
-
----@type PointSetter[]
-POINTLIST = {}
-for _, data in pairs(BRIDGE_SWITCH) do
-	for key, _ in pairs(data.pointAndRoute) do
-		POINTLIST[key] = SwitchBridge.getPointSetter(data, key)
-	end
 end
 
 function onPlayerJoin(steam_id, name, peer_id, is_admin, is_auth)

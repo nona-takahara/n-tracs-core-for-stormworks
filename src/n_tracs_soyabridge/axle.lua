@@ -1,5 +1,6 @@
 local Area = require "src.n_tracs_soyabridge.area"
----@class Axle
+local NtracsObject = require "src.n_tracs_core.n_tracs_object"
+---@class Axle:NtracsObject
 local Axle = {}
 
 ---@class Vector3d
@@ -27,20 +28,20 @@ local Axle = {}
 ---@param voxelPos Vector3d | nil
 ---@return Axle
 function Axle.new(vehicle_id, name, voxelPos)
-    return {
-        vehicle_id = vehicle_id,
-        name = "Axle",
-        itemName = name,
-        voxel_pos = voxelPos,
-        real_pos = { x = 0, z = 0 },
-        area = DEFAULT_AREA,
-        arc = 0
-    }
+    local obj = NtracsObject.createInstance({}, Axle)
+    obj.vehicle_id = vehicle_id
+    obj.name = "Axle"
+    obj.itemName = name
+    obj.voxel_pos = voxelPos
+    obj.real_pos = { x = 0, z = 0 }
+    obj.area = DEFAULT_AREA
+    obj.arc = 0
+    return obj
 end
 
 ---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle.initializeForProcess(self)
+function Axle:initializeForProcess()
     ---@type SWMatrix
     local mtx
     ---@type boolean
@@ -66,13 +67,14 @@ function Axle.initializeForProcess(self)
 end
 
 ---輪軸の現在地を更新します
----@param self Axle
-function Axle.search(self)
+---@param sys SoyaBridge
+function Axle:search(sys)
     self.area = self.area or DEFAULT_AREA
 
-    ---@type Area[]
+    ---@type number[]
     local queue = {}
     local front = 1
+
     ---@type Area
     local targetArea
     local found = false
@@ -80,9 +82,9 @@ function Axle.search(self)
     table.insert(queue, self.area)
     -- BFS
     while front <= #queue do
-        targetArea = queue[front]
+        targetArea = sys.areas[queue[front]]
 
-        if Area.isInArea(targetArea, self.real_pos) then
+        if targetArea:isInArea(self.real_pos) then
             found = true
             break
         end
@@ -108,11 +110,10 @@ function Axle.search(self)
 
     if found then
         self.area = targetArea
-        Area.insertAxle(targetArea, self)
+        targetArea:insertAxle(self)
     end
 end
 
----comment
 ---@param vehicle_id number
 ---@param vdata SWVehicleData
 ---@param forceRegister boolean
@@ -132,16 +133,17 @@ function LoadAxles(vehicle_id, vdata, forceRegister)
     return axles
 end
 
-function Axle.send(self)
+---@param sendingSign number
+function Axle:send(sendingSign)
     local sending = self.sending or { 0, 0, 0 }
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * SendingSign)
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * sendingSign)
     if sending[2] == 0 or sending[2] == 14 then
         server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", 0)
     else
         server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1] or 1)
     end
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", SendingSign)
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", sendingSign)
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[3])
     self.sending = { 0, 0, 0 }
 end

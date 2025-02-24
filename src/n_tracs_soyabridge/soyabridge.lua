@@ -28,7 +28,7 @@ function SoyaBridge.new()
 end
 
 function SoyaBridge:setArea(id, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
-    self.areas[id] = Area.overWrite(id, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
+    self.areas[id] = Area.new(id, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
 end
 
 function SoyaBridge:createTrack(trackName, areaIds)
@@ -92,7 +92,7 @@ function SoyaBridge:trackShort()
     for _, data in pairs(self.vehicleTable) do
         if data.axles then
             for _, axle in ipairs(data.axles) do
-                axle:search()
+                axle:search(self)
             end
         end
     end
@@ -123,7 +123,7 @@ function SoyaBridge:broadcast(sign)
     for vehicle_id, data in pairs(self.vehicleTable) do
         if data.axles then
             for _, axle in ipairs(data.axles) do
-                axle:send()
+                axle:send(sign)
             end
         end
         if data.bridges then
