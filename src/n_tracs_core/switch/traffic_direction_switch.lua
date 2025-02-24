@@ -1,6 +1,6 @@
 -- N-TRACS Core [Switch]
 local NtracsObject           = require("src.n_tracs_core.n_tracs_object")
-local SetRoute               = require("src.n_tracs_core.set_route")
+local SetRoute               = require("src.n_tracs_core.switch.set_route")
 local Switch                 = require("src.n_tracs_core.switch.switch")
 
 ---転てつ器に関する情報です
