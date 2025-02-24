@@ -246,7 +246,9 @@ function Lever:process(deltaTick)
         self.autoReset = false
     end
 
-    if (self:getInput() and self:siteSwitchAssert()) then
+    -- てこリレー（総括制御条件を加える必要あり）
+    local R = self:getInput() and self:siteSwitchAssert()
+    if R then
         for _, rswitch in ipairs(self.switches) do
             rswitch:moveToTarget()
         end

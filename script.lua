@@ -3,6 +3,10 @@ ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
+SYS = require("src.n_tracs_soyabridge.soyabridge").new()
+require("res.area_track")(SYS)
+require("res.signal")(SYS)
+
 -- 1. Load N-TRACS Core
 --require("src.n_tracs_core")
 
@@ -10,13 +14,14 @@ CTC_VERSION = "SoyaWS-2"
 --require("src.n_tracs_soyabridge")
 
 -- 3. Load settings
-require("res.utils")
-require("res.area_track")
-require("res.signal")
-require("res.signal_alias")
-require("res.switch")
-require("res.crossing")
-require("res.ctc")
+--require("res.utils")
+--require("res.area_track")
+--require("res.signal")
+--require("res.signal_alias")
+--require("res.switch")
+--require("res.crossing")
+--require("res.ctc")
+
 
 DEFAULT_AREA = AreaGetter(2)
 Lever.setInput(LEVERS["WAK1R"], true, false)
@@ -104,107 +109,29 @@ function onTick()
 
 	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then
-		-- データの初期化及びビークルデータの取得フェーズ
-		for _, area in pairs(AREAS) do
-			area:initializeForProcess()
-		end
-
-		for vehicle_id, data in pairs(VehicleTable) do
-			if data.axles then
-				for _, axle in ipairs(data.axles) do
-					Axle.initializeForProcess(axle)
-					--axle:initializeForProcess()
-				end
-			end
-
-			if data.bridges then
-				for _, setter in ipairs(data.bridges.points) do
-					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
-					if ss then
-						setter.set(dial.value)
-						--else
-						--ARCを実装したら 0 にするようにする。
-						--setter.set(0)
-					end
-				end
-			end
-		end
-
-		-- CTCデータ取得
-		if CTC_AVAILABLE and CTC then
-			GetCtcState()
-		end
+		SYS:beforeDateUpdate()
+		SYS:getVehicleData()
 	elseif Phase == 2 then
-		-- 取得データをCoreに処理させるのに適した状態に変換するフェーズ
-		for _, data in pairs(VehicleTable) do
-			if data.axles then
-				for _, axle in ipairs(data.axles) do
-					Axle.search(axle)
-					--axle:search()
-				end
-			end
-		end
-
+		SYS:trackShort()
 		-- CTC取得データの変換
-		if CTC_AVAILABLE and CTC_ACTIVE then
-			SetCtcState()
-		end
+		--if CTC_AVAILABLE and CTC_ACTIVE then
+		--	SetCtcState()
+		--end
 	elseif Phase == 3 then
-		for _, data in pairs(BRIDGE_TRACK) do
-			TRACKS[data.itemName]:beforeProcess(TrackBridge.isInAxle(data))
-			-- TRACKS[data.itemName]:beforeProcess(data:isInAxle())
-		end
-
-		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
-		for _, data in pairs(BRIDGE_SWITCH) do
-			SWITCHES[data.itemName]:beforeProcess(SwitchBridge.getState(data))
-			-- SWITCHES[data.itemName]:beforeProcess(data:getState())
-		end
-
-		for _, data in pairs(LEVERS) do
-			data:beforeProcess()
-		end
+		SYS:beforeProcess()
 	elseif Phase == 4 then
-		-- Coreで処理するフェーズ
-		for _, track in pairs(TRACKS) do
-			track:process(6)
-		end
-
-		for _, lever in pairs(LEVERS) do
-			lever:process(6)
-		end
-
-		-- 特殊処理
-		BridgeCrossing(6)
+		SYS:process(6)
+		-- BridgeCrossing(6)
 	elseif Phase == 5 then
-		-- Coreで処理したデータを配信用に加工するフェーズ
-		for _, area in pairs(AREAS) do
-			area.cbdata = area.updateCallback and area.updateCallback(area, 6)
-		end
-
+		SYS:beforeBroadcast()
 		-- CTCデータ生成
-		if CTC_AVAILABLE and CTC then
-			MakeCtcData()
-		end
+		--if CTC_AVAILABLE and CTC then
+		--    MakeCtcData()
+		--end
 	elseif Phase == 0 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
-		for vehicle_id, data in pairs(VehicleTable) do
-			if data.axles then
-				for _, axle in ipairs(data.axles) do
-					Axle.send(axle)
-					--axle:send()
-				end
-			end
-
-			if data.bridges then
-				SendBridge(vehicle_id, data.bridges)
-			end
-		end
-
-		if CTC_AVAILABLE and CTC then
-			SendCtcData(SendingSign)
-		end
+		SYS:broadcast(SendingSign)
 
 		while #DELAY_ANNOUNE > 0 do
 			local calls = table.remove(DELAY_ANNOUNE, 1)

@@ -35,7 +35,7 @@ def absolute_lever_lua_code(name, data):
     for v in data["approach_track"]:
         approachTrackMake.append(f'TrackGetter("{v}")')
 
-    rets = 'Lever.overWrite(' + \
+    rets = 'sys:createLever(' + \
         f'LeverGetter("{name}"),' +\
         f'"{name}",' +\
         f'TrackGetter("{data["start"]}"),' + \
@@ -59,7 +59,7 @@ def auto_lever_lua_code(name, data):
     for v in data["signal_track"]:
         signalTrackMake.append(f'TrackGetter("{v}")')
 
-    rets = 'AutoSignal.overWrite(' +\
+    rets = 'sys:createAutoSignal(' +\
         f'LeverGetter("{name}"),' +\
         f'"{name}",' +\
         '{' + ','.join(signalTrackMake) + '},' +\
@@ -71,5 +71,11 @@ def auto_lever_lua_code(name, data):
 
 with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf-8") as lua_f):
     data = tomllib.load(toml_f)
+
+    print("---@param sys SoyaBridge", file=lua_f)
+    print("return function(sys)", file=lua_f)
+
     for k, v in data.items():
         print(lever_lua_code(k, v), file=lua_f)
+
+    print("end", file=lua_f)

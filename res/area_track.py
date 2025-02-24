@@ -10,15 +10,15 @@ def area_track_lua_code(area, vertexes):
     listVertex = "{" + ",".join(
         ["{" + f"x={vertexes[id]['x']},z={vertexes[id]['z']}" + "}" for id in area["vertexes"]]) + "}"
     # listVertex = "{" + ",".join([f"V[{id}]" for id in area["vertexes"]]) + "}"
-    listRelated = "AreasGetter({" + ",".join(
-        [str(id).replace('Area_', '') for id in area["related"]]) + "})"
-    return f"Area.overWrite(AreaGetter({str(area['name']).replace('Area_','')}),\"{str(area['name']).replace('Area_','')}\",{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{area['callback'] or 'function()end'})"
+    listRelated = "{" + ",".join(
+        [str(id).replace('Area_', '') for id in area["related"]]) + "}"
+    return f"sys:setArea({str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},nil,{area['callback'] or 'function()end'})"
 
 
 def track_lua_code(track):
-    arealist = "AreasGetter({" + ",".join(
-        [id['name'].replace('Area_', '') for id in track["areas"]]) + "})"
-    return f"CreateTrack(\"{track['name']}\",{arealist})"
+    arealist = "{" + ",".join(
+        [id['name'].replace('Area_', '') for id in track["areas"]]) + "}"
+    return f"sys:createTrack(\"{track['name']}\",{arealist})"
 
 # {"name":"NHB4LT",
 # "areas":[{"name":"Area_38","trackFlag":"none"},{"name":"Area_37","trackFlag":"none"},{"name":"Area_39","trackFlag":"none"}]
@@ -40,8 +40,13 @@ with (open("area_track.json", "rb") as json_f, open("area_track.lua", "w", encod
     for vx in v:
         vv[vx['name']] = vx
 
+    print("---@param sys SoyaBridge", file=lua_f)
+    print("return function(sys)", file=lua_f)
+
     for a in data["areas"]:
         print(area_track_lua_code(a, vv), file=lua_f)
 
     for a in data["tracks"]:
         print(track_lua_code(a), file=lua_f)
+
+    print("end", file=lua_f)
