@@ -3,6 +3,7 @@ ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
+--コマンド部分の修正が済むまで一時的にsysをglobalにする
 sys = require("src.n_tracs_soyabridge.soyabridge").new()
 require("res.area_track")(sys)
 require("res.signal")(sys)
@@ -18,22 +19,13 @@ sys.defaultArea = 2
 --Lever.setInput(LEVERS["SGN2R"], true, false)
 --Lever.setInput(LEVERS["SGN5L"], true, false)
 
--- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
-FAKE_PROPERTY =
-[[
 g_savedata = {
-	recommendedSettings = property.checkbox("Start with no wind and damage", true),
-	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
-}
---]]
-
-_ENV["g_savedata"] = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
 	cheatBattery = property.checkbox("Enable cheat_battery feature", true)
 }
 
 function onCreate(is_world_create)
-	if is_world_create and _ENV["g_savedata"].recommendedSettings then
+	if is_world_create and g_savedata.recommendedSettings then
 		server.setGameSetting("vehicle_damage", false)
 		server.setGameSetting("player_damage", false)
 		server.setGameSetting("npc_damage", false)
@@ -43,20 +35,20 @@ function onCreate(is_world_create)
 		server.setWeather(weather.fog, weather.rain, 0)
 	end
 
-	if not _ENV["g_savedata"].ui_id then
+	if not g_savedata.ui_id then
 		AddMapLabels(0)
 	end
 end
 
 function onDestroy()
 	local playerlist = server.getPlayers()
-	local ui_id = _ENV["g_savedata"].ui_id
+	local ui_id = g_savedata.ui_id
 	if ui_id then
 		for _, v in pairs(playerlist) do
 			server.removeMapID(v.id, ui_id)
 		end
 	end
-	_ENV["g_savedata"] = nil
+	g_savedata = nil
 end
 
 function onPlayerJoin(steam_id, name, peer_id, is_admin, is_auth)
@@ -64,8 +56,8 @@ function onPlayerJoin(steam_id, name, peer_id, is_admin, is_auth)
 end
 
 function onPlayerLeave(steam_id, name, peer_id, is_admin, is_auth)
-	if _ENV["g_savedata"].ui_id then
-		server.removeMapID(peer_id, _ENV["g_savedata"].ui_id)
+	if g_savedata.ui_id then
+		server.removeMapID(peer_id, g_savedata.ui_id)
 	end
 end
 
@@ -75,7 +67,7 @@ function onTick()
 	TickCounter = (TickCounter or 0) + 1
 
 	-- 毎Tick実行しないとsignal_batを3に充電できない
-	sys:chargeBattery(_ENV["g_savedata"].cheatBattery)
+	sys:chargeBattery(g_savedata.cheatBattery)
 
 	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then

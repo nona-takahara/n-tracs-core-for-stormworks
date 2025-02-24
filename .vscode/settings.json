@@ -23,6 +23,7 @@
     "onTick",
     "onVehicleLoad",
     "onVehicleDespawn",
-    "onButtonPress"
+    "onButtonPress",
+    "g_savedata"
   ]
 }
