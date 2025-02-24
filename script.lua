@@ -3,15 +3,15 @@ ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
-SYS = require("src.n_tracs_soyabridge.soyabridge").new()
-require("res.area_track")(SYS)
-require("res.signal")(SYS)
-require("res.switch")(SYS)
-require("res.signal_alias")()
-require("res.crossing")()
+sys = require("src.n_tracs_soyabridge.soyabridge").new()
+require("res.area_track")(sys)
+require("res.signal")(sys)
+require("res.switch")(sys)
+require("res.signal_alias")(sys)
+local crossing = require("res.crossing")(sys)
 require("res.ctc")()
 
-SYS.defaultArea = 2
+sys.defaultArea = 2
 --Lever.setInput(LEVERS["WAK1R"], true, false)
 --Lever.setInput(LEVERS["WAK4L"], true, false)
 --Lever.setInput(LEVERS["SGN1R"], true, false)
@@ -75,25 +75,25 @@ function onTick()
 	TickCounter = (TickCounter or 0) + 1
 
 	-- 毎Tick実行しないとsignal_batを3に充電できない
-	SYS:chargeBattery(_ENV["g_savedata"].cheatBattery)
+	sys:chargeBattery(_ENV["g_savedata"].cheatBattery)
 
 	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then
-		SYS:beforeDateUpdate()
-		SYS:getVehicleData()
+		sys:beforeDateUpdate()
+		sys:getVehicleData()
 	elseif Phase == 2 then
-		SYS:trackShort()
+		sys:trackShort()
 		-- CTC取得データの変換
 		--if CTC_AVAILABLE and CTC_ACTIVE then
 		--	SetCtcState()
 		--end
 	elseif Phase == 3 then
-		SYS:beforeProcess()
+		sys:beforeProcess()
 	elseif Phase == 4 then
-		SYS:process(6)
-		-- BridgeCrossing(6)
+		sys:process(6)
+		crossing(6, sys)
 	elseif Phase == 5 then
-		SYS:beforeBroadcast()
+		sys:beforeBroadcast()
 		-- CTCデータ生成
 		--if CTC_AVAILABLE and CTC then
 		--    MakeCtcData()
@@ -101,7 +101,7 @@ function onTick()
 	elseif Phase == 0 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
-		SYS:broadcast(SendingSign)
+		sys:broadcast(SendingSign)
 
 		while #DELAY_ANNOUNE > 0 do
 			local calls = table.remove(DELAY_ANNOUNE, 1)
@@ -113,19 +113,21 @@ function onTick()
 end
 
 function onVehicleLoad(vehicle_id)
-	SYS:loadVehicle(vehicle_id)
+	sys:loadVehicle(vehicle_id)
 end
 
 function onVehicleDespawn(vehicle_id)
-	SYS:despawnVehicle(vehicle_id)
+	sys:despawnVehicle(vehicle_id)
 end
 
 function onButtonPress(vehicle_id, peer_id, button_name)
 	if button_name == "N-TRACS RESET" then
-		SYS:loadVehicle(vehicle_id)
+		sys:loadVehicle(vehicle_id)
 	end
 
 	--if button_name == "Activate CTC" then
 	--	CTC = vehicle_id
 	--end
 end
+
+dofile("src.n_tracs_soyabridge.command") -- TODO: 今後修正せねばならない

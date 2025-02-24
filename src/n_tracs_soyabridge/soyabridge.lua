@@ -57,6 +57,10 @@ function SoyaBridge:createSwitch(name, pointNames, relatedTracks, isSite)
     end
 end
 
+function SoyaBridge:setLeverAlias(alias, target)
+    self.leverAlias[alias] = target
+end
+
 function SoyaBridge:beforeDateUpdate()
     for _, area in pairs(self.areas) do
         area:initializeForProcess()
@@ -86,9 +90,9 @@ function SoyaBridge:getVehicleData()
     end
 
     -- CTCデータ取得
-    if CTC_AVAILABLE and CTC then
-        GetCtcState()
-    end
+    --if CTC_AVAILABLE and CTC then
+    --    GetCtcState()
+    --end
 end
 
 function SoyaBridge:trackShort()
@@ -127,9 +131,9 @@ function SoyaBridge:broadcast(sign)
         data:send(sign, self)
     end
 
-    if CTC_AVAILABLE and CTC then
-        SendCtcData(sign)
-    end
+    --if CTC_AVAILABLE and CTC then
+    --    SendCtcData(sign)
+    --end
 end
 
 function SoyaBridge:loadVehicle(vehicle_id)
@@ -141,7 +145,7 @@ function SoyaBridge:despawnVehicle(vehicle_id)
 end
 
 function SoyaBridge:chargeBattery(isCheatBattery)
-    for _, vehicle in pairs(SYS.vehicleTable) do
+    for _, vehicle in pairs(self.vehicleTable) do
         vehicle:chargeBattery(isCheatBattery)
     end
 end
