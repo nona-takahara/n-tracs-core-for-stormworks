@@ -1,5 +1,5 @@
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
-local Complex      = require "src.utils.complex"
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local Complex      = require("src.utils.complex")
 ---@class Area
 local Area         = {}
 

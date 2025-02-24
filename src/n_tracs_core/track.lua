@@ -1,8 +1,8 @@
 -- N-TRACS Core [Track]
-local NtracsObject   = require "src.n_tracs_core.n_tracs_object"
-local BookType       = require "src.n_tracs_core.book_type"
-local RouteDirection = require "src.n_tracs_core.route_direction"
-local Lever          = require "src.n_tracs_core.lever"
+local NtracsObject   = require("src.n_tracs_core.n_tracs_object")
+local BookType       = require("src.n_tracs_core.book_type")
+local RouteDirection = require("src.n_tracs_core.route_direction")
+local Lever          = require("src.n_tracs_core.lever")
 
 ---軌道回路に関するものです
 ---@class Track:NtracsObject

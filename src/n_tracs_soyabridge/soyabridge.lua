@@ -1,12 +1,12 @@
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
-local Ntracs       = require "src.n_tracs_core.ntracs"
-local Area         = require "src.n_tracs_soyabridge.area"
-local TrackBridge  = require "src.n_tracs_soyabridge.track_bridge"
-local Track        = require "src.n_tracs_core.track"
-local Lever        = require "src.n_tracs_core.lever"
-local SwitchBridge = require "src.n_tracs_soyabridge.switch_bridge"
-local Switch       = require "src.n_tracs_core.switch"
-local VehicleInfo  = require "src.n_tracs_soyabridge.vehicle_info"
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local Ntracs       = require("src.n_tracs_core.ntracs")
+local Area         = require("src.n_tracs_soyabridge.area")
+local TrackBridge  = require("src.n_tracs_soyabridge.track_bridge")
+local Track        = require("src.n_tracs_core.track")
+local Lever        = require("src.n_tracs_core.lever")
+local SwitchBridge = require("src.n_tracs_soyabridge.switch_bridge")
+local Switch       = require("src.n_tracs_core.switch")
+local VehicleInfo  = require("src.n_tracs_soyabridge.vehicle_info")
 ---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
 ---@field areas Area[]

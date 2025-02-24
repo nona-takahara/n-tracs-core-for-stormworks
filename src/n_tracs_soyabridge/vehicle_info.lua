@@ -1,6 +1,6 @@
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
-local Axle         = require "src.n_tracs_soyabridge.axle"
-local SetRoute     = require "src.n_tracs_core.set_route"
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local Axle         = require("src.n_tracs_soyabridge.axle")
+local SetRoute     = require("src.n_tracs_core.set_route")
 ---@class VehicleInfo:NtracsObject
 ---@field vehicle_id number
 ---@field axles Axle[] | nil

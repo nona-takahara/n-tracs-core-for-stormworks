@@ -1,4 +1,4 @@
-local SetRoute = require "src.n_tracs_core.set_route"
+local SetRoute = require("src.n_tracs_core.set_route")
 ---@enum SignalRoute
 local t = {
     Normal = SetRoute.Normal,

@@ -1,5 +1,5 @@
 -- N-TRACS Core [SwitchRoute]
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 
 ---転てつ器と開通方向の情報セットを扱います
 ---@class SwitchRoute:NtracsObject

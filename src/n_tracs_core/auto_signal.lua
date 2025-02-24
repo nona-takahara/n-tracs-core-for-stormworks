@@ -1,7 +1,7 @@
 -- N-TRACS Core [Auto Signal]
 
-local NtracsOjbect = require "src.n_tracs_core.n_tracs_object"
-local SignalBase   = require "src.n_tracs_core.signal_base"
+local NtracsOjbect = require("src.n_tracs_core.n_tracs_object")
+local SignalBase   = require("src.n_tracs_core.signal_base")
 
 ---てこに関する操作を行います
 ---@class AutoSignal:SignalBase

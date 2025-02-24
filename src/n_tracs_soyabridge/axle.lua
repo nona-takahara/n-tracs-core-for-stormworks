@@ -1,5 +1,5 @@
-local Area = require "src.n_tracs_soyabridge.area"
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
+local Area = require("src.n_tracs_soyabridge.area")
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 ---@class Axle:NtracsObject
 local Axle = {}
 

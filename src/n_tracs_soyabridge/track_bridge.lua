@@ -1,4 +1,4 @@
-local NtracsObject = require "src.n_tracs_core.n_tracs_object"
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 ---@class TrackBridge
 local TrackBridge = {}
 
