@@ -11,7 +11,7 @@ require("res.signal_alias")()
 require("res.crossing")()
 require("res.ctc")()
 
-DEFAULT_AREA = AreaGetter(2)
+SYS.defaultArea = 2
 --Lever.setInput(LEVERS["WAK1R"], true, false)
 --Lever.setInput(LEVERS["WAK4L"], true, false)
 --Lever.setInput(LEVERS["SGN1R"], true, false)
@@ -19,7 +19,7 @@ DEFAULT_AREA = AreaGetter(2)
 --Lever.setInput(LEVERS["SGN5L"], true, false)
 
 -- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
-fake_property =
+FAKE_PROPERTY =
 [[
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
@@ -76,16 +76,7 @@ function onTick()
 	TickCounter = (TickCounter or 0) + 1
 
 	-- 毎Tick実行しないとsignal_batを3に充電できない
-	if _ENV["g_savedata"].cheatBattery then
-		for vehicle_id, _ in pairs(VehicleTable) do
-			server.setVehicleBattery(vehicle_id, "signal_bat", 3)
-			server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
-		end
-	else
-		for vehicle_id, _ in pairs(VehicleTable) do
-			server.setVehicleBattery(vehicle_id, "signal_bat", 3)
-		end
-	end
+	SYS:chargeBattery(_ENV["g_savedata"].cheatBattery)
 
 	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then

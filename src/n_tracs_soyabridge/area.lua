@@ -5,7 +5,7 @@ local Area         = {}
 
 ---@class Area:NtracsObject
 ---@field name string
----@field itemName string
+---@field itemName number
 ---@field vertexs Vector2d[] @反時計回りにエリアの頂点を定義
 ---@field leftVertexId number
 ---@field axles Axle[] @左から順に車軸情報

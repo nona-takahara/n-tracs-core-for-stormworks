@@ -7,13 +7,14 @@ local Lever        = require "src.n_tracs_core.lever"
 local SwitchBridge = require "src.n_tracs_soyabridge.switch_bridge"
 local Switch       = require "src.n_tracs_core.switch"
 local VehicleInfo  = require "src.n_tracs_soyabridge.vehicle_info"
----@class SoyaBridge
+---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
 ---@field areas Area[]
 ---@field trackBridge TrackBridge[]
 ---@field switchBridge SwitchBridge[]
 ---@field pointList PointSetter[]
 ---@field vehicleTable VehicleInfo[]
+---@field defaultArea number
 local SoyaBridge   = {}
 
 function SoyaBridge.new()
@@ -121,7 +122,7 @@ function SoyaBridge:beforeBroadcast()
 end
 
 function SoyaBridge:broadcast(sign)
-    for vehicle_id, data in pairs(self.vehicleTable) do
+    for _, data in pairs(self.vehicleTable) do
         data:send(sign)
     end
 
@@ -136,6 +137,12 @@ end
 
 function SoyaBridge:despawnVehicle(vehicle_id)
     self.vehicleTable[vehicle_id] = nil
+end
+
+function SoyaBridge:chargeBattery(isCheatBattery)
+    for _, vehicle in pairs(SYS.vehicleTable) do
+        vehicle:chargeBattery(isCheatBattery)
+    end
 end
 
 return SoyaBridge

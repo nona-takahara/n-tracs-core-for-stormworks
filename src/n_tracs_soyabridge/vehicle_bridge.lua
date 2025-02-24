@@ -77,7 +77,7 @@ function VehicleBridge:send(vehicle_id)
     end
 
     for _, track in ipairs(self.tracks) do
-        local sending = 1 - (track.short and 1 or 0)
+        local sending = 1 - (track:isShort() and 1 or 0)
         server.setVehicleKeypad(vehicle_id, track.itemName .. "R", sending * SendingSign)
         if self.arc_send then
             local right_arc = nil
@@ -105,6 +105,15 @@ function VehicleBridge:send(vehicle_id)
 
         local sending = Switch.getWLR(SWITCHES[point.switchName]) and 1 or 0
         server.setVehicleKeypad(vehicle_id, point.switchName .. "WLR", sending * SendingSign)
+    end
+end
+
+function VehicleBridge:chargeBattery(vehicle_id, isCheatBattery)
+    if isCheatBattery then
+        server.setVehicleBattery(vehicle_id, "signal_bat", 3)
+        server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
+    else
+        server.setVehicleBattery(vehicle_id, "signal_bat", 3)
     end
 end
 

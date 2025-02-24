@@ -18,7 +18,7 @@ local Axle = {}
 ---@field vehicle_id number @車軸のあるビークルID
 ---@field voxel_pos Vector3d | nil @車軸のボクセル
 ---@field real_pos Vector2d @実際の位置
----@field area Area | nil @現在のエリア
+---@field area number | nil @現在のエリア
 ---@field sending number[]
 ---@field arc number
 
@@ -34,7 +34,7 @@ function Axle.new(vehicle_id, name, voxelPos)
     obj.itemName = name
     obj.voxel_pos = voxelPos
     obj.real_pos = { x = 0, z = 0 }
-    obj.area = DEFAULT_AREA
+    obj.area = nil
     obj.arc = 0
     return obj
 end
@@ -69,7 +69,7 @@ end
 ---輪軸の現在地を更新します
 ---@param sys SoyaBridge
 function Axle:search(sys)
-    self.area = self.area or DEFAULT_AREA
+    self.area = self.area or sys.defaultArea
 
     ---@type number[]
     local queue = {}
@@ -109,7 +109,7 @@ function Axle:search(sys)
     end
 
     if found then
-        self.area = targetArea
+        self.area = targetArea.itemName
         targetArea:insertAxle(self)
     end
 end

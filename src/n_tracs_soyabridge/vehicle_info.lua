@@ -76,4 +76,8 @@ function VehicleInfo:send(sign)
     end
 end
 
+function VehicleInfo:chargeBattery(isCheatBattery)
+    self.bridges:chargeBattery(self.vehicle_id, isCheatBattery)
+end
+
 return VehicleInfo

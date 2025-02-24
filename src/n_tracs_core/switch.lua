@@ -15,26 +15,15 @@ local Switch       = {}
 ---@param isSite boolean 現場扱いの転てつ器ならばtrue
 ---@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
-function Switch.new()
+function Switch.new(obj, itemName, isSite, relatedTracks)
     local obj = NtracsObject.createInstance(NtracsObject.new(), Switch)
     obj.name = "Switch"
+    obj.itemName = itemName
+    obj.W = SetRoute.Indefinite
+    obj.K = SetRoute.Indefinite
+    obj.isSite = isSite
+    obj.relatedTracks = relatedTracks
     return obj
-end
-
----転てつ器情報を作成します
----@param itemName string 転てつ器名称
----@param isSite boolean 現場扱いの転てつ器ならばtrue
----@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
----@return Switch
-function Switch.overWrite(self, itemName, isSite, relatedTracks)
-    self = self or {}
-    self.name = "Switch"
-    self.itemName = itemName
-    self.W = SetRoute.Indefinite
-    self.K = SetRoute.Indefinite
-    self.isSite = isSite
-    self.relatedTracks = relatedTracks
-    return self
 end
 
 ---現在の開通方向を取得します
@@ -43,8 +32,6 @@ function Switch.getRealRoute(self)
     return self.K
 end
 
----[package]
----@package
 ---@param target SetRoute
 function Switch.move(self, target)
     if Switch.getWLR(self) then
@@ -56,7 +43,7 @@ end
 ---@return boolean
 function Switch.getWLR(self)
     for _, value in ipairs(self.relatedTracks) do
-        if value.short or value:isLocked(not self.isSite) then
+        if value:isShort() or value:isLocked(not self.isSite) then
             return false
         end
     end
