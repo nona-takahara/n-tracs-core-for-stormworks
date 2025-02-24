@@ -15,6 +15,17 @@ local Switch       = require "src.n_tracs_core.switch"
 ---@field vehicleTable VehicleInfo[]
 local SoyaBridge   = {}
 
+---@class VehicleInfo
+---@field axles Axle[] | nil
+---@field bridges VehicleBridge | nil
+
+---@class VehicleBridge
+---@field levers Lever[]
+---@field tracks Track[]
+---@field points PointSetter[]
+---@field arc_send boolean
+---@field alias string[]
+
 function SoyaBridge.new()
     local obj = NtracsObject.createInstance({}, SoyaBridge)
     obj.nt = Ntracs.new()
