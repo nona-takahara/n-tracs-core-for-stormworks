@@ -5,7 +5,7 @@ local NtracsOjbect = require("src.n_tracs_core.n_tracs_object")
 ---てこに関する操作を行います
 ---@class AutoSignal:SignalBase
 ---@field private signalTrack string[]
-local AutoSignal   = AutoSignal or {}
+local AutoSignal   = {}
 
 ---てこ構造体のインスタンスを作成します
 ---@param itemName string てこ名称
