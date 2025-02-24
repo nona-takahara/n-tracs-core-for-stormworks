@@ -6,6 +6,7 @@ local Track        = require "src.n_tracs_core.track"
 local Lever        = require "src.n_tracs_core.lever"
 local SwitchBridge = require "src.n_tracs_soyabridge.switch_bridge"
 local Switch       = require "src.n_tracs_core.switch"
+local VehicleInfo  = require "src.n_tracs_soyabridge.vehicle_info"
 ---@class SoyaBridge
 ---@field nt Ntracs
 ---@field areas Area[]
@@ -14,17 +15,6 @@ local Switch       = require "src.n_tracs_core.switch"
 ---@field pointList PointSetter[]
 ---@field vehicleTable VehicleInfo[]
 local SoyaBridge   = {}
-
----@class VehicleInfo
----@field axles Axle[] | nil
----@field bridges VehicleBridge | nil
-
----@class VehicleBridge
----@field levers Lever[]
----@field tracks Track[]
----@field points PointSetter[]
----@field arc_send boolean
----@field alias string[]
 
 function SoyaBridge.new()
     local obj = NtracsObject.createInstance({}, SoyaBridge)
@@ -146,6 +136,14 @@ function SoyaBridge:broadcast(sign)
     if CTC_AVAILABLE and CTC then
         SendCtcData(sign)
     end
+end
+
+function SoyaBridge:loadVehicle(vehicle_id)
+    self.vehicleTable[vehicle_id] = VehicleInfo.new(vehicle_id)
+end
+
+function SoyaBridge:despawnVehicle(vehicle_id)
+    self.vehicleTable[vehicle_id] = nil
 end
 
 return SoyaBridge

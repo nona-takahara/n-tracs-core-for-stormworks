@@ -12,7 +12,7 @@ function NtracsObject.new()
     return obj
 end
 
----@generic T: any
+---@generic T: NtracsObject
 ---@param target any
 ---@param classObj T
 ---@return T
