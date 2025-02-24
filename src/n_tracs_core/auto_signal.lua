@@ -9,30 +9,21 @@ local SignalBase   = require "src.n_tracs_core.signal_base"
 AutoSignal         = AutoSignal or {}
 
 ---てこ構造体のインスタンスを作成します
----@return AutoSignal
-function AutoSignal.new()
-    local obj = NtracsOjbect.createInstance(SignalBase.new(), AutoSignal)
-    obj.name = "AutoSignal"
-    return obj
-end
-
----てこ構造体のインスタンスを作成します
----@param self SignalBase
 ---@param itemName string てこ名称
 ---@param signalTrack Track[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
 ---@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return AutoSignal
-function AutoSignal.overWrite(self, itemName, signalTrack, direction, updateCallback)
-    self = NtracsOjbect.createInstance(self, AutoSignal)
-    self.name = "AutoSignal"
-    self.itemName = itemName
-    self.aspect = 0
-    self.nextAspect = 0
-    self.signalTrack = signalTrack
-    self.direction = direction
-    self.updateCallback = updateCallback
-    return self
+function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
+    local obj = NtracsOjbect.createInstance({}, AutoSignal)
+    obj.name = "AutoSignal"
+    obj.itemName = itemName
+    obj.aspect = 0
+    obj.nextAspect = 0
+    obj.signalTrack = signalTrack
+    obj.direction = direction
+    obj.updateCallback = updateCallback
+    return obj
 end
 
 ---信号現示を返します

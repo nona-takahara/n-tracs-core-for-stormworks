@@ -15,8 +15,8 @@ local Switch       = {}
 ---@param isSite boolean 現場扱いの転てつ器ならばtrue
 ---@param relatedTracks Track[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
-function Switch.new(obj, itemName, isSite, relatedTracks)
-    local obj = NtracsObject.createInstance(NtracsObject.new(), Switch)
+function Switch.new(itemName, isSite, relatedTracks)
+    local obj = NtracsObject.createInstance({}, Switch)
     obj.name = "Switch"
     obj.itemName = itemName
     obj.W = SetRoute.Indefinite
