@@ -71,7 +71,6 @@ end
 
 ---[Stormworks] onTick function.
 -- 1 Tickごとに呼び出されます.
----@diagnostic disable-next-line: lowercase-global
 function onTick()
 	TickCounter = (TickCounter or 0) + 1
 

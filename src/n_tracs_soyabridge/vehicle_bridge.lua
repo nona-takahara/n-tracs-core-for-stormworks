@@ -7,8 +7,8 @@ local NtracsObject = require "src.n_tracs_core.n_tracs_object"
 ---@field alias string[]
 local VehicleBridge = {}
 
----@param vehicle_id number
----@param vdata SWVehicleData
+
+---@param vdata SWLoadedVehicleData
 ---@return VehicleBridge | nil
 function VehicleBridge.new(vdata)
     if not vdata then return nil end
