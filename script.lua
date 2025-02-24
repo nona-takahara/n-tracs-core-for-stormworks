@@ -10,7 +10,7 @@ require("res.signal")(sys)
 require("res.switch")(sys)
 require("res.signal_alias")(sys)
 local crossing = require("res.crossing")(sys)
-require("res.ctc")()
+--require("res.ctc")()
 
 sys.defaultArea = 2
 --Lever.setInput(LEVERS["WAK1R"], true, false)

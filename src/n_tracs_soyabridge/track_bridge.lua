@@ -2,7 +2,7 @@ local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 ---@class TrackBridge
 local TrackBridge = {}
 
----@class TrackBridge
+---@class TrackBridge:NtracsObject
 ---@field name string
 ---@field itemName string
 ---@field areas Area[]
@@ -11,7 +11,7 @@ local TrackBridge = {}
 ---@param areas Area[]
 ---@return TrackBridge
 function TrackBridge.new(itemName, areas)
-    local obj = NtracsObject({}, TrackBridge)
+    local obj = NtracsObject.createInstance({}, TrackBridge)
     obj.name = "TrackBridge"
     obj.itemName = itemName
     obj.areas = areas

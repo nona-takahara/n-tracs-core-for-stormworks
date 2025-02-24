@@ -12,7 +12,9 @@ def area_track_lua_code(area, vertexes):
     # listVertex = "{" + ",".join([f"V[{id}]" for id in area["vertexes"]]) + "}"
     listRelated = "{" + ",".join(
         [str(id).replace('Area_', '') for id in area["related"]]) + "}"
-    return f"sys:setArea({str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},nil,{area['callback'] or 'function()end'})"
+    # return f"sys:setArea({str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},nil,{area['callback'] or 'function()end'})"
+    # ↓ATSをいったん外す
+    return f"sys:setArea({str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{'{}'},{'function()end'})"
 
 
 def track_lua_code(track):

@@ -17,29 +17,28 @@ def absolute_lever_lua_code(name, data):
     switchesMake = []
     for v in data["switches"]:
         switchesMake.append(
-            f'SwitchRoute.new(SwitchGetter("{v["sw"]}"),TargetRoute.{v["t"].capitalize()})')
+            f'SwitchRoute.new("{v["sw"]}",SignalRoute.{v["t"].capitalize()})')
 
     routeLockMake = []
     for v in data["route_lock"]:
-        routeLockMake.append(f'TrackGetter("{v}")')
+        routeLockMake.append(f'"{v}"')
 
     overrunLockMake = []
     for v in data["overrun_lock"]:
-        overrunLockMake.append(f'TrackGetter("{v}")')
+        overrunLockMake.append(f'"{v}"')
 
     signalTrackMake = []
     for v in data["signal_track"]:
-        signalTrackMake.append(f'TrackGetter("{v}")')
+        signalTrackMake.append(f'"{v}"')
 
     approachTrackMake = []
     for v in data["approach_track"]:
-        approachTrackMake.append(f'TrackGetter("{v}")')
+        approachTrackMake.append(f'"{v}"')
 
     rets = 'sys:createLever(' + \
-        f'LeverGetter("{name}"),' +\
         f'"{name}",' +\
-        f'TrackGetter("{data["start"]}"),' + \
-        f'TrackGetter("{data["destination"]}"),' + \
+        f'"{data["start"]}",' + \
+        f'"{data["destination"]}",' + \
         '{' + f'{",".join(switchesMake)}' + '},' + \
         '{' + ','.join(routeLockMake) + '},' +\
         '{' + ','.join(overrunLockMake) + '},' +\
@@ -48,8 +47,9 @@ def absolute_lever_lua_code(name, data):
         '{' + ','.join(approachTrackMake) + '},' +\
         f'{data["approach_lock_time"]},' +\
         f'{data["overrun_lock_time"]},' +\
-        f'{data["update_callback"]}' +\
-        ')'
+        "function()end)"
+    # f'{data["update_callback"]}' +\
+    # ')'
 
     return rets
 
@@ -57,21 +57,24 @@ def absolute_lever_lua_code(name, data):
 def auto_lever_lua_code(name, data):
     signalTrackMake = []
     for v in data["signal_track"]:
-        signalTrackMake.append(f'TrackGetter("{v}")')
+        signalTrackMake.append(f'"{v}"')
 
     rets = 'sys:createAutoSignal(' +\
-        f'LeverGetter("{name}"),' +\
         f'"{name}",' +\
         '{' + ','.join(signalTrackMake) + '},' +\
         f'RouteDirection.{data["direction"].capitalize()},' +\
-        f'{data["update_callback"]}' +\
-        ')'
+        "function()end)"
+    # f'{data["update_callback"]}' +\
+    # ')'
     return rets
 
 
 with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf-8") as lua_f):
     data = tomllib.load(toml_f)
 
+    print('''local SwitchRoute = require("src.n_tracs_core.switch.switch_route")
+local SignalRoute = require("src.n_tracs_core.switch.signal_route")
+local RouteDirection = require("src.n_tracs_core.lever.route_direction")''', file=lua_f)
     print("---@param sys SoyaBridge", file=lua_f)
     print("return function(sys)", file=lua_f)
 
