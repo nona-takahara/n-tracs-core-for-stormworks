@@ -11,7 +11,7 @@ local TrackBridge = {}
 ---@param areas Area[]
 ---@return TrackBridge
 function TrackBridge.new(itemName, areas)
-    local obj = NtracsObject.createInstance({}, TrackBridge)
+    local obj = NtracsObject.create_instance({}, TrackBridge)
     obj.name = "TrackBridge"
     obj.itemName = itemName
     obj.areas = areas

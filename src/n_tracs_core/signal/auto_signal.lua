@@ -14,7 +14,7 @@ local AutoSignal   = {}
 ---@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return AutoSignal
 function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
-    local obj = NtracsOjbect.createInstance({}, AutoSignal)
+    local obj = NtracsOjbect.create_instance({}, AutoSignal)
     obj.name = "AutoSignal"
     obj.itemName = itemName
     obj.aspect = 0

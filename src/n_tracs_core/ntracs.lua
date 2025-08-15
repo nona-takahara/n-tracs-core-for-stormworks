@@ -10,7 +10,7 @@ local AutoSignal = require("src.n_tracs_core.lever.auto_signal")
 local Ntracs = {}
 
 function Ntracs.new()
-    local obj = NtracsObject.createInstance({}, Ntracs)
+    local obj = NtracsObject.create_instance({}, Ntracs)
 
     obj.signal = {}
     obj.track = {}

@@ -28,7 +28,7 @@ local Axle = {}
 ---@param voxelPos Vector3d | nil
 ---@return Axle
 function Axle.new(vehicle_id, name, voxelPos)
-    local obj = NtracsObject.createInstance({}, Axle)
+    local obj = NtracsObject.create_instance({}, Axle)
     obj.vehicle_id = vehicle_id
     obj.name = "Axle"
     obj.itemName = name

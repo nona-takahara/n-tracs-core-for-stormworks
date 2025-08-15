@@ -15,7 +15,7 @@ local TrafficDirectionSwitch = {}
 ---@param relatedTracks string[] てっ査鎖錠を行う抽象軌道回路
 ---@return Switch
 function TrafficDirectionSwitch.new(itemName, relatedTracks)
-    local obj = NtracsObject.createInstance({}, TrafficDirectionSwitch)
+    local obj = NtracsObject.create_instance({}, TrafficDirectionSwitch)
     obj.name = "TrafficDirectionSwitch"
     obj.itemName = itemName
     obj.W = SetRoute.Indefinite

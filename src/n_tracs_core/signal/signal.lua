@@ -44,7 +44,7 @@ local SignalBase = require("src.n_tracs_core.lever.signal_base")
 ---@return Signal
 function Signal.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
                     signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
-    local obj = NtracsObject.createInstance(SignalBase.new(), Signal)
+    local obj = NtracsObject.create_instance(SignalBase.new(), Signal)
     obj.name = "Lever"
     obj.itemName = itemName
     obj.input = false

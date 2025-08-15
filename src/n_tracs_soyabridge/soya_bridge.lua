@@ -21,7 +21,7 @@ local SoyaBridge   = {}
 
 ---@return SoyaBridge
 function SoyaBridge.new()
-    local obj = NtracsObject.createInstance({}, SoyaBridge)
+    local obj = NtracsObject.create_instance({}, SoyaBridge)
     obj.nt = Ntracs.new()
     obj.areas = {}
     obj.trackBridge = {}

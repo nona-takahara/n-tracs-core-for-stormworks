@@ -17,7 +17,7 @@ local SwitchBridge = {}
 -- 役割：複数ビークルからなるSwitchを束ねる
 
 function SwitchBridge.new(itemName, pointlist)
-    local obj = NtracsObject.createInstance({}, SwitchBridge)
+    local obj = NtracsObject.create_instance({}, SwitchBridge)
     obj.name = "SwitchBridge"
     obj.itemName = itemName
     local par = {}

@@ -7,7 +7,7 @@ local NtracsObject = {}
 
 ---@return NtracsObject
 function NtracsObject.new()
-    local obj = NtracsObject.createInstance({}, NtracsObject)
+    local obj = NtracsObject.create_instance({}, NtracsObject)
     obj.name = "NtracsObject"
     return obj
 end
@@ -16,7 +16,7 @@ end
 ---@param target any
 ---@param classObj T
 ---@return T
-function NtracsObject.createInstance(target, classObj)
+function NtracsObject.create_instance(target, classObj)
     for k, v in pairs(classObj) do
         if k ~= "new" and type(v) == "function" then
             target[k] = v

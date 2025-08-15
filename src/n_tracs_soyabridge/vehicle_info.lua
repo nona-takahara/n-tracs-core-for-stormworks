@@ -37,7 +37,7 @@ function VehicleInfo.new(vehicle_id, sys)
     local vdata, s = server.getVehicleComponents(vehicle_id)
     if not s then return nil end
 
-    local obj = NtracsObject.createInstance({}, VehicleInfo)
+    local obj = NtracsObject.create_instance({}, VehicleInfo)
     local f = false
     obj.vehicle_id = vehicle_id
     obj.axles = LoadAxles(vehicle_id, vdata, false)

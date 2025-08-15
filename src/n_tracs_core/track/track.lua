@@ -18,7 +18,7 @@ local Track          = {}
 ---@param itemName string 抽象軌道回路名称です
 ---@return Track
 function Track.new(itemName)
-    local obj = NtracsObject.createInstance(NtracsObject.new(), Track)
+    local obj = NtracsObject.create_instance(NtracsObject.new(), Track)
     obj.name = "Track"
     obj.itemName = itemName
     obj.relatedLever = nil

@@ -22,7 +22,7 @@ local Area         = {}
 ---@param updateCallback fun(self: Area, deltaTick?: number): any @コールバック関数で使えるデータ
 ---@return Area
 function Area.new(name, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
-    local obj = NtracsObject.createInstance(NtracsObject.new(), Area)
+    local obj = NtracsObject.create_instance(NtracsObject.new(), Area)
     obj.name = "Area"
     obj.itemName = name
     obj.vertexs = vertexs

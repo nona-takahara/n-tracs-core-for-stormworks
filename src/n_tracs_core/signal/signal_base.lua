@@ -13,7 +13,7 @@ local SignalBase = {}
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 
 function SignalBase.new()
-    local obj = NtracsObject.createInstance({}, SignalBase)
+    local obj = NtracsObject.create_instance({}, SignalBase)
     obj.name = "SignalBase"
     return obj
 end
