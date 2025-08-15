@@ -1,7 +1,7 @@
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
-local Signal = require("src.n_tracs_core.lever.signal")
+local Signal = require("src.n_tracs_core.signal.signal")
 local Track = require("src.n_tracs_core.track.track")
-local AutoSignal = require("src.n_tracs_core.lever.auto_signal")
+local AutoSignal = require("src.n_tracs_core.signal.auto_signal")
 
 ---@class Ntracs:NtracsObject
 ---@field private signal Signal[]

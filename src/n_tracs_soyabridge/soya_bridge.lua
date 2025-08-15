@@ -3,11 +3,11 @@ local Ntracs       = require("src.n_tracs_core.ntracs")
 local Area         = require("src.n_tracs_soyabridge.area")
 local TrackBridge  = require("src.n_tracs_soyabridge.track_bridge")
 local Track        = require("src.n_tracs_core.track.track")
-local Signal       = require("src.n_tracs_core.lever.signal")
+local Signal       = require("src.n_tracs_core.signal.signal")
 local SwitchBridge = require("src.n_tracs_soyabridge.switch_bridge")
 local Switch       = require("src.n_tracs_core.switch.switch")
 local VehicleInfo  = require("src.n_tracs_soyabridge.vehicle_info")
-local AutoSignal   = require("src.n_tracs_core.lever.auto_signal")
+local AutoSignal   = require("src.n_tracs_core.signal.auto_signal")
 ---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
 ---@field areas table<number, Area>

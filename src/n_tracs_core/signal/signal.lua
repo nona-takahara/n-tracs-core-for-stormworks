@@ -26,7 +26,7 @@ local Signal = {}
 
 
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
-local SignalBase = require("src.n_tracs_core.lever.signal_base")
+local SignalBase = require("src.n_tracs_core.signal.signal_base")
 
 ---てこ構造体のインスタンスを作成します
 ---@param itemName string てこ名称

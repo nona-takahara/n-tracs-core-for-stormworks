@@ -73,7 +73,7 @@ with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf
     data = tomllib.load(toml_f)
 
     print('''local SignalRoute = require("src.n_tracs_core.switch.signal_route")
-local RouteDirection = require("src.n_tracs_core.lever.route_direction")''', file=lua_f)
+local RouteDirection = require("src.n_tracs_core.signal.route_direction")''', file=lua_f)
     print("---@param sw SoyaBridge", file=lua_f)
     print("return function(sw)", file=lua_f)
 
