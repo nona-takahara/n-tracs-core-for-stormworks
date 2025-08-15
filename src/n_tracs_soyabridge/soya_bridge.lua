@@ -3,7 +3,7 @@ local Ntracs       = require("src.n_tracs_core.ntracs")
 local Area         = require("src.n_tracs_soyabridge.area")
 local TrackBridge  = require("src.n_tracs_soyabridge.track_bridge")
 local Track        = require("src.n_tracs_core.track.track")
-local Lever        = require("src.n_tracs_core.lever.signal")
+local Signal       = require("src.n_tracs_core.lever.signal")
 local SwitchBridge = require("src.n_tracs_soyabridge.switch_bridge")
 local Switch       = require("src.n_tracs_core.switch.switch")
 local VehicleInfo  = require("src.n_tracs_soyabridge.vehicle_info")
@@ -35,19 +35,19 @@ end
 
 ---@param id number
 ---@param vertexs Vector2d[]
----@param leftVertexId number
----@param leftAreaIds number[]
----@param rightAreaIds number[]
----@param updateCallback fun(self: Area, deltaTick?: number): any
-function SoyaBridge:setArea(id, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
-    self.areas[id] = Area.new(id, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
+---@param left_vertex_id number
+---@param left_area_ids number[]
+---@param right_area_ids number[]
+---@param update_callback fun(self: Area, deltaTick?: number): any
+function SoyaBridge:create_area(id, vertexs, left_vertex_id, left_area_ids, right_area_ids, update_callback)
+    self.areas[id] = Area.new(id, vertexs, left_vertex_id, left_area_ids, right_area_ids, update_callback)
 end
 
----@param trackName string
----@param areaIds number[]
-function SoyaBridge:createTrack(trackName, areaIds)
-    self.trackBridge[trackName] = TrackBridge.new(trackName, areaIds)
-    self.nt.tracks[trackName] = Track.new(trackName)
+---@param track_id string
+---@param area_ids number[]
+function SoyaBridge:create_track(track_id, area_ids)
+    self.trackBridge[track_id] = TrackBridge.new(track_id, area_ids)
+    self.nt:crate_track(track_id)
 end
 
 ---@param name string てこ名称
@@ -62,24 +62,24 @@ end
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
 ---@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
-function SoyaBridge:createLever(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
-                                approachTrack, lockTime, overrunTime, updateCallback)
-    self.nt.levers[name] = Lever.new(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
+function SoyaBridge:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
+                                  approachTrack, lockTime, overrunTime, updateCallback)
+    self.nt:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
         direction, approachTrack, lockTime, overrunTime, updateCallback)
 end
 
 ---@param name string てこ名称
 ---@param direction RouteDirection 進路てこの方向
 ---@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
-function SoyaBridge:createAutoSignal(name, track, direction, updateCallback)
-    self.nt.levers[name] = AutoSignal.new(name, track, direction, updateCallback)
+function SoyaBridge:create_auto_signal(name, track, direction, updateCallback)
+    self.nt:create_auto_signal(name, track, direction, updateCallback)
 end
 
 ---@param name string
 ---@param pointNames string[]
 ---@param relatedTracks string[]
 ---@param isSite boolean | nil
-function SoyaBridge:createSwitch(name, pointNames, relatedTracks, isSite)
+function SoyaBridge:create_switch(name, pointNames, relatedTracks, isSite)
     self.switchBridge[name] = SwitchBridge.new(name, pointNames)
     self.nt.switches[name] = Switch.new(name, isSite or false, relatedTracks)
     for _, v in pairs(pointNames) do

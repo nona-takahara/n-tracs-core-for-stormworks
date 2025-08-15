@@ -1,4 +1,7 @@
-NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local Signal = require("src.n_tracs_core.lever.signal")
+local Track = require("src.n_tracs_core.track.track")
+local AutoSignal = require("src.n_tracs_core.lever.auto_signal")
 
 ---@class Ntracs:NtracsObject
 ---@field private signal Signal[]
@@ -72,6 +75,24 @@ end
 ---@return Switch | nil
 function Ntracs:get_switch_may_nil(switch_id)
     return self.switch[switch_id]
+end
+
+function Ntracs:create_signal(signal_id, startTrack, destination, switches, routeLock, overrunLock,
+                              signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+    if self.signal[signal_id] then error(signal_id .. " is defined") end
+    self.signal[signal_id] = Signal.new(signal_id, startTrack, destination, switches, routeLock, overrunLock,
+        signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+end
+
+function Ntracs:create_auto_signal(signal_id, track, direction, updateCallback)
+    if self.signal[signal_id] then error(signal_id .. " is defined") end
+    self.signal[signal_id] = AutoSignal.new(signal_id, track, direction, updateCallback)
+end
+
+---@param track_id string
+function Ntracs:crate_track(track_id)
+    if self.track[track_id] then error(track_id .. " is defined") end
+    self.track[track_id] = Track.new(track_id)
 end
 
 return Ntracs

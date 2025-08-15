@@ -4,7 +4,7 @@ ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
 --コマンド部分の修正が済むまで一時的にsysをglobalにする
-sys = require("src.n_tracs_soyabridge.soyabridge").new()
+sys = require("src.n_tracs_soyabridge.soya_bridge").new()
 require("res.area_track")(sys)
 require("res.signal")(sys)
 require("res.switch")(sys)

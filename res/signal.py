@@ -17,7 +17,7 @@ def absolute_lever_lua_code(name, data):
     switchesMake = []
     for v in data["switches"]:
         switchesMake.append(
-            f'SwitchRoute.new("{v["sw"]}",SignalRoute.{v["t"].capitalize()})')
+            '{switch="' + v["sw"] + '",target=SignalRoute.' + v["t"].capitalize()+'}')
 
     routeLockMake = []
     for v in data["route_lock"]:
@@ -35,7 +35,7 @@ def absolute_lever_lua_code(name, data):
     for v in data["approach_track"]:
         approachTrackMake.append(f'"{v}"')
 
-    rets = 'sys:createLever(' + \
+    rets = 'sw:create_signal(' + \
         f'"{name}",' +\
         f'"{data["start"]}",' + \
         f'"{data["destination"]}",' + \
@@ -59,7 +59,7 @@ def auto_lever_lua_code(name, data):
     for v in data["signal_track"]:
         signalTrackMake.append(f'"{v}"')
 
-    rets = 'sys:createAutoSignal(' +\
+    rets = 'sw:create_auto_signal(' +\
         f'"{name}",' +\
         '{' + ','.join(signalTrackMake) + '},' +\
         f'RouteDirection.{data["direction"].capitalize()},' +\
@@ -72,11 +72,10 @@ def auto_lever_lua_code(name, data):
 with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf-8") as lua_f):
     data = tomllib.load(toml_f)
 
-    print('''local SwitchRoute = require("src.n_tracs_core.switch.switch_route")
-local SignalRoute = require("src.n_tracs_core.switch.signal_route")
+    print('''local SignalRoute = require("src.n_tracs_core.switch.signal_route")
 local RouteDirection = require("src.n_tracs_core.lever.route_direction")''', file=lua_f)
-    print("---@param sys SoyaBridge", file=lua_f)
-    print("return function(sys)", file=lua_f)
+    print("---@param sw SoyaBridge", file=lua_f)
+    print("return function(sw)", file=lua_f)
 
     for k, v in data.items():
         print(lever_lua_code(k, v), file=lua_f)
