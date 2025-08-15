@@ -2,6 +2,7 @@ local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local Signal = require("src.n_tracs_core.signal.signal")
 local Track = require("src.n_tracs_core.track.track")
 local AutoSignal = require("src.n_tracs_core.signal.auto_signal")
+local Switch = require("src.n_tracs_core.switch.switch")
 
 ---@class Ntracs:NtracsObject
 ---@field private signal Signal[]
@@ -93,6 +94,12 @@ end
 function Ntracs:crate_track(track_id)
     if self.track[track_id] then error(track_id .. " is defined") end
     self.track[track_id] = Track.new(track_id)
+end
+
+---@param switch_id string
+function Ntracs:create_switch(switch_id, is_site, related_tracks)
+    if self.switch[switch_id] then error(switch_id .. " is defined") end
+    self.switch[switch_id] = Switch.new(switch_id)
 end
 
 return Ntracs
