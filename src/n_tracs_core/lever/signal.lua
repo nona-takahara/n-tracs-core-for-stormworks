@@ -229,7 +229,7 @@ end
 
 ---進路鎖錠が成立していたらfalseを返します
 ---@return boolean
-function Signal:underRouteLock_b()
+function Signal:under_route_lock_b()
     return self.ASR
 end
 

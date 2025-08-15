@@ -53,4 +53,25 @@ function Ntracs:get_switch(switch_id)
         error(debug.traceback(tostring(switch_id) .. " is not found."))
 end
 
+---信号機を取得します
+---@param signal_id string
+---@return Signal | nil
+function Ntracs:get_signal_may_nil(signal_id)
+    return self.signal[signal_id]
+end
+
+---論理軌道回路を取得します
+---@param track_id string
+---@return Track | nil
+function Ntracs:get_track_may_nil(track_id)
+    return self.track[track_id]
+end
+
+---論理分岐器を取得します
+---@param switch_id string
+---@return Switch | nil
+function Ntracs:get_switch_may_nil(switch_id)
+    return self.switch[switch_id]
+end
+
 return Ntracs

@@ -117,24 +117,12 @@ end
 
 ---ポリモーフィズム的に取り扱う。ひとつ前のNtracsObjectを調べる。
 ---@param item string
+---@param nt Ntracs
 ---@return boolean
-function CheckUnlockRouteLock(item)
+function CheckUnlockRouteLock(item, nt)
     if item == nil then return true end
-
-    --クラス判別の必要があるため、内部データnameを取得
-    ---@diagnostic disable-next-line: invisible
-    local item_name = item.name
-
-    if item_name == "Track" then
-        --Track型が確定しているためエラー回避
-        ---@diagnostic disable-next-line
-        return Track.under_route_lock_b(item)
-    elseif item_name == "Lever" then
-        --Lever型が確定しているためエラー回避
-        ---@diagnostic disable-next-line
-        return Lever.underRouteLock_b(item)
-    end
-    return false
+    local item_obj = nt:get_track_may_nil(item) or nt:get_signal_may_nil(item)
+    return (item_obj and item_obj:under_route_lock_b()) or false
 end
 
 ---抽象軌道回路内に在線があればtrueを返却します
@@ -154,11 +142,11 @@ end
 ---@param nt Ntracs
 function Track:process(deltaTick, nt)
     if self.book == BookType.RouteLock or self.book == BookType.RouteOver then
-        if (not self.short) and CheckUnlockRouteLock(self.beforeRouteLockItem) then
+        if (not self.short) and CheckUnlockRouteLock(self.beforeRouteLockItem, nt) then
             self.book = BookType.NoBook
         end
     elseif self.book == BookType.Destination then
-        if CheckUnlockRouteLock(self.beforeRouteLockItem) then
+        if CheckUnlockRouteLock(self.beforeRouteLockItem, nt) then
             self.timer = math.max(self.timer - deltaTick, -1)
             if not self.short then
                 self.book = BookType.NoBook
