@@ -76,13 +76,13 @@ function SoyaBridge:create_auto_signal(name, track, direction, updateCallback)
 end
 
 ---@param name string
----@param pointNames string[]
----@param relatedTracks string[]
----@param isSite boolean | nil
-function SoyaBridge:create_switch(name, pointNames, relatedTracks, isSite)
-    self.switchBridge[name] = SwitchBridge.new(name, pointNames)
-    self.nt.switches[name] = Switch.new(name, isSite or false, relatedTracks)
-    for _, v in pairs(pointNames) do
+---@param points string[]
+---@param related_tracks string[]
+---@param is_site boolean | nil
+function SoyaBridge:create_switch(name, points, related_tracks, is_site)
+    self.switchBridge[name] = SwitchBridge.new(name, points)
+    self.nt:create_switch(name, is_site or false, related_tracks)
+    for _, v in pairs(points) do
         self.pointList[v] = (self.switchBridge[name]):getPointSetter(v)
     end
 end
