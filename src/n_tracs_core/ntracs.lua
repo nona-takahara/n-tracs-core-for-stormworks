@@ -1,66 +1,56 @@
-local NtracsObject           = require("src.n_tracs_core.n_tracs_object")
-local TrafficDirectionLever  = require("src.n_tracs_core.lever.traffic_direction_lever")
-local SetRoute               = require("src.n_tracs_core.switch.set_route")
-local TrafficDirectionSwitch = require("src.n_tracs_core.switch.traffic_direction_switch")
+NtracsObject = require("src.n_tracs_core.n_tracs_object")
 
 ---@class Ntracs:NtracsObject
----@field levers table<string,SignalBase>
----@field tracks table<string,Track>
----@field switches table<string,Switch>
-local Ntracs                 = {}
+---@field private signal Signal[]
+---@field private track Track[]
+---@field private switch Switch[]
+local Ntracs = {}
 
 function Ntracs.new()
     local obj = NtracsObject.createInstance({}, Ntracs)
-    obj.levers = {}
-    obj.tracks = {}
-    obj.switches = {}
+
+    obj.signal = {}
+    obj.track = {}
+    obj.switch = {}
 
     return obj
 end
 
----@param updateLever fun(lever: SignalBase):nil 戻り値は入力
----@param updateTrack fun(track: Track):boolean 戻り値は在線状況
----@param updateSwitch fun(switch: Switch):SetRoute 戻り値は現在の状況
-function Ntracs:beforeProcess(updateLever, updateTrack, updateSwitch)
-    for _, track in pairs(self.tracks) do
-        track:beforeProcess(updateTrack(track))
-    end
-
-    for _, switch in pairs(self.switches) do
-        switch:beforeProcess(updateSwitch(switch))
-    end
-
-    for _, lever in pairs(self.levers) do
-        lever:beforeProcess(updateLever(lever))
-    end
+function Ntracs:to_str()
+    return "N-TRACS DB Object"
 end
 
-function Ntracs:process(deltaTicks)
-    for _, track in pairs(self.tracks) do
-        track:process(deltaTicks)
-    end
+function Ntracs:calculate_signal()
 
-    for _, lever in pairs(self.levers) do
-        lever:process(deltaTicks, self)
-    end
 end
 
----単線自動閉そく用のてこ・リレーを一括生成します
----@param lever1 string
----@param fr1 string
----@param lever2 string
----@param fr2 string
----@param tracks string[]
-function Ntracs:createSingleLineBlock(lever1, fr1, lever2, fr2, tracks)
-    local lever1L, lever1R, lever2L, lever2R = lever1 .. "L", lever1 .. "R", lever2 .. "L", lever2 .. "R"
-    self.levers[lever1L] = TrafficDirectionLever.new(lever1L, lever1R, SetRoute.Normal, true, fr1, fr2)
-    self.levers[lever1R] = TrafficDirectionLever.new(lever1R, lever1L, SetRoute.Reverse, false, fr1, fr2)
+---N-TRACSオブジェクトの依存関係にエラーがないか確認します。エラーがある場合はerror関数で止まります
+function Ntracs:assert()
 
-    self.levers[lever2L] = TrafficDirectionLever.new(lever2L, lever2R, SetRoute.Normal, false, fr2, fr1)
-    self.levers[lever2R] = TrafficDirectionLever.new(lever2R, lever2L, SetRoute.Reverse, true, fr2, fr1)
+end
 
-    self.switches[fr1] = TrafficDirectionSwitch.new(fr1, tracks)
-    self.switches[fr2] = TrafficDirectionSwitch.new(fr2, tracks)
+---信号機を取得します
+---@param signal_id string
+---@return Signal
+function Ntracs:get_signal(signal_id)
+    return (type(signal_id) == "string" and self.signal[signal_id]) or
+        error(debug.traceback(tostring(signal_id) .. " is not found."))
+end
+
+---論理軌道回路を取得します
+---@param track_id string
+---@return Track
+function Ntracs:get_track(track_id)
+    return (type(track_id) == "string" and self.track[track_id]) or
+        error(debug.traceback(tostring(track_id) .. " is not found."))
+end
+
+---論理分岐器を取得します
+---@param switch_id string
+---@return Switch
+function Ntracs:get_switch(switch_id)
+    return (type(switch_id) == "string" and self.switch[switch_id]) or
+        error(debug.traceback(tostring(switch_id) .. " is not found."))
 end
 
 return Ntracs

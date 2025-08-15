@@ -3,7 +3,7 @@ local Ntracs       = require("src.n_tracs_core.ntracs")
 local Area         = require("src.n_tracs_soyabridge.area")
 local TrackBridge  = require("src.n_tracs_soyabridge.track_bridge")
 local Track        = require("src.n_tracs_core.track.track")
-local Lever        = require("src.n_tracs_core.lever.lever")
+local Lever        = require("src.n_tracs_core.lever.signal")
 local SwitchBridge = require("src.n_tracs_soyabridge.switch_bridge")
 local Switch       = require("src.n_tracs_core.switch.switch")
 local VehicleInfo  = require("src.n_tracs_soyabridge.vehicle_info")
@@ -61,7 +61,7 @@ end
 ---@param approachTrack string[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
----@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 function SoyaBridge:createLever(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
                                 approachTrack, lockTime, overrunTime, updateCallback)
     self.nt.levers[name] = Lever.new(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
@@ -70,7 +70,7 @@ end
 
 ---@param name string てこ名称
 ---@param direction RouteDirection 進路てこの方向
----@param updateCallback fun(lever: Lever, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 function SoyaBridge:createAutoSignal(name, track, direction, updateCallback)
     self.nt.levers[name] = AutoSignal.new(name, track, direction, updateCallback)
 end

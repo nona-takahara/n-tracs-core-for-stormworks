@@ -25,4 +25,9 @@ function NtracsObject.createInstance(target, classObj)
     return target
 end
 
+---@return string
+function NtracsObject:to_str()
+    error("to_str is not defined")
+end
+
 return NtracsObject

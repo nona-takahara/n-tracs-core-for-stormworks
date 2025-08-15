@@ -2,15 +2,15 @@
 local NtracsObject   = require("src.n_tracs_core.n_tracs_object")
 local BookType       = require("src.n_tracs_core.track.book_type")
 local RouteDirection = require("src.n_tracs_core.lever.route_direction")
-local Lever          = require("src.n_tracs_core.lever.lever")
+local Lever          = require("src.n_tracs_core.lever.signal")
 
 ---軌道回路に関するものです
 ---@class Track:NtracsObject
----@field relatedLever Lever | nil
+---@field relatedLever string
 ---@field book BookType
 ---@field direction RouteDirection
 ---@field private timer number
----@field private beforeRouteLockItem Track | Lever | nil
+---@field private beforeRouteLockItem string
 ---@field private short boolean
 local Track          = {}
 
@@ -29,71 +29,79 @@ function Track.new(itemName)
     return obj
 end
 
----@param lever Lever
-function Track:bookTemporary(lever)
+---@param lever string
+---@param nt Ntracs
+function Track:book_temporary(lever, nt)
     if self.book ~= BookType.RouteOver then
         self.relatedLever = lever
         self.book = BookType.Temporary
-        self.direction = lever.direction
+        self.direction = nt:get_signal(lever).direction
     end
 end
 
----@param lever Lever
-function Track:bookRouteLock(lever, routeLockBefore)
+---@param lever string
+---@param routeLockBefore string
+---@param nt Ntracs
+function Track:book_route_lock(lever, routeLockBefore, nt)
     self.relatedLever = lever
     self.beforeRouteLockItem = routeLockBefore
     self.book = BookType.RouteLock
-    self.direction = lever.direction
+    self.direction = nt:get_signal(lever).direction
 end
 
----@param lever Lever
-function Track:bookDestination(lever, routeLockBefore)
+---@param lever string
+---@param routeLockBefore string
+---@param nt Ntracs
+function Track:book_destination(lever, routeLockBefore, nt)
     self.relatedLever = lever
     self.beforeRouteLockItem = routeLockBefore
     self.book = BookType.Destination
-    self.direction = lever.direction
-    self.timer = lever.overrunTime
+    self.direction = nt:get_signal(lever).direction
+    self.timer = nt:get_signal(lever).overrunTime
 end
 
----@param lever Lever
+---@param lever string
 ---@param nt Ntracs
-function Track:bookOverrun(lever, nt)
+function Track:book_over_run(lever, nt)
     self.relatedLever = lever
-    self.beforeRouteLockItem = nt.tracks[lever.destination]
+    self.beforeRouteLockItem = nt:get_signal(lever).destination
     self.book = BookType.RouteOver
-    self.direction = lever.direction
+    self.direction = nt:get_signal(lever).direction
 end
 
----@param lever Lever
+---@param lever string
+---@param nt Ntracs
 ---@return boolean
-function Track:isReadyToBookTemporary(lever)
+function Track:is_ready_for_book_temporary(lever, nt)
     return (self.book == BookType.NoBook) or (self.book == BookType.Temporary and self.relatedLever == lever) or
-        (self.book == BookType.RouteOver and self.direction == lever.direction)
+        (self.book == BookType.RouteOver and self.direction == nt:get_signal(lever).direction)
 end
 
----@param lever Lever
+---@param lever string
+---@param nt Ntracs
 ---@return boolean
-function Track:isBookedTemporary(lever)
+function Track:is_booked_temporary(lever, nt)
     return (self.book == BookType.Temporary and self.relatedLever == lever) or
-        (self.book == BookType.RouteOver and self.direction == lever.direction)
+        (self.book == BookType.RouteOver and self.direction == nt:get_signal(lever).direction)
 end
 
----@param lever Lever
+---@param lever string
 ---@return boolean
-function Track:isRouteLock(lever)
+function Track:is_route_lock(lever)
     return self.relatedLever == lever and self.book == BookType.RouteLock
 end
 
----@param lever Lever
+---@param lever string
+---@param nt Ntracs
 ---@return boolean
-function Track:isOverrunLock(lever)
+function Track:is_over_run_lock(lever, nt)
     return (self.relatedLever == lever and self.book == BookType.RouteOver) or
-        (self.book == BookType.RouteLock and self.direction == lever.direction)
+        (self.book == BookType.RouteLock and self.direction == nt:get_signal(lever).direction)
 end
 
 ---@param temporaryIsNotLocked boolean
 ---@return boolean
-function Track:isLocked(temporaryIsNotLocked)
+function Track:is_locked(temporaryIsNotLocked)
     if temporaryIsNotLocked then
         return (self.book ~= BookType.NoBook) and (self.book ~= BookType.Temporary)
     else
@@ -102,13 +110,13 @@ function Track:isLocked(temporaryIsNotLocked)
 end
 
 ---@return boolean
-function Track:underRouteLock_b()
+function Track:under_route_lock_b()
     return (self.book == BookType.Destination and self.timer < 0) or
         (self.book == BookType.NoBook or self.book == BookType.Temporary)
 end
 
 ---ポリモーフィズム的に取り扱う。ひとつ前のNtracsObjectを調べる。
----@param item nil | NtracsObject
+---@param item string
 ---@return boolean
 function CheckUnlockRouteLock(item)
     if item == nil then return true end
@@ -120,7 +128,7 @@ function CheckUnlockRouteLock(item)
     if item_name == "Track" then
         --Track型が確定しているためエラー回避
         ---@diagnostic disable-next-line
-        return Track.underRouteLock_b(item)
+        return Track.under_route_lock_b(item)
     elseif item_name == "Lever" then
         --Lever型が確定しているためエラー回避
         ---@diagnostic disable-next-line
@@ -131,7 +139,7 @@ end
 
 ---抽象軌道回路内に在線があればtrueを返却します
 ---@return boolean
-function Track:isShort()
+function Track:is_short()
     return self.short
 end
 
@@ -143,7 +151,8 @@ end
 
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
-function Track:process(deltaTick)
+---@param nt Ntracs
+function Track:process(deltaTick, nt)
     if self.book == BookType.RouteLock or self.book == BookType.RouteOver then
         if (not self.short) and CheckUnlockRouteLock(self.beforeRouteLockItem) then
             self.book = BookType.NoBook
@@ -158,7 +167,7 @@ function Track:process(deltaTick)
     elseif self.book == BookType.NoBook then
         -- do nothing
     elseif self.book == BookType.Temporary then
-        if not Lever.getInput(self.relatedLever) then
+        if not nt:get_signal(self.relatedLever):getInput() then
             self.book = BookType.NoBook
         end
     else

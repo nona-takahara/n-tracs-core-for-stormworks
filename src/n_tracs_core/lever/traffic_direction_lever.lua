@@ -1,5 +1,9 @@
 -- 運転方向てこ
 
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local SignalBase   = require("src.n_tracs_core.lever.signal_base")
+
+
 ---@class TrafficDirectionLever:SignalBase
 ---@field myFrDirection SetRoute
 ---@field isAcceptLever boolean
@@ -8,9 +12,6 @@
 ---@field pairLeverName string
 ---@field private input boolean
 local TrafficDirectionLever = {}
-
-local NtracsObject          = require("src.n_tracs_core.n_tracs_object")
-local SignalBase            = require("src.n_tracs_core.lever.signal_base")
 
 ---@param name string
 ---@param pairLeverName string
@@ -39,9 +40,9 @@ function TrafficDirectionLever:process(deltaTick, nt)
     if self.input then
         if self.isAcceptLever then
             --NOTE: てっ査鎖錠条件はmove関数で照査されるため、これを区間内在線判定に使用
-            nt.switches[self.myFrName]:move(self.myFrDirection, nt)
-        elseif nt.switches[self.anotherFrName]:getRealRoute() == self.myFrDirection then
-            nt.switches[self.myFrName]:move(self.myFrDirection, nt)
+            nt:get_switch(self.myFrName):move(self.myFrDirection, nt)
+        elseif nt:get_switch(self.anotherFrName):getRealRoute() == self.myFrDirection then
+            nt:get_switch(self.myFrName):move(self.myFrDirection, nt)
         end
     end
 end
@@ -54,7 +55,7 @@ function TrafficDirectionLever:setInput(input, nt)
         self.input = true
 
         ---@diagnostic disable-next-line: inject-field
-        nt.levers[self.pairLeverName].input = false
+        nt:get_signal(self.pairLeverName):setInput(false)
     end
 end
 

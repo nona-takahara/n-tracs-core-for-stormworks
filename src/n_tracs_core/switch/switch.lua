@@ -45,7 +45,7 @@ end
 ---@return boolean
 function Switch:getWLR(nt)
     for _, value in ipairs(self.relatedTracks) do
-        if nt.tracks[value]:isShort() or nt.tracks[value]:isLocked(not self.isSite) then
+        if nt:get_track(value):is_short() or nt:get_track(value):is_locked(not self.isSite) then
             return false
         end
     end
