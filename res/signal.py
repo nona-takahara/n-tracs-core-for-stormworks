@@ -47,9 +47,9 @@ def absolute_lever_lua_code(name, data):
         '{' + ','.join(approachTrackMake) + '},' +\
         f'{data["approach_lock_time"]},' +\
         f'{data["overrun_lock_time"]},' +\
-        "function()end)"
-    # f'{data["update_callback"]}' +\
-    # ')'
+        f'{data["update_callback"]}' +\
+        ')'
+        #"function()end)"
 
     return rets
 
@@ -63,9 +63,9 @@ def auto_lever_lua_code(name, data):
         f'"{name}",' +\
         '{' + ','.join(signalTrackMake) + '},' +\
         f'RouteDirection.{data["direction"].capitalize()},' +\
-        "function()end)"
-    # f'{data["update_callback"]}' +\
-    # ')'
+        f'{data["update_callback"]}' +\
+        ')'
+    #    "function()end)"
     return rets
 
 

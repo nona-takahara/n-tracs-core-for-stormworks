@@ -422,9 +422,9 @@ auto = true
 direction = "right"
 signal_track = ["SGN_SNH1T"]
 update_callback = """
-function(self)
+function(self, nt)
     if self.HR then
-        if LEVERS["SNH1R"].HR and self.aspect >= 2 then
+        if nt:get_signal("SNH1R").HR and self.aspect >= 2 then
             return 3
         else
             return 2

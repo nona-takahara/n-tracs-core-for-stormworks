@@ -40,7 +40,7 @@ local Signal = {}
 ---@param approachTrack string[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
----@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Signal
 function Signal.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
                     signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
@@ -66,7 +66,7 @@ function Signal.new(itemName, startTrack, destination, switches, routeLock, over
     obj.lockTime = lockTime
     obj.overrunTime = overrunTime
     obj.updateCallback = updateCallback
-    obj.auto_reset = false
+    obj.auto_reset = true
     return obj
 end
 
@@ -141,7 +141,7 @@ function Signal:process(deltaTick, nt)
         (not Signal.ASR) and
         self:isNoShort(nt)
 
-    self.nextAspect = self:updateCallback(deltaTick)
+    self.nextAspect = self:updateCallback(nt, deltaTick)
     if not self.HR then
         self.nextAspect = 0
     end

@@ -6,7 +6,7 @@
 ---@field aspect number
 ---@field protected nextAspect number
 ---@field direction RouteDirection [CONSTANT]進路てこの方向
----@field protected updateCallback fun(lever: SignalBase, deltaTick: number):number
+---@field protected updateCallback fun(lever: SignalBase, nt: Ntracs, deltaTick: number):number
 ---@field cbdata any
 local SignalBase = {}
 

@@ -13,9 +13,9 @@ end
 ---@param nextSignal string
 ---@return function
 function StandardAspectCallback_3rd_G_Y_R(nextSignal)
-    return (function(self)
+    return (function(self, nt)
         if self.HR then
-            if LEVERS[nextSignal].aspect >= 2 and self.aspect >= 2 then
+            if nt:get_signal(nextSignal).aspect >= 2 and self.aspect >= 2 then
                 return 4
             else
                 return 2
@@ -29,11 +29,11 @@ end
 ---@param nextSignals string[]
 ---@return function
 function StandardAspectCallback_3rd_multi(nextSignals)
-    return (function(self)
+    return (function(self, nt)
         if self.HR then
             if self.aspect >= 2 then
                 for _, s in ipairs(nextSignals) do
-                    if LEVERS[s].aspect >= 2 then
+                    if nt:get_signal(s).aspect >= 2 then
                         return 4
                     end
                 end

@@ -11,7 +11,7 @@ local AutoSignal   = {}
 ---@param itemName string てこ名称
 ---@param signalTrack string[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
----@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return AutoSignal
 function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
     local obj = NtracsOjbect.create_instance({}, AutoSignal)
@@ -52,7 +52,7 @@ end
 ---@param nt Ntracs
 function AutoSignal:process(deltaTick, nt)
     self.HR = self:is_no_short(nt)
-    self.nextAspect = self:updateCallback(deltaTick)
+    self.nextAspect = self:updateCallback(nt, deltaTick)
     if not self.HR then
         self.nextAspect = 0
     end

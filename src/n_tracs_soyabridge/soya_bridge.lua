@@ -74,7 +74,7 @@ end
 
 ---@param name string てこ名称
 ---@param direction RouteDirection 進路てこの方向
----@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 function SoyaBridge:create_auto_signal(name, track, direction, updateCallback)
     self.nt:create_auto_signal(name, track, direction, updateCallback)
 end
