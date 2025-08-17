@@ -31,6 +31,7 @@ function Area.new(name, vertexs, leftVertexId, leftAreaIds, rightAreaIds, update
     obj.leftAreaIds = leftAreaIds
     obj.rightAreaIds = rightAreaIds
     obj.relatedTracks = {}
+    obj.axles = {}
     obj.updateCallback = updateCallback
     return obj
 end

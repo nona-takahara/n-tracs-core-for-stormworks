@@ -108,7 +108,7 @@ function SoyaBridge:get_vehicle_data()
 end
 
 function SoyaBridge:before_process()
-    for _, v in pairs(sw.vehicle_table) do
+    for _, v in pairs(self.vehicle_table) do
         for _, a in ipairs(v.axles) do
             a:search(self)
         end

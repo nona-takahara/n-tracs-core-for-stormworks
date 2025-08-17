@@ -23,7 +23,8 @@ end
 ---@return boolean
 function TrackBridge:is_in_axle(sw)
     for _, area in ipairs(self.area_ids) do
-        if #(sw.areas[area].axles) > 0 then return true end
+        if sw.areas[area] and #(sw.areas[area].axles) > 0 then return true end
+        --if #(sw.areas[area].axles) > 0 then return true end
     end
     return false
 end
