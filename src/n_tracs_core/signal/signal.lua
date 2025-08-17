@@ -20,6 +20,7 @@ local SignalBase = require("src.n_tracs_core.signal.signal_base")
 ---@field private signalTrack string[]
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
+---@field aspect number
 local Signal = {}
 
 ---転てつ器と開通方向の情報セットを扱います

@@ -55,7 +55,7 @@ function VehicleInfo.new(vehicle_id, sw)
         -- 駅の実装負担軽減：宛先ペインタブルが無くても送信
         if button.name then
             local v, _ = (button.name):gsub("_ASPECT", "")
-            if sw.leverAlias[v] then
+            if sw.lever_alias[v] then
                 f = true
                 table.insert(obj.alias, v)
             end
@@ -98,7 +98,7 @@ function VehicleInfo:send(sign, sw)
     end
 
     for _, alias in ipairs(self.alias) do
-        local sending = sw.nt:get_signal(sw.leverAlias[alias]).aspect
+        local sending = sw.nt:get_signal(sw.lever_alias[alias]).aspect
         server.setVehicleKeypad(self.vehicle_id, alias .. "_ASPECT", sending * sign)
     end
 

@@ -96,10 +96,27 @@ function Ntracs:crate_track(track_id)
     self.track[track_id] = Track.new(track_id)
 end
 
----@param switch_id string
+---@param switch_id string 転てつ器名称
+---@param is_site boolean 現場扱いの転てつ器ならばtrue
+---@param related_tracks string[] てっ査鎖錠を行う抽象軌道回路
 function Ntracs:create_switch(switch_id, is_site, related_tracks)
     if self.switch[switch_id] then error(switch_id .. " is defined") end
-    self.switch[switch_id] = Switch.new(switch_id)
+    self.switch[switch_id] = Switch.new(switch_id, is_site, related_tracks)
+end
+
+---@param deltaTicks number
+function Ntracs:process(deltaTicks)
+    for _, v in pairs(self.track) do
+        v:process(deltaTicks, self)
+    end
+
+    for _, v in pairs(self.signal) do
+        v:process(deltaTicks, self)
+    end
+
+    for _, v in pairs(self.switch) do
+        v:process(deltaTicks, self)
+    end
 end
 
 return Ntracs

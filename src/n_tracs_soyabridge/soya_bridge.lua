@@ -1,23 +1,24 @@
-local NtracsObject = require("src.n_tracs_core.n_tracs_object")
-local Ntracs       = require("src.n_tracs_core.ntracs")
-local Area         = require("src.n_tracs_soyabridge.area")
-local TrackBridge  = require("src.n_tracs_soyabridge.track_bridge")
-local Track        = require("src.n_tracs_core.track.track")
-local Signal       = require("src.n_tracs_core.signal.signal")
-local SwitchBridge = require("src.n_tracs_soyabridge.switch_bridge")
-local Switch       = require("src.n_tracs_core.switch.switch")
-local VehicleInfo  = require("src.n_tracs_soyabridge.vehicle_info")
-local AutoSignal   = require("src.n_tracs_core.signal.auto_signal")
+local NtracsObject   = require("src.n_tracs_core.n_tracs_object")
+local Ntracs         = require("src.n_tracs_core.ntracs")
+local Area           = require("src.n_tracs_soyabridge.area")
+local TrackBridge    = require("src.n_tracs_soyabridge.track_bridge")
+local Track          = require("src.n_tracs_core.track.track")
+local Signal         = require("src.n_tracs_core.signal.signal")
+local SwitchBridge   = require("src.n_tracs_soyabridge.switch_bridge")
+local RouteDirection = require("src.n_tracs_core.signal.route_direction")
+local Switch         = require("src.n_tracs_core.switch.switch")
+local VehicleInfo    = require("src.n_tracs_soyabridge.vehicle_info")
+local AutoSignal     = require("src.n_tracs_core.signal.auto_signal")
 ---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
 ---@field areas table<number, Area>
----@field leverAlias table<string, string> key: Alias to val: Real name
+---@field lever_alias table<string, string> key: Alias to val: Real name
 ---@field track_bridge table<string, TrackBridge>
 ---@field switch_bridge table<string, SwitchBridge>
 ---@field points table<string, PointSetter>
 ---@field vehicle_table table<number, VehicleInfo>
 ---@field default_area number
-local SoyaBridge   = {}
+local SoyaBridge     = {}
 
 ---@return SoyaBridge
 function SoyaBridge.new()
@@ -28,7 +29,7 @@ function SoyaBridge.new()
     obj.switch_bridge = {}
     obj.points = {}
     obj.vehicle_table = {}
-    obj.leverAlias = {}
+    obj.lever_alias = {}
 
     return obj
 end
@@ -93,7 +94,7 @@ end
 ---@param alias string
 ---@param target string
 function SoyaBridge:set_lever_alias(alias, target)
-    self.leverAlias[alias] = target
+    self.lever_alias[alias] = target
 end
 
 function SoyaBridge:get_vehicle_data()

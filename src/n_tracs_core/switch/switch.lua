@@ -5,7 +5,7 @@ local SetRoute     = require("src.n_tracs_core.switch.set_route")
 ---転てつ器に関する情報です
 ---@class Switch:NtracsObject
 ---@field W SetRoute
----@field private K SetRoute
+---@field K SetRoute
 ---@field isSite boolean
 ---@field private relatedTracks string[]
 local Switch       = {}
