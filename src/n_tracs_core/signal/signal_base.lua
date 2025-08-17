@@ -24,7 +24,7 @@ function SignalBase:process(deltaTick, nt)
     error("Abstract Class SignalBase")
 end
 
-function SignalBase:beforeProcess()
+function SignalBase:before_process()
     error("Abstract Class SignalBase")
 end
 

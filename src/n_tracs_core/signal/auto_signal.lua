@@ -27,12 +27,12 @@ end
 
 ---信号現示を返します
 ---@return number
-function AutoSignal:getAspect()
+function AutoSignal:get_aspect()
     return self.aspect
 end
 
 ---processを呼び出す前に呼び出してください。現在の状態を設定します
-function AutoSignal:beforeProcess()
+function AutoSignal:before_process()
     self.aspect = self.nextAspect
 end
 

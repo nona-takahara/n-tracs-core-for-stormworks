@@ -59,7 +59,7 @@ function TrafficDirectionLever:setInput(input, nt)
     end
 end
 
-function TrafficDirectionLever:beforeProcess()
+function TrafficDirectionLever:before_process()
 
 end
 

@@ -322,7 +322,7 @@ function Signal:getInput()
 end
 
 ---processを呼び出す前に呼び出してください。現在の状態を設定します
-function Signal:beforeProcess(nt)
+function Signal:before_process()
     self.aspect = self.nextAspect
 end
 
