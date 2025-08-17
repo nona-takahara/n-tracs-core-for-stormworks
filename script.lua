@@ -10,14 +10,10 @@ require("res.signal")(sw)
 require("res.switch")(sw)
 require("res.signal_alias")(sw)
 local crossing = require("res.crossing")(sw)
---require("res.ctc")()
+
+dofile("res.maplabel")
 
 sw.default_area = 2
---Lever.setInput(LEVERS["WAK1R"], true, false)
---Lever.setInput(LEVERS["WAK4L"], true, false)
---Lever.setInput(LEVERS["SGN1R"], true, false)
---Lever.setInput(LEVERS["SGN2R"], true, false)
---Lever.setInput(LEVERS["SGN5L"], true, false)
 
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),

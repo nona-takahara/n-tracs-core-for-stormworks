@@ -1,5 +1,8 @@
 -- N-TRACS Core [Lever]
 
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+local SignalBase = require("src.n_tracs_core.signal.signal_base")
+
 ---てこに関する操作を行います
 ---@class Signal:SignalBase
 ---@field private input boolean てこの入力状態
@@ -23,10 +26,6 @@ local Signal = {}
 ---@class SwitchRoute
 ---@field switch string 関連転てつ器
 ---@field target SignalRoute 開通希望方向
-
-
-local NtracsObject = require("src.n_tracs_core.n_tracs_object")
-local SignalBase = require("src.n_tracs_core.signal.signal_base")
 
 ---てこ構造体のインスタンスを作成します
 ---@param itemName string てこ名称

@@ -114,7 +114,7 @@ function SoyaBridge:before_process()
     end
 
     for k, v in pairs(self.track_bridge) do
-        self.nt:get_track(k):before_process(v.is_in_axle())
+        self.nt:get_track(k):before_process(v:is_in_axle(self))
     end
 
     for k, v in pairs(self.switch_bridge) do
