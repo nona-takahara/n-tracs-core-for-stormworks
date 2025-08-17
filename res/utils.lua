@@ -45,10 +45,10 @@ function StandardAspectCallback_3rd_multi(nextSignals)
     end)
 end
 
-function error(message)
+error = error or function(message)
     debug.log("[N-TRACS] ERROR: " .. tostring(message))
 end
 
-function Dbglog(message)
+Dbglog = function(message)
     debug.log("[N-TRACS] DEBUG: " .. tostring(message))
 end
