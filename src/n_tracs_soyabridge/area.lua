@@ -11,6 +11,7 @@ local Area         = {}
 ---@field axles Axle[] @左から順に車軸情報
 ---@field leftAreaIds number[] @隣り合うエリア・ポリゴンへの参照
 ---@field rightAreaIds number[] @隣り合うエリア・ポリゴンへの参照
+---@field relatedTracks string[]
 ---@field updateCallback fun(self: Area, deltaTick?: number): any
 ---@field cbdata any @コールバック関数で使えるデータ
 
@@ -29,27 +30,28 @@ function Area.new(name, vertexs, leftVertexId, leftAreaIds, rightAreaIds, update
     obj.leftVertexId = leftVertexId
     obj.leftAreaIds = leftAreaIds
     obj.rightAreaIds = rightAreaIds
+    obj.relatedTracks = {}
     obj.updateCallback = updateCallback
     return obj
 end
 
 --- Areaの状態を初期化します。
 ---@param self Area
-function Area:initializeForProcess()
+function Area:initialize_for_process()
     self.axles = {}
 end
 
 --- 渡された座標がエリア内にあるか判定します。
 ---@param pos Vector2d
 ---@return boolean
-function Area:isInArea(pos)
+function Area:is_in_area(pos)
     local polygon, x, z = self.vertexs, pos.x, pos.z
     local n = #polygon
     local prod = Complex.new(1, 0)
     for i, v0 in ipairs(polygon) do
         local v1 = polygon[i % n + 1]
         prod = Complex.mul(prod,
-            Complex.halfArgument(
+            Complex.half_argument(
                 Complex.mul(
                     Complex.new(v1.x - x, v1.z - z),
                     Complex.conjugate(Complex.new(v0.x - x, v0.z - z))
@@ -69,7 +71,7 @@ end
 
 ---渡された輪軸を、上下線フラグに基づいて順番通り挿入します
 ---@param axle Axle
-function Area:insertAxle(axle)
+function Area:insert_axle(axle)
     local lv = self.vertexs[self.leftVertexId]
     local lself = len2(lv, axle.real_pos)
     local i = 0

@@ -54,7 +54,7 @@ end
 
 ---processの実行前に呼び出してください。現在の状態を設定します
 ---@param currentState SetRoute 現在の開通方向
-function Switch:beforeProcess(currentState)
+function Switch:before_process(currentState)
     self.K = currentState
     self.W = SetRoute.Indefinite
 end

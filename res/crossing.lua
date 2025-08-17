@@ -112,11 +112,11 @@ return function(nt)
     return function(deltaTicks, sys)
         local r
         r = CrossingShionagihama(deltaTicks, sys)
-        sys.trackBridge["SNH_DC"].isInAxle = function() return r.right end
-        sys.trackBridge["SNH_UC"].isInAxle = function() return r.left end
+        sys.track_bridge["SNH_DC"].is_in_axle = function() return r.right end
+        sys.track_bridge["SNH_UC"].is_in_axle = function() return r.left end
 
         r = CrossingOhmori(sys)
-        sys.trackBridge["OMR_DC"].isInAxle = function() return r.right end
-        sys.trackBridge["OMR_UC"].isInAxle = function() return r.left end
+        sys.track_bridge["OMR_DC"].is_in_axle = function() return r.right end
+        sys.track_bridge["OMR_UC"].is_in_axle = function() return r.left end
     end
 end

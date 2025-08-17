@@ -21,6 +21,7 @@ local Axle = {}
 ---@field area number | nil @現在のエリア
 ---@field sending number[]
 ---@field arc number
+---@field disable_short boolean
 
 ---輪軸を初期化します
 ---@param vehicle_id number
@@ -36,12 +37,13 @@ function Axle.new(vehicle_id, name, voxelPos)
     obj.real_pos = { x = 0, z = 0 }
     obj.area = nil
     obj.arc = 0
+    obj.disable_short = false
     return obj
 end
 
 ---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle:getPosition()
+function Axle:get_position()
     ---@type SWMatrix
     local mtx
     ---@type boolean
@@ -64,12 +66,23 @@ function Axle:getPosition()
     if ss then
         self.arc = dialArc.value
     end
+
+    ---@type SWVehicleDialData
+    local dial_disable_short
+    dial_disable_short, ss = server.getVehicleDial(self.vehicle_id, "TRAIN_SHORT")
+    if ss then
+        self.disable_short = dial_disable_short.value == 1
+    end
 end
 
 ---輪軸の現在地を更新します
----@param sys SoyaBridge
-function Axle:search(sys)
-    self.area = self.area or sys.defaultArea
+---@param sw SoyaBridge
+function Axle:search(sw)
+    self.area = self.area or sw.default_area
+    if self.disable_short then
+        self.area = nil
+        return
+    end
 
     ---@type number[]
     local queue = {}
@@ -82,9 +95,9 @@ function Axle:search(sys)
     table.insert(queue, self.area)
     -- BFS
     while front <= #queue do
-        targetArea = sys.areas[queue[front]]
+        targetArea = sw.areas[queue[front]]
 
-        if targetArea:isInArea(self.real_pos) then
+        if targetArea:is_in_area(self.real_pos) then
             found = true
             break
         end
@@ -125,23 +138,19 @@ function Axle:search(sys)
 
     if found then
         self.area = targetArea.itemName
-        targetArea:insertAxle(self)
+        targetArea:insert_axle(self)
+    else
+        self.area = nil
     end
 end
 
----@param sendingSign number
-function Axle:send(sendingSign)
-    local sending = self.sending or { 0, 0, 0 }
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * sendingSign)
-    if sending[2] == 0 or sending[2] == 14 then
-        server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", 0)
-    else
-        server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1] or 1)
-    end
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", sendingSign)
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[3])
-    self.sending = { 0, 0, 0 }
+---@param sign number
+function Axle:send(sign)
+    local sending = self.sending or { 0, 0 }
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1])
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", 1 * sign)
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[2])
+    self.sending = { 0, 0 }
 end
 
 return Axle

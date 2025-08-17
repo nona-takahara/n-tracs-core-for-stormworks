@@ -2,7 +2,8 @@
 local NtracsObject   = require("src.n_tracs_core.n_tracs_object")
 local BookType       = require("src.n_tracs_core.track.book_type")
 local RouteDirection = require("src.n_tracs_core.signal.route_direction")
-local Lever          = require("src.n_tracs_core.signal.signal")
+local Signal         = require("src.n_tracs_core.signal.signal")
+local Switch         = require("src.n_tracs_core.switch.switch")
 
 ---軌道回路に関するものです
 ---@class Track:NtracsObject
@@ -133,7 +134,7 @@ end
 
 ---processを呼び出す前に実行してください。状態を設定します
 ---@param isShort boolean
-function Track:beforeProcess(isShort)
+function Track:before_process(isShort)
     self.short = isShort
 end
 

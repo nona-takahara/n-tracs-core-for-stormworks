@@ -92,7 +92,7 @@ end
 function TrackInformation(trackName, area, direction)
     local t = TRACKS[trackName]
     local lv = t.relatedLever and t.relatedLever.itemName
-    local trackArea = BRIDGE_TRACK[trackName].areas
+    local trackArea = BRIDGE_TRACK[trackName].area_ids
     local begins = 1
     local ends = #trackArea
     local step = 1
@@ -115,7 +115,7 @@ function TrackInformation(trackName, area, direction)
 end
 
 function GetLeftTrackArea(trackName, area)
-    local trackArea = BRIDGE_TRACK[trackName].areas
+    local trackArea = BRIDGE_TRACK[trackName].area_ids
     for i = 0, #trackArea - 1 do
         if trackArea[i + 1] == area then
             return trackArea[i]
@@ -125,7 +125,7 @@ function GetLeftTrackArea(trackName, area)
 end
 
 function GetRightTrackArea(trackName, area)
-    local trackArea = BRIDGE_TRACK[trackName].areas
+    local trackArea = BRIDGE_TRACK[trackName].area_ids
     for i = 1, #trackArea - 1 do
         if trackArea[i] == area then
             return trackArea[i + 1]

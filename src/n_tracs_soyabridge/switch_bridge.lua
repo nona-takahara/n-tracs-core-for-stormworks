@@ -6,7 +6,7 @@ local SwitchBridge = {}
 ---@class SwitchBridge:NtracsObject
 ---@field name string
 ---@field itemName string
----@field pointAndRoute table<string,SetRoute>
+---@field points table<string,SetRoute>
 
 ---@class PointSetter
 ---@field name string
@@ -24,28 +24,28 @@ function SwitchBridge.new(itemName, pointlist)
     for _, key in ipairs(pointlist) do
         par[key] = SetRoute.Indefinite
     end
-    obj.pointAndRoute = par
+    obj.points = par
     return obj
 end
 
 ---@param name string
 ---@return PointSetter
-function SwitchBridge:getPointSetter(name)
+function SwitchBridge:get_point_setter(name)
     return {
         name = "PointSetter",
         pointName = name,
         switchName = self.itemName,
         set = function(state)
-            self.pointAndRoute[name] = state
+            self.points[name] = state
         end
     }
 end
 
 ---@return SetRoute
-function SwitchBridge:getState()
+function SwitchBridge:get_state()
     ---@type SetRoute | nil
     local s = nil
-    for _, value in pairs(self.pointAndRoute) do
+    for _, value in pairs(self.points) do
         if s == nil then s = value end
         if s ~= value then return SetRoute.Indefinite end
     end

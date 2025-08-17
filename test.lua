@@ -5,3 +5,7 @@ require("res.signal")(sw)
 require("res.switch")(sw)
 require("res.signal_alias")(sw)
 local crossing = require("res.crossing")(sw)
+
+local JSON = require("temp.json")
+
+print(JSON.stringify(sw))

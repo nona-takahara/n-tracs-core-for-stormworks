@@ -12,11 +12,11 @@ local AutoSignal   = require("src.n_tracs_core.signal.auto_signal")
 ---@field nt Ntracs
 ---@field areas table<number, Area>
 ---@field leverAlias table<string, string> key: Alias to val: Real name
----@field trackBridge table<string, TrackBridge>
----@field switchBridge table<string, SwitchBridge>
----@field pointList table<string, PointSetter>
----@field vehicleTable table<number, VehicleInfo>
----@field defaultArea number
+---@field track_bridge table<string, TrackBridge>
+---@field switch_bridge table<string, SwitchBridge>
+---@field points table<string, PointSetter>
+---@field vehicle_table table<number, VehicleInfo>
+---@field default_area number
 local SoyaBridge   = {}
 
 ---@return SoyaBridge
@@ -24,10 +24,10 @@ function SoyaBridge.new()
     local obj = NtracsObject.create_instance({}, SoyaBridge)
     obj.nt = Ntracs.new()
     obj.areas = {}
-    obj.trackBridge = {}
-    obj.switchBridge = {}
-    obj.pointList = {}
-    obj.vehicleTable = {}
+    obj.track_bridge = {}
+    obj.switch_bridge = {}
+    obj.points = {}
+    obj.vehicle_table = {}
     obj.leverAlias = {}
 
     return obj
@@ -46,7 +46,10 @@ end
 ---@param track_id string
 ---@param area_ids number[]
 function SoyaBridge:create_track(track_id, area_ids)
-    self.trackBridge[track_id] = TrackBridge.new(track_id, area_ids)
+    self.track_bridge[track_id] = TrackBridge.new(track_id, area_ids)
+    for _, v in pairs(area_ids) do
+        if self.areas[v] then table.insert(self.areas[v].relatedTracks, track_id) end
+    end
     self.nt:crate_track(track_id)
 end
 
@@ -80,72 +83,43 @@ end
 ---@param related_tracks string[]
 ---@param is_site boolean | nil
 function SoyaBridge:create_switch(name, points, related_tracks, is_site)
-    self.switchBridge[name] = SwitchBridge.new(name, points)
+    self.switch_bridge[name] = SwitchBridge.new(name, points)
     self.nt:create_switch(name, is_site or false, related_tracks)
     for _, v in pairs(points) do
-        self.pointList[v] = (self.switchBridge[name]):getPointSetter(v)
+        self.points[v] = (self.switch_bridge[name]):get_point_setter(v)
     end
 end
 
 ---@param alias string
 ---@param target string
-function SoyaBridge:setLeverAlias(alias, target)
+function SoyaBridge:set_lever_alias(alias, target)
     self.leverAlias[alias] = target
 end
 
-function SoyaBridge:beforeDateUpdate()
+function SoyaBridge:get_vehicle_data()
     for _, area in pairs(self.areas) do
-        area:initializeForProcess()
+        area:initialize_for_process()
+    end
+
+    for _, data in pairs(self.vehicle_table) do
+        data:get_vehicle_data()
     end
 end
 
-function SoyaBridge:getVehicleData()
-    for vehicle_id, data in pairs(self.vehicleTable) do
-        if data.axles then
-            for _, axle in ipairs(data.axles) do
-                axle:getPosition()
-            end
-        end
-
-        if data.points then
-            -- 個々の実装はbridge側に移すこと
-            for _, setter in ipairs(data.points) do
-                local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
-                if ss then
-                    setter.set(dial.value)
-                    --else
-                    --ARCを実装したら 0 にするようにする。
-                    --setter.set(0)
-                end
-            end
+function SoyaBridge:before_process()
+    for _, v in pairs(sw.vehicle_table) do
+        for _, a in ipairs(v.axles) do
+            a:search(self)
         end
     end
 
-    -- CTCデータ取得
-    --if CTC_AVAILABLE and CTC then
-    --    GetCtcState()
-    --end
-end
-
-function SoyaBridge:trackShort()
-    for _, data in pairs(self.vehicleTable) do
-        if data.axles then
-            for _, axle in ipairs(data.axles) do
-                axle:search(self)
-            end
-        end
+    for k, v in pairs(self.track_bridge) do
+        self.nt:get_track(k):before_process(v.is_in_axle())
     end
-end
 
-function SoyaBridge:beforeProcess()
-    self.nt:beforeProcess(
-        function(lever) end,
-        function(track)
-            return self.trackBridge[track.itemName]:isInAxle()
-        end,
-        function(switch)
-            return self.switchBridge[switch.itemName]:getState()
-        end)
+    for k, v in pairs(self.switch_bridge) do
+        self.nt:get_switch(k):before_process(v:get_state())
+    end
 end
 
 ---@param deltaTicks number
@@ -153,37 +127,35 @@ function SoyaBridge:process(deltaTicks)
     self.nt:process(deltaTicks)
 end
 
-function SoyaBridge:beforeBroadcast()
+---@param deltaTicks number
+function SoyaBridge:before_broadcast(deltaTicks)
+    -- Areaのコールバック
     for _, area in pairs(self.areas) do
-        area.cbdata = area.updateCallback and area.updateCallback(area, 6)
+        area.cbdata = area.updateCallback and area.updateCallback(area, deltaTicks)
     end
 end
 
 ---@param sign number
 function SoyaBridge:broadcast(sign)
-    for _, data in pairs(self.vehicleTable) do
+    for _, data in pairs(self.vehicle_table) do
         data:send(sign, self)
     end
-
-    --if CTC_AVAILABLE and CTC then
-    --    SendCtcData(sign)
-    --end
 end
 
 ---@param vehicle_id number
-function SoyaBridge:loadVehicle(vehicle_id)
-    self.vehicleTable[vehicle_id] = VehicleInfo.new(vehicle_id, self)
+function SoyaBridge:load_vehicle(vehicle_id)
+    self.vehicle_table[vehicle_id] = VehicleInfo.new(vehicle_id, self)
 end
 
 ---@param vehicle_id number
-function SoyaBridge:despawnVehicle(vehicle_id)
-    self.vehicleTable[vehicle_id] = nil
+function SoyaBridge:despawn_vehicle(vehicle_id)
+    self.vehicle_table[vehicle_id] = nil
 end
 
 ---@param isCheatBattery boolean
-function SoyaBridge:chargeBattery(isCheatBattery)
-    for _, vehicle in pairs(self.vehicleTable) do
-        vehicle:chargeBattery(isCheatBattery)
+function SoyaBridge:charge_battery(isCheatBattery)
+    for _, vehicle in pairs(self.vehicle_table) do
+        vehicle:charge_battery(isCheatBattery)
     end
 end
 

@@ -4,7 +4,7 @@ local SetRoute     = require("src.n_tracs_core.switch.set_route")
 ---@class VehicleInfo:NtracsObject
 ---@field vehicle_id number
 ---@field axles Axle[] | nil
----@field levers string[]
+---@field signals string[]
 ---@field tracks string[]
 ---@field points PointSetter[]
 ---@field arc_send boolean
@@ -15,7 +15,7 @@ local VehicleInfo  = {}
 ---@param vdata SWLoadedVehicleData
 ---@param forceRegister boolean
 ---@return Axle[] | nil
-local function LoadAxles(vehicle_id, vdata, forceRegister)
+local function load_axles(vehicle_id, vdata, forceRegister)
     ---@type Axle[]
     local axles = {}
     for _, sign in ipairs(vdata.components.signs) do
@@ -31,27 +31,23 @@ local function LoadAxles(vehicle_id, vdata, forceRegister)
 end
 
 ---@param vehicle_id number
----@param sys SoyaBridge
+---@param sw SoyaBridge
 ---@return VehicleInfo | nil
-function VehicleInfo.new(vehicle_id, sys)
+function VehicleInfo.new(vehicle_id, sw)
     local vdata, s = server.getVehicleComponents(vehicle_id)
     if not s then return nil end
 
     local obj = NtracsObject.create_instance({}, VehicleInfo)
     local f = false
     obj.vehicle_id = vehicle_id
-    obj.axles = LoadAxles(vehicle_id, vdata, false)
-    obj.levers = {}
+    obj.axles = load_axles(vehicle_id, vdata, false)
+    obj.signals = {}
     obj.tracks = {}
     obj.points = {}
     obj.arc_send = false
     obj.alias = {}
 
     for _, button in ipairs(vdata.components.buttons) do
-        --if button.name == "Activate CTC" then
-        --    CTC = vehicle_id
-        --end
-
         if button.name == "N-TRACS RESET" then
             f = true
         end
@@ -59,7 +55,7 @@ function VehicleInfo.new(vehicle_id, sys)
         -- 駅の実装負担軽減：宛先ペインタブルが無くても送信
         if button.name then
             local v, _ = (button.name):gsub("_ASPECT", "")
-            if sys.leverAlias[v] then
+            if sw.leverAlias[v] then
                 f = true
                 table.insert(obj.alias, v)
             end
@@ -68,7 +64,7 @@ function VehicleInfo.new(vehicle_id, sys)
     if not f then return obj end
 
     for _, sign in ipairs(vdata.components.signs) do
-        if sys.nt.tracks[sign.name] then
+        if sw.nt:get_track_may_nil(sign.name) then
             table.insert(obj.tracks, sign.name)
             if not obj.arc_send then
                 for _, dial in ipairs(vdata.components.buttons) do
@@ -83,44 +79,44 @@ function VehicleInfo.new(vehicle_id, sys)
                 end
             end
         end
-        if sys.pointList[sign.name] then
-            table.insert(obj.points, sys.pointList[sign.name])
+        if sw.points[sign.name] then
+            table.insert(obj.points, sw.points[sign.name])
         end
-        if sys.nt.levers[sign.name] then
-            table.insert(obj.levers, sign.name)
+        if sw.nt:get_signal_may_nil(sign.name) then
+            table.insert(obj.signals, sign.name)
         end
     end
     return obj
 end
 
 ---@param sign number
----@param sys SoyaBridge
-function VehicleInfo:send(sign, sys)
-    for _, lever in ipairs(self.levers) do
-        local sending = sys.nt.levers[lever].aspect
-        server.setVehicleKeypad(self.vehicle_id, lever .. "_ASPECT", sending * SendingSign)
+---@param sw SoyaBridge
+function VehicleInfo:send(sign, sw)
+    for _, lever in ipairs(self.signals) do
+        local sending = sw.nt:get_signal(lever).aspect
+        server.setVehicleKeypad(self.vehicle_id, lever .. "_ASPECT", sending * sign)
     end
 
     for _, alias in ipairs(self.alias) do
-        local sending = sys.nt.levers[sys.leverAlias[alias]].aspect
-        server.setVehicleKeypad(self.vehicle_id, alias .. "_ASPECT", sending * SendingSign)
+        local sending = sw.nt:get_signal(sw.leverAlias[alias]).aspect
+        server.setVehicleKeypad(self.vehicle_id, alias .. "_ASPECT", sending * sign)
     end
 
     for _, track in ipairs(self.tracks) do
-        local sending = 1 - (sys.nt.tracks[track]:isShort() and 1 or 0)
-        server.setVehicleKeypad(self.vehicle_id, track .. "R", sending * SendingSign)
+        local sending = 1 - (sw.nt:get_track(track):is_short() and 1 or 0)
+        server.setVehicleKeypad(self.vehicle_id, track .. "R", sending * sign)
         if self.arc_send then
             local right_arc = nil
-            for _, area in ipairs(sys.trackBridge[track].areas) do
-                if #area.axles > 0 then
+            for _, area in ipairs(sw.track_bridge[track].area_ids) do
+                if #sw.areas[area].axles > 0 then
                     if right_arc == nil then
-                        server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_L", area.axles[1].arc * SendingSign)
+                        server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_L", sw.areas[area].axles[1].arc * sign)
                     end
-                    right_arc = area.axles[#area.axles].arc
+                    right_arc = sw.areas[area].axles[#sw.areas[area].axles].arc
                 end
             end
             if right_arc ~= nil then
-                server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_R", right_arc * SendingSign)
+                server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_R", right_arc * sign)
             else
                 server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_L", 0)
                 server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_R", 0)
@@ -129,13 +125,33 @@ function VehicleInfo:send(sign, sys)
     end
 
     for _, point in ipairs(self.points) do
-        if sys.nt.switches[point.switchName].W ~= SetRoute.Indefinite then
-            server.setVehicleKeypad(self.vehicle_id, point.switchName .. "W", sys.nt.switches[point.switchName].W)
+        if sw.nt:get_switch(point.switchName).W ~= SetRoute.Indefinite then
+            server.setVehicleKeypad(self.vehicle_id, point.switchName .. "W", sw.nt:get_switch(point.switchName).W)
         end
     end
 end
 
-function VehicleInfo:chargeBattery(isCheatBattery)
+function VehicleInfo:get_vehicle_data()
+    if self.axles then
+        for _, axle in ipairs(self.axles) do
+            axle:get_position()
+        end
+    end
+
+    if self.points then
+        for _, setter in ipairs(self.points) do
+            local dial, ss = server.getVehicleDial(self.vehicle_id, setter.pointName .. "K")
+            if ss then
+                setter.set(dial.value)
+                --else
+                --ARCを実装したら 0 にするようにする。
+                --setter.set(0)
+            end
+        end
+    end
+end
+
+function VehicleInfo:charge_battery(isCheatBattery)
     if isCheatBattery then
         server.setVehicleBattery(self.vehicle_id, "signal_bat", 3)
         server.setVehicleBattery(self.vehicle_id, "cheat_battery", 1)
