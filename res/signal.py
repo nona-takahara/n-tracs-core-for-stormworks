@@ -35,7 +35,7 @@ def absolute_lever_lua_code(name, data):
     for v in data["approach_track"]:
         approachTrackMake.append(f'"{v}"')
 
-    rets = 'sw:create_signal(' + \
+    rets = 'cs(s,' + \
         f'"{name}",' +\
         f'"{data["start"]}",' + \
         f'"{data["destination"]}",' + \
@@ -59,7 +59,7 @@ def auto_lever_lua_code(name, data):
     for v in data["signal_track"]:
         signalTrackMake.append(f'"{v}"')
 
-    rets = 'sw:create_auto_signal(' +\
+    rets = 'cas(s,' +\
         f'"{name}",' +\
         '{' + ','.join(signalTrackMake) + '},' +\
         f'RouteDirection.{data["direction"].capitalize()},' +\
@@ -74,8 +74,9 @@ with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf
 
     print('''local SignalRoute = require("src.n_tracs_core.switch.signal_route")
 local RouteDirection = require("src.n_tracs_core.signal.route_direction")''', file=lua_f)
-    print("---@param sw SoyaBridge", file=lua_f)
-    print("return function(sw)", file=lua_f)
+    print("---@param s SoyaBridge", file=lua_f)
+    print("return function(s)", file=lua_f)
+    print("local cas,cs=s.create_auto_signal,sw.create_signal", file=lua_f)
 
     for k, v in data.items():
         print(lever_lua_code(k, v), file=lua_f)

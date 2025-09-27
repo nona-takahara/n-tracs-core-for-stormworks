@@ -14,13 +14,13 @@ def area_track_lua_code(area, vertexes):
         [str(id).replace('Area_', '') for id in area["related"]]) + "}"
     # return f"sys:setArea({str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},nil,{area['callback'] or 'function()end'})"
     # ↓ATSをいったん外す
-    return f"sw:create_area({str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{'{}'},{'function()end'})"
+    return f"ca(s,{str(area['name']).replace('Area_','')},{listVertex},{area['left_vertex_inner_id']+1},{listRelated},{'{}'},{'function()end'})"
 
 
 def track_lua_code(track):
     arealist = "{" + ",".join(
         [id['name'].replace('Area_', '') for id in track["areas"]]) + "}"
-    return f"sw:create_track(\"{track['name']}\",{arealist})"
+    return f"ct(s,\"{track['name']}\",{arealist})"
 
 # {"name":"NHB4LT",
 # "areas":[{"name":"Area_38","trackFlag":"none"},{"name":"Area_37","trackFlag":"none"},{"name":"Area_39","trackFlag":"none"}]
@@ -42,8 +42,9 @@ with (open("area_track.json", "rb") as json_f, open("area_track.lua", "w", encod
     for vx in v:
         vv[vx['name']] = vx
 
-    print("---@param sw SoyaBridge", file=lua_f)
-    print("return function(sw)", file=lua_f)
+    print("---@param s SoyaBridge", file=lua_f)
+    print("return function(s)", file=lua_f)
+    print("local ca,ct=s.create_area,s.create_track", file=lua_f)
 
     for a in data["areas"]:
         print(area_track_lua_code(a, vv), file=lua_f)
