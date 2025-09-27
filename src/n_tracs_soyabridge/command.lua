@@ -38,9 +38,9 @@ COMMANDS["aspect"] = {
     description = "Get aspect of signal",
     command = (function(args, is_admin, is_auth, peer_id)
         local nm = args[2]
-        if sw.nt.levers[nm] then
+        if sw.nt:get_signal_may_nil(nm) then
             table.insert(DELAY_ANNOUNE, function()
-                Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(sw.nt.levers[nm].aspect), peer_id)
+                Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(sw.nt:get_signal(nm).aspect), peer_id)
             end)
         else
             Announce("ERROR! " .. "Singal \"" .. nm .. "\" is not found", peer_id)
@@ -54,10 +54,10 @@ COMMANDS["set"] = {
     description = "Set signal",
     command = (function(args, is_admin, is_auth, peer_id)
         local nm = args[2]
-        if sw.nt.levers[nm] then
-            if sw.nt.levers[nm].name == "Lever" then
+        if sw.nt:get_signal_may_nil(nm) then
+            if sw.nt:get_signal(nm).name == "Lever" then
                 ---@diagnostic disable-next-line: param-type-mismatch
-                sw.nt.levers[nm]:setInput(true, not (nm == "WAK1R" or nm == "WAK4L" or nm == "SGN1R" or nm == "SGN4L"))
+                sw.nt:get_signal(nm):setInput(true)
                 Announce("Singal \"" .. nm .. "\" has set", peer_id)
             else
                 Announce("WARNING " .. "Singal \"" .. nm .. "\" cannot set", peer_id)
@@ -74,10 +74,10 @@ COMMANDS["reset"] = {
     description = "Reset signal",
     command = (function(args, is_admin, is_auth, peer_id)
         local nm = args[2]
-        if sw.nt.levers[nm] then
-            if sw.nt.levers[nm].name == "Lever" then
+        if sw.nt:get_signal_may_nil(nm) then
+            if sw.nt:get_signal(nm).name == "Lever" then
                 ---@diagnostic disable-next-line: param-type-mismatch
-                sw.nt.levers[nm]:setInput(false, false)
+                sw.nt:get_signal(nm):setInput(false)
                 Announce("Singal \"" .. nm .. "\" has reset", peer_id)
             else
                 Announce("WARNING " .. "Singal \"" .. nm .. "\" cannot reset", peer_id)
@@ -94,14 +94,14 @@ COMMANDS["debug"] = {
     description = "Get " .. ADDON_SHORT_NAME .. " item information for debug",
     command = (function(args, is_admin, is_auth, peer_id)
         local nm = args[2]
-        if sw.nt.levers[nm] then
+        if sw.nt:get_signal_may_nil(nm) then
             table.insert(DELAY_ANNOUNE, function()
-                Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(sw.nt.levers[nm].aspect), peer_id)
+                Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(sw.nt:get_signal(nm).aspect), peer_id)
             end)
         end
-        if sw.nt.switches[nm] then
+        if sw.nt:get_switch_may_nil(nm) then
             table.insert(DELAY_ANNOUNE, function()
-                Announce("Switch \"" .. nm .. "\" route: " .. tostring(sw.nt.switches[nm]:getRealRoute()), peer_id)
+                Announce("Switch \"" .. nm .. "\" route: " .. tostring(sw.nt:get_switch(nm):getRealRoute()), peer_id)
             end)
         end
     end)

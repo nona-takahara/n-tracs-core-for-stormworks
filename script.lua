@@ -3,13 +3,16 @@ ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
+dofile("res.utils")
+
 --コマンド部分の修正が済むまで一時的にsysをglobalにする
-sw = require("src.n_tracs_soyabridge.soya_bridge").new()
-require("res.area_track")(sw)
-require("res.signal")(sw)
-require("res.switch")(sw)
-require("res.signal_alias")(sw)
-local crossing = require("res.crossing")(sw)
+local _ = require("src.n_tracs_soyabridge.soya_bridge"); sw = _.new();
+_ = require("res.area_track"); _(sw);
+_ = require("res.signal"); _(sw);
+_ = require("res.switch"); _(sw);
+_ = require("res.signal_alias"); _(sw);
+_ = require("res.crossing");
+local crossing = _(sw);
 
 dofile("res.maplabel")
 
@@ -17,7 +20,7 @@ sw.default_area = 2
 
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
-	cheatBattery = property.checkbox("Enable cheat_battery feature", true)
+	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
 }
 
 function onCreate(is_world_create)

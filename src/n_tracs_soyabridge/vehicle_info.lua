@@ -108,9 +108,11 @@ function VehicleInfo:send(sign, sw)
         if self.arc_send then
             local right_arc = nil
             for _, area in ipairs(sw.track_bridge[track].area_ids) do
-                if #sw.areas[area].axles > 0 then
+                -- NOTE: このnilチェック(sw.areas[area])は本来不要
+                if sw.areas[area] and #sw.areas[area].axles > 0 then
                     if right_arc == nil then
-                        server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_L", sw.areas[area].axles[1].arc * sign)
+                        server.setVehicleKeypad(self.vehicle_id, track .. "_ARC_L",
+                            sw.areas[area].axles[1].arc * sign)
                     end
                     right_arc = sw.areas[area].axles[#sw.areas[area].axles].arc
                 end
