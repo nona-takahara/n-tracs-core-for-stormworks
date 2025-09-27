@@ -575,8 +575,8 @@ approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
 update_callback = """
-function(self)
-    if self.HR and TRACKS["SNH4LT"].isShort() then
+function(self, nt)
+    if self.HR and nt:get_track("SNH4LT"):is_short() then
         return 1
     else
         return 0
@@ -617,8 +617,8 @@ approach_track = ["SNH13LT"]
 approach_lock_time = 15
 
 update_callback = """
-function(self)
-    if self.HR and TRACKS["SNH4LT"].isShort()  then
+function(self, nt)
+    if self.HR and nt:get_track("SNH4LT"):is_short()  then
         return 1
     else
         return 0
