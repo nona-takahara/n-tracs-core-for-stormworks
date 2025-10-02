@@ -3,7 +3,13 @@ ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v1.1.2"
 CTC_VERSION = "SoyaWS-2"
 
-dofile("res.utils")
+error = error or function(message)
+	debug.log("[N-TRACS] ERROR: " .. tostring(message))
+end
+
+dlog = function(message)
+	debug.log("[N-TRACS] DEBUG: " .. tostring(message))
+end
 
 --コマンド部分の修正が済むまで一時的にsysをglobalにする
 local _ = require("src.n_tracs_soyabridge.soya_bridge"); sw = _.new();

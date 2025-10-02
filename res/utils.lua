@@ -1,6 +1,8 @@
+local Utils = {}
+
 ---@param aspect number
 ---@return function
-function StandardAspectCallback_2nd(aspect)
+function Utils.StandardAspectCallback_2nd(aspect)
     return (function(self)
         if self.HR then
             return aspect
@@ -12,7 +14,7 @@ end
 
 ---@param nextSignal string
 ---@return function
-function StandardAspectCallback_3rd_G_Y_R(nextSignal)
+function Utils.StandardAspectCallback_3rd_G_Y_R(nextSignal)
     return (function(self, nt)
         if self.HR then
             if nt:get_signal(nextSignal).aspect >= 2 and self.aspect >= 2 then
@@ -28,7 +30,7 @@ end
 
 ---@param nextSignals string[]
 ---@return function
-function StandardAspectCallback_3rd_multi(nextSignals)
+function Utils.StandardAspectCallback_3rd_multi(nextSignals)
     return (function(self, nt)
         if self.HR then
             if self.aspect >= 2 then
@@ -45,10 +47,4 @@ function StandardAspectCallback_3rd_multi(nextSignals)
     end)
 end
 
-error = error or function(message)
-    debug.log("[N-TRACS] ERROR: " .. tostring(message))
-end
-
-Dbglog = function(message)
-    debug.log("[N-TRACS] DEBUG: " .. tostring(message))
-end
+return Utils
