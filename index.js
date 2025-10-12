@@ -44,7 +44,7 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
 
     const vx = new Map();
     obj.vertexes.forEach((p) => {
-        vx.set(p.name, p);
+        vx.set(p.name, ((p)=>({x: Math.floor(p.x*10)/10, z: Math.floor(p.z*10)/10}))(p));
     });
 
     const ar = new Map();
