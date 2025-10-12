@@ -72,7 +72,7 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
             `{${a.vertexes.map((k) => {
                 const v = vx.get(k);
                 return `{x=${v.x},z=${v.z}}`;
-            }).join(",")}},${a.left_vertex_inner_id},` +
+            }).join(",")}},${a.left_vertex_inner_id + 1},` +
             `{${a.uparea.map((s) => s.replace("Area_", "")).join(",")}},` +
             `{${a.downarea.map((s) => s.replace("Area_", "")).join(",")}},` + 
             `${a.callback || "function()end"})`);
