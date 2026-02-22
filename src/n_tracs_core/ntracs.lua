@@ -79,10 +79,10 @@ function Ntracs:get_switch_may_nil(switch_id)
 end
 
 function Ntracs:create_signal(signal_id, startTrack, destination, switches, routeLock, overrunLock,
-                              signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+                              signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
     if self.signal[signal_id] then error(signal_id .. " is defined") end
     self.signal[signal_id] = Signal.new(signal_id, startTrack, destination, switches, routeLock, overrunLock,
-        signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+        signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
 end
 
 function Ntracs:create_auto_signal(signal_id, track, direction, updateCallback)

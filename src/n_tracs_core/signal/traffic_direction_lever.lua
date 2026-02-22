@@ -36,7 +36,6 @@ end
 ---@param deltaTick number
 ---@param nt Ntracs
 function TrafficDirectionLever:process(deltaTick, nt)
-    --TODO: 総括制御条件を入れる（自身のsetInputを呼ぶ）
     if self.input then
         if self.isAcceptLever then
             --NOTE: てっ査鎖錠条件はmove関数で照査されるため、これを区間内在線判定に使用
@@ -49,14 +48,14 @@ end
 
 ---@param input boolean
 ---@param nt Ntracs
-function TrafficDirectionLever:setInput(input, nt)
-    --trueなら自分とペアのInputを一緒に倒す
-    if input then
-        self.input = true
-
-        ---@diagnostic disable-next-line: inject-field
-        nt:get_signal(self.pairLeverName):setInput(false)
+---@param fromPair boolean|nil
+function TrafficDirectionLever:setInput(input, nt, fromPair)
+    self.input = input
+    if fromPair then
+        return
     end
+    ---@diagnostic disable-next-line: inject-field
+    nt:get_signal(self.pairLeverName):setInput(input, nt, true)
 end
 
 function TrafficDirectionLever:before_process()

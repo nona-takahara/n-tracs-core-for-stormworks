@@ -65,11 +65,12 @@ end
 ---@param approachTrack string[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(sec)
 ---@param overrunTime number 過走防護鎖錠の時間(sec)
+---@param controls string[]|nil このてこが総括制御するてこ名一覧
 ---@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 function SoyaBridge:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
-                                  approachTrack, lockTime, overrunTime, updateCallback)
+                                  approachTrack, lockTime, overrunTime, controls, updateCallback)
     self.nt:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
-        direction, approachTrack, lockTime * 60, overrunTime * 60, updateCallback)
+        direction, approachTrack, lockTime * 60, overrunTime * 60, controls, updateCallback)
 end
 
 ---@param name string てこ名称

@@ -19,6 +19,7 @@ local SwitchRoute = require("src.n_tracs_core.signal.switch_route")
 ---@field private approachTrack string[]
 ---@field private overrunLock string[]
 ---@field private signalTrack string[]
+---@field private controls string[]
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
 ---@field aspect number
@@ -36,10 +37,11 @@ local Signal = {}
 ---@param approachTrack string[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
+---@param controls string[]|nil このてこが総括制御するてこ名一覧
 ---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Signal
 function Signal.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
-                    signalTrack, direction, approachTrack, lockTime, overrunTime, updateCallback)
+                    signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
     local obj = NtracsObject.create_instance(SignalBase.new(), Signal)
     obj.name = "Lever"
     obj.itemName = itemName
@@ -58,6 +60,7 @@ function Signal.new(itemName, startTrack, destination, switches, routeLock, over
     obj.routeLock = routeLock
     obj.overrunLock = overrunLock
     obj.signalTrack = signalTrack
+    obj.controls = controls or {}
     obj.direction = direction
     obj.lockTime = lockTime
     obj.overrunTime = overrunTime
@@ -307,8 +310,19 @@ end
 
 ---継電連動装置の進路てこの物理的状態に相当する情報を設定します
 ---@param input boolean
-function Signal:setInput(input)
+---@param nt Ntracs|nil
+---@param fromControl boolean|nil
+function Signal:setInput(input, nt, fromControl)
     self.input = input
+    if fromControl or (not nt) then
+        return
+    end
+    for _, signalName in ipairs(self.controls) do
+        local signal = nt:get_signal_may_nil(signalName)
+        if signal and signal ~= self and type(signal.setInput) == "function" then
+            signal:setInput(input, nt, true)
+        end
+    end
 end
 
 ---継電連動装置の進路リレー相当の情報を返却します

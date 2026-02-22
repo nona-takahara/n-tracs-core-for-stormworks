@@ -61,7 +61,7 @@ return function(sw)
             if sw.nt:get_signal_may_nil(nm) then
                 if sw.nt:get_signal(nm).name == "Lever" then
                     ---@diagnostic disable-next-line: param-type-mismatch
-                    sw.nt:get_signal(nm):setInput(true)
+                    sw.nt:get_signal(nm):setInput(true, sw.nt)
                     Announce("Singal \"" .. nm .. "\" has set", peer_id)
                 else
                     Announce("WARNING " .. "Singal \"" .. nm .. "\" cannot set", peer_id)
@@ -81,7 +81,7 @@ return function(sw)
             if sw.nt:get_signal_may_nil(nm) then
                 if sw.nt:get_signal(nm).name == "Lever" then
                     ---@diagnostic disable-next-line: param-type-mismatch
-                    sw.nt:get_signal(nm):setInput(false)
+                    sw.nt:get_signal(nm):setInput(false, sw.nt)
                     Announce("Singal \"" .. nm .. "\" has reset", peer_id)
                 else
                     Announce("WARNING " .. "Singal \"" .. nm .. "\" cannot reset", peer_id)
