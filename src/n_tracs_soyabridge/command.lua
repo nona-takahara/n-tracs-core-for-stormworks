@@ -59,7 +59,7 @@ return function(sw)
         command = (function(args, is_admin, is_auth, peer_id)
             local nm = args[2]
             if sw.nt:get_signal_may_nil(nm) then
-                if sw.nt:get_signal(nm).name == "Lever" then
+                if type(sw.nt:get_signal(nm).setInput) == "function" then
                     ---@diagnostic disable-next-line: param-type-mismatch
                     sw.nt:get_signal(nm):setInput(true, sw.nt)
                     Announce("Singal \"" .. nm .. "\" has set", peer_id)
@@ -79,7 +79,7 @@ return function(sw)
         command = (function(args, is_admin, is_auth, peer_id)
             local nm = args[2]
             if sw.nt:get_signal_may_nil(nm) then
-                if sw.nt:get_signal(nm).name == "Lever" then
+                if type(sw.nt:get_signal(nm).setInput) == "function" then
                     ---@diagnostic disable-next-line: param-type-mismatch
                     sw.nt:get_signal(nm):setInput(false, sw.nt)
                     Announce("Singal \"" .. nm .. "\" has reset", peer_id)

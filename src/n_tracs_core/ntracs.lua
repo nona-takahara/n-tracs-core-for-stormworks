@@ -1,8 +1,10 @@
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local Signal = require("src.n_tracs_core.signal.signal")
+local TrafficDirectionLever = require("src.n_tracs_core.signal.traffic_direction_lever")
 local Track = require("src.n_tracs_core.track.track")
 local AutoSignal = require("src.n_tracs_core.signal.auto_signal")
 local Switch = require("src.n_tracs_core.switch.switch")
+local TrafficDirectionSwitch = require("src.n_tracs_core.switch.traffic_direction_switch")
 
 ---@class Ntracs:NtracsObject
 ---@field private signal Signal[]
@@ -90,6 +92,19 @@ function Ntracs:create_auto_signal(signal_id, track, direction, updateCallback)
     self.signal[signal_id] = AutoSignal.new(signal_id, track, direction, updateCallback)
 end
 
+---@param signal_id string
+---@param pair_signal_id string
+---@param my_direction SetRoute
+---@param is_accept_lever boolean
+---@param my_switch_id string
+---@param another_switch_id string
+function Ntracs:create_traffic_direction_lever(signal_id, pair_signal_id, my_direction, is_accept_lever, my_switch_id,
+                                               another_switch_id)
+    if self.signal[signal_id] then error(signal_id .. " is defined") end
+    self.signal[signal_id] = TrafficDirectionLever.new(signal_id, pair_signal_id, my_direction, is_accept_lever,
+        my_switch_id, another_switch_id)
+end
+
 ---@param track_id string
 function Ntracs:crate_track(track_id)
     if self.track[track_id] then error(track_id .. " is defined") end
@@ -102,6 +117,13 @@ end
 function Ntracs:create_switch(switch_id, is_site, related_tracks)
     if self.switch[switch_id] then error(switch_id .. " is defined") end
     self.switch[switch_id] = Switch.new(switch_id, is_site, related_tracks)
+end
+
+---@param switch_id string
+---@param related_tracks string[]
+function Ntracs:create_traffic_direction_switch(switch_id, related_tracks)
+    if self.switch[switch_id] then error(switch_id .. " is defined") end
+    self.switch[switch_id] = TrafficDirectionSwitch.new(switch_id, related_tracks)
 end
 
 ---@param deltaTicks number

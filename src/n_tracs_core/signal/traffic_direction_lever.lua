@@ -1,7 +1,7 @@
 -- 運転方向てこ
 
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
-local SignalBase   = require("src.n_tracs_core.lever.signal_base")
+local SignalBase = require("src.n_tracs_core.signal.signal_base")
 
 
 ---@class TrafficDirectionLever:SignalBase
@@ -21,7 +21,7 @@ local TrafficDirectionLever = {}
 ---@param anotherFrName string
 ---@return TrafficDirectionLever
 function TrafficDirectionLever.new(name, pairLeverName, myFrDirection, isAcceptLever, myFrName, anotherFrName)
-    local obj = NtracsObject.create_instance(SignalBase.new, TrafficDirectionLever)
+    local obj = NtracsObject.create_instance(SignalBase.new(), TrafficDirectionLever)
     obj.name = "TrafficDirectionLever"
     obj.itemName = name
     obj.pairLeverName = pairLeverName
@@ -48,14 +48,15 @@ end
 
 ---@param input boolean
 ---@param nt Ntracs
+---@param fromControl boolean|nil
 ---@param fromPair boolean|nil
-function TrafficDirectionLever:setInput(input, nt, fromPair)
+function TrafficDirectionLever:setInput(input, nt, fromControl, fromPair)
     self.input = input
-    if fromPair then
+    if fromPair or (not nt) then
         return
     end
     ---@diagnostic disable-next-line: inject-field
-    nt:get_signal(self.pairLeverName):setInput(input, nt, true)
+    nt:get_signal(self.pairLeverName):setInput(input, nt, fromControl, true)
 end
 
 function TrafficDirectionLever:before_process()

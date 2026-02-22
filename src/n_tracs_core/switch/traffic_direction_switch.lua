@@ -1,7 +1,6 @@
 -- N-TRACS Core [Switch]
 local NtracsObject           = require("src.n_tracs_core.n_tracs_object")
 local SetRoute               = require("src.n_tracs_core.switch.set_route")
-local Switch                 = require("src.n_tracs_core.switch.switch")
 
 ---転てつ器に関する情報です
 ---@class TrafficDirectionSwitch:Switch
@@ -52,7 +51,7 @@ end
 
 ---processの実行前に呼び出してください。現在の状態を設定します
 ---@param currentState SetRoute 現在の開通方向
-function TrafficDirectionSwitch:beforeProcess(currentState)
+function TrafficDirectionSwitch:before_process(currentState)
 end
 
 ---毎ループごとに呼び出してください

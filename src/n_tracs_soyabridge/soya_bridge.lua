@@ -7,6 +7,7 @@ local Signal         = require("src.n_tracs_core.signal.signal")
 local SwitchBridge   = require("src.n_tracs_soyabridge.switch_bridge")
 local RouteDirection = require("src.n_tracs_core.signal.route_direction")
 local Switch         = require("src.n_tracs_core.switch.switch")
+local SetRoute       = require("src.n_tracs_core.switch.set_route")
 local VehicleInfo    = require("src.n_tracs_soyabridge.vehicle_info")
 local AutoSignal     = require("src.n_tracs_core.signal.auto_signal")
 ---@class SoyaBridge:NtracsObject
@@ -81,6 +82,17 @@ function SoyaBridge:create_auto_signal(name, track, direction, updateCallback)
 end
 
 ---@param name string
+---@param pairName string
+---@param myDirection SetRoute
+---@param isAcceptLever boolean
+---@param mySwitchName string
+---@param anotherSwitchName string
+function SoyaBridge:create_traffic_direction_lever(name, pairName, myDirection, isAcceptLever, mySwitchName,
+                                                   anotherSwitchName)
+    self.nt:create_traffic_direction_lever(name, pairName, myDirection, isAcceptLever, mySwitchName, anotherSwitchName)
+end
+
+---@param name string
 ---@param points string[]
 ---@param related_tracks string[]
 ---@param is_site boolean | nil
@@ -90,6 +102,12 @@ function SoyaBridge:create_switch(name, points, related_tracks, is_site)
     for _, v in pairs(points) do
         self.points[v] = (self.switch_bridge[name]):get_point_setter(v)
     end
+end
+
+---@param name string
+---@param related_tracks string[]
+function SoyaBridge:create_traffic_direction_switch(name, related_tracks)
+    self.nt:create_traffic_direction_switch(name, related_tracks)
 end
 
 ---@param alias string
