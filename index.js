@@ -11,7 +11,7 @@ function main() {
         fs.writeFileSync(ad, area_track(JSON.parse(fs.readFileSync(as))));
     }
 
-    const sd = "res/area_track.lua", ss = "res/area_track.json";
+    const sd = "res/signal.lua", ss = "res/signal.toml";
     if (!fs.existsSync(sd) || fs.statSync(ss).mtime > fs.statSync(sd).mtime) {
         console.log(execSync("python res/signal.py").toString());
     }
