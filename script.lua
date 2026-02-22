@@ -11,14 +11,22 @@ dlog = function(message)
 	debug.log("[N-TRACS] DEBUG: " .. tostring(message))
 end
 
---コマンド部分の修正が済むまで一時的にsysをglobalにする
-local _ = require("src.n_tracs_soyabridge.soya_bridge"); sw = _.new();
-_ = require("res.area_track"); _(sw);
-_ = require("res.signal"); _(sw);
-_ = require("res.switch"); _(sw);
-_ = require("res.signal_alias"); _(sw);
-_ = require("res.crossing");
-local crossing = _(sw);
+local soya_bridge = require("src.n_tracs_soyabridge.soya_bridge")
+local sw = soya_bridge.new()
+local apply_area_track = require("res.area_track")
+local apply_signal = require("res.signal")
+local apply_switch = require("res.switch")
+local apply_signal_alias = require("res.signal_alias")
+local crossing_factory = require("res.crossing")
+local apply_command = require("src.n_tracs_soyabridge.command")
+
+apply_area_track(sw)
+apply_signal(sw)
+apply_switch(sw)
+apply_signal_alias(sw)
+
+local crossing = crossing_factory(sw)
+local command_module = apply_command(sw)
 
 dofile("res.maplabel")
 
@@ -89,12 +97,32 @@ function onTick()
 		SendingSign = (SendingSign or -1) * -1
 		sw:broadcast(SendingSign)
 
-		while #DELAY_ANNOUNE > 0 do
-			local calls = table.remove(DELAY_ANNOUNE, 1)
+		while #command_module.DELAY_ANNOUNE > 0 do
+			local calls = table.remove(command_module.DELAY_ANNOUNE, 1)
 			if type(calls) == "function" then
 				calls()
 			end
 		end
+	end
+end
+
+---@diagnostic disable-next-line: lowercase-global
+function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
+	if command == "?ntracs" or command == "?nt" then
+		local args = { ... }
+		if command_module.COMMANDS[args[1]] then
+			local cmd = command_module.COMMANDS[args[1]]
+			if (not cmd.admin or (cmd.admin and is_admin)) and (not cmd.auth or (cmd.auth and is_auth)) then
+				cmd.command(args, is_admin, is_auth, peer_id)
+			end
+		else
+			command_module.Announce(
+				"ERROR! " .. ADDON_SHORT_NAME .. " command '" .. tostring(args[1]) .. "' is not found", peer_id)
+		end
+	end
+
+	if command == "?help" then
+		command_module.Announce("For more help, use ?nt help", peer_id)
 	end
 end
 
@@ -115,5 +143,3 @@ function onButtonPress(vehicle_id, peer_id, button_name)
 	--	CTC = vehicle_id
 	--end
 end
-
-dofile("src.n_tracs_soyabridge.command") -- TODO: 今後修正せねばならない
