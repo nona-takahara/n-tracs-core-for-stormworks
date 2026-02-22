@@ -2,6 +2,7 @@
 
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local SignalBase = require("src.n_tracs_core.signal.signal_base")
+local SwitchRoute = require("src.n_tracs_core.signal.switch_route")
 
 ---てこに関する操作を行います
 ---@class Signal:SignalBase
@@ -22,11 +23,6 @@ local SignalBase = require("src.n_tracs_core.signal.signal_base")
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
 ---@field aspect number
 local Signal = {}
-
----転てつ器と開通方向の情報セットを扱います
----@class SwitchRoute
----@field switch string 関連転てつ器
----@field target SignalRoute 開通希望方向
 
 ---てこ構造体のインスタンスを作成します
 ---@param itemName string てこ名称
@@ -208,7 +204,7 @@ end
 ---@return boolean
 function Signal:checkSwitches(nt)
     for _, value in ipairs(self.switches) do
-        if nt:get_switch(value.switch).K ~= value.target then
+        if value:check(nt) then
             return false
         end
     end

@@ -17,7 +17,7 @@ def absolute_lever_lua_code(name, data):
     switchesMake = []
     for v in data["switches"]:
         switchesMake.append(
-            '{switch="' + v["sw"] + '",target=SignalRoute.' + v["t"].capitalize()+'}')
+            'sr("' + v["sw"] + '",SignalRoute.' + v["t"].capitalize()+')')
 
     routeLockMake = []
     for v in data["route_lock"]:
@@ -73,10 +73,11 @@ with (open("signal.toml", "rb") as toml_f, open("signal.lua", "w", encoding="utf
     data = tomllib.load(toml_f)
 
     print('''local SignalRoute = require("src.n_tracs_core.switch.signal_route")
+local SwitchRoute = require("src.n_tracs_core.signal.switch_route")
 local RouteDirection = require("src.n_tracs_core.signal.route_direction")''', file=lua_f)
     print("---@param s SoyaBridge", file=lua_f)
     print("return function(s)", file=lua_f)
-    print("local cas,cs=s.create_auto_signal,sw.create_signal", file=lua_f)
+    print("local cas,cs,sr=s.create_auto_signal,s.create_signal,SwitchRoute.new", file=lua_f)
 
     for k, v in data.items():
         print(lever_lua_code(k, v), file=lua_f)

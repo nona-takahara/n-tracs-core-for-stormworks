@@ -4,6 +4,8 @@ local t = {
     Normal = SetRoute.Normal,
     Reverse = SetRoute.Reverse,
     Indefinite = SetRoute.Indefinite,
-    -- 片鎖錠など各種条件をここに
+    Onewaynormal = 11,
+    Onewayreverse = -11,
+    Bothway = 21
 }
 return t

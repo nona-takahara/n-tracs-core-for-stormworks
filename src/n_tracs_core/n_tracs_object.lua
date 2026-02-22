@@ -22,7 +22,29 @@ function NtracsObject.create_instance(target, classObj)
             target[k] = v
         end
     end
+    target.__ntracs_class = classObj
     return target
+end
+
+---@param target any
+---@param classObj any
+---@return boolean
+function NtracsObject.is_instance(target, classObj)
+    return type(target) == "table" and target.__ntracs_class == classObj
+end
+
+---@generic T: NtracsObject
+---@param target any
+---@param classObj T
+---@return T
+function NtracsObject.ensure_instance(target, classObj)
+    if type(target) ~= "table" then
+        error("target is not table")
+    end
+    if NtracsObject.is_instance(target, classObj) then
+        return target
+    end
+    return NtracsObject.create_instance(target, classObj)
 end
 
 ---@return string
