@@ -14,8 +14,8 @@ signal_track = ["NHB21T", "NHB_WAK1T"]
 approach_track = ["NHB4LT"]
 approach_lock_time = 20
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK1R")'
-# StandardAspectCallback_3rd_multi({"WAK1R","WAK2R"})
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK1R")'
+# u.StandardAspectCallback_3rd_multi({"WAK1R","WAK2R"})
 
 [NHB5R]
 start = "NHB5LT"
@@ -32,8 +32,8 @@ signal_track = ["NHB21T", "NHB_WAK1T"]
 approach_track = ["NHB5LT"]
 approach_lock_time = 20
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK1R")'
-# StandardAspectCallback_3rd_multi({"WAK1R","WAK2R"})
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK1R")'
+# u.StandardAspectCallback_3rd_multi({"WAK1R","WAK2R"})
 
 [NHB11R]
 start = "NHB4LT"
@@ -50,7 +50,7 @@ signal_track = ["NHB21T", "NHB22T", "NHB13RT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [NHB12R]
 start = "NHB5LT"
@@ -67,7 +67,7 @@ signal_track = ["NHB21T", "NHB22T", "NHB13RT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [NHB13R]
 start = "NHB6LT"
@@ -84,7 +84,7 @@ signal_track = ["NHB22T", "NHB13RT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [NHB4L]
 start = "WAK_NHB1T"
@@ -101,7 +101,7 @@ signal_track = ["NHB13RT", "NHB22T", "NHB21T", "NHB4LT"]
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_2nd(2)'
+update_callback = 'u.StandardAspectCallback_2nd(2)'
 
 [NHB5L]
 start = "WAK_NHB1T"
@@ -118,7 +118,7 @@ signal_track = ["NHB13RT", "NHB22T", "NHB21T", "NHB5LT"]
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_2nd(2)'
+update_callback = 'u.StandardAspectCallback_2nd(2)'
 
 [NHB6L]
 start = "WAK_NHB1T"
@@ -135,7 +135,7 @@ signal_track = ["NHB13RT", "NHB22T", "NHB6LT"]
 approach_track = ["WAK_NHB1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_2nd(2)'
+update_callback = 'u.StandardAspectCallback_2nd(2)'
 
 [NHB11L]
 start = "NHB13RT"
@@ -152,7 +152,7 @@ signal_track = ["NHB22T", "NHB21T", "NHB4LT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [NHB12L]
 start = "NHB13RT"
@@ -169,7 +169,7 @@ signal_track = ["NHB22T", "NHB21T", "NHB5LT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [NHB13L]
 start = "NHB13RT"
@@ -186,7 +186,7 @@ signal_track = ["NHB22T", "NHB6LT"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 ### 北尾信号場 ###
 
@@ -205,7 +205,7 @@ signal_track = ["WAK1RT", "WAK_SGN5T"]
 approach_track = ["NHB_WAK1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN4")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK_SGN4")'
 
 [WAK4L]
 start = "SGN_WAK1T"
@@ -222,7 +222,7 @@ signal_track = ["WAK4LT", "WAK11T", "WAK12T", "WAK_NHB1T"]
 approach_track = ["SGN_WAK1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_3rd_multi({"NHB4L","NHB5L","NHB6L"})'
+update_callback = 'u.StandardAspectCallback_3rd_multi({"NHB4L","NHB5L","NHB6L"})'
 
 ### 北尾・大熊間 ###
 
@@ -230,55 +230,55 @@ update_callback = 'StandardAspectCallback_3rd_multi({"NHB4L","NHB5L","NHB6L"})'
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN4T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN3")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK_SGN3")'
 
 [WAK_SGN3]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN3T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN2")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK_SGN2")'
 
 [WAK_SGN2]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN2T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK_SGN1")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK_SGN1")'
 
 [WAK_SGN1]
 auto = true
 direction = "right"
 signal_track = ["WAK_SGN1T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN1R")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN1R")'
 
 [SGN_WAK5]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK5T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK4")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_WAK4")'
 
 [SGN_WAK4]
 auto = true
 direction = "right"
 signal_track = ["SGN_WAK4T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK3")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_WAK3")'
 
 [SGN_WAK3]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK3T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK2")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_WAK2")'
 
 [SGN_WAK2]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK2T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK1")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_WAK1")'
 
 [SGN_WAK1]
 auto = true
 direction = "left"
 signal_track = ["SGN_WAK1T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("WAK4L")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("WAK4L")'
 
 ### 大熊駅 ###
 
@@ -297,7 +297,7 @@ signal_track = ["SGN1RT"]
 approach_track = ["WAK_SGN1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_3rd_multi({"SGN2R"})'
+update_callback = 'u.StandardAspectCallback_3rd_multi({"SGN2R"})'
 
 [SGN2R]
 start = "SGN1RT"
@@ -314,7 +314,7 @@ signal_track = ["SGN2RT", "SGN_SNH4T"]
 approach_track = []
 approach_lock_time = 0
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
 
 #[SGN11R]
 #start = "SGN1RT"
@@ -331,7 +331,7 @@ update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
 #approach_track = []
 #approach_lock_time = 0
 #
-#update_callback = 'StandardAspectCallback_2nd(1)'
+#update_callback = 'u.StandardAspectCallback_2nd(1)'
 #
 #[SGN11L]
 #start = "SGN3RT"
@@ -348,7 +348,7 @@ update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
 #approach_track = []
 #approach_lock_time = 0
 #
-#update_callback = 'StandardAspectCallback_2nd(1)'
+#update_callback = 'u.StandardAspectCallback_2nd(1)'
 #
 #[SGN12R]
 #start = "SGN_WAK6T"
@@ -365,7 +365,7 @@ update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
 #approach_track = []
 #approach_lock_time = 0
 #
-#update_callback = 'StandardAspectCallback_2nd(1)'
+#update_callback = 'u.StandardAspectCallback_2nd(1)'
 #
 #[SGN12L]
 #start = "SGN12RT"
@@ -382,7 +382,7 @@ update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH3")'
 #approach_track = []
 #approach_lock_time = 0
 #
-#update_callback = 'StandardAspectCallback_2nd(1)'
+#update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [SGN5L]
 start = "SNH_SGN1T"
@@ -399,7 +399,7 @@ signal_track = ["SGN5LT", "SGN21T", "SGN22T", "SGN_WAK6T"]
 approach_track = ["SNH_SGN1T"]
 approach_lock_time = 40
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK5")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_WAK5")'
 
 ### 大熊・潮凪浜間 ###
 
@@ -407,14 +407,14 @@ update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_WAK5")'
 auto = true
 direction = "right"
 signal_track = ["SGN_SNH3T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH2")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_SNH2")'
 
 
 [SGN_SNH2]
 auto = true
 direction = "right"
 signal_track = ["SGN_SNH2T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN_SNH1")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN_SNH1")'
 
 
 [SGN_SNH1]
@@ -439,19 +439,19 @@ end
 auto = true
 direction = "left"
 signal_track = ["SNH_SGN3T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN2")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_SGN2")'
 
 [SNH_SGN2]
 auto = true
 direction = "left"
 signal_track = ["SNH_SGN2T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN1")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_SGN1")'
 
 [SNH_SGN1]
 auto = true
 direction = "left"
 signal_track = ["SNH_SGN1T"]
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SGN5L")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SGN5L")'
 
 ### 潮凪浜駅 ###
 
@@ -470,7 +470,7 @@ signal_track = ["SNH1RT"]
 approach_track = ["SGN_SNH1T"]
 approach_lock_time = 20
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 
 [SNH2L]
@@ -488,7 +488,7 @@ signal_track = ["SNH22T", "SNH_SGN4T"]
 approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_3rd_G_Y_R("SNH_SGN3")'
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_SGN3")'
 
 
 [SNH11R]
@@ -506,7 +506,7 @@ signal_track = ["SNH21AT", "SNH3RT"]
 approach_track = ["SNH1RT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [SNH11L]
 start = "SNH3RT"
@@ -523,7 +523,7 @@ signal_track = ["SNH21AT", "SNH1RT"]
 approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 [SNH12R]
 start = "SNH4LT"
 destination = "SNH3RT"
@@ -539,7 +539,7 @@ signal_track = ["SNH21BT", "SNH21AT", "SNH3RT"]
 approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 
 [SNH12L]
@@ -557,7 +557,7 @@ signal_track = ["SNH21AT", "SNH21BT", "SNH4LT"]
 approach_track = ["SNH3RT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [SNH12LZ]
 start = "SNH3RT"
@@ -599,7 +599,7 @@ signal_track = ["SNH22T", "SNH4LT"]
 approach_track = ["SNH13LT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'
 
 [SNH13RZ]
 start = "SNH13LT"
@@ -641,4 +641,4 @@ signal_track = ["SNH22T", "SNH13LT"]
 approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
-update_callback = 'StandardAspectCallback_2nd(1)'
+update_callback = 'u.StandardAspectCallback_2nd(1)'

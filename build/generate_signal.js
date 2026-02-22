@@ -3,6 +3,7 @@ function generateSignal(obj) {
     out.push('local SignalRoute = require("src.n_tracs_core.switch.signal_route")');
     out.push('local SwitchRoute = require("src.n_tracs_core.signal.switch_route")');
     out.push('local RouteDirection = require("src.n_tracs_core.signal.route_direction")');
+    out.push('local u = require("res.utils")');
     out.push("---@param s SoyaBridge");
     out.push("return function(s)");
     out.push("local cas,cs,sr=s.create_auto_signal,s.create_signal,SwitchRoute.new");
