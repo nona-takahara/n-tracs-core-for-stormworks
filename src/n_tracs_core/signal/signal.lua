@@ -133,8 +133,8 @@ function Signal:process(deltaTick, nt)
         ZR and
         self:isLocked(nt) and
         self:checkWLR(nt) and
-        (not Signal.TSSlR) and
-        (not Signal.ASR) and
+        (not self.TSSlR) and
+        (not self.ASR) and
         self:isNoShort(nt)
 
     self.nextAspect = self:updateCallback(nt, deltaTick)
@@ -149,7 +149,7 @@ end
 ---@return boolean
 function Signal:siteSwitchAssert(nt)
     for _, sw in ipairs(self.switches) do
-        if nt:get_switch(sw.switch).isSite and not nt:get_switch(sw.switch).K == sw.target then
+        if nt:get_switch(sw.switch).isSite and nt:get_switch(sw.switch).K ~= sw.target then
             return false
         end
     end
