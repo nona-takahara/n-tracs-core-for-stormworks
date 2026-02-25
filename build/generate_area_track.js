@@ -32,19 +32,19 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
 
     const createArea = Array();
     ar.forEach((a) => {
-        createArea.push(`ca(s,${a.name.replace("Area_", "")},` +
+        createArea.push(`ca(s,${a.name},` +
             `{${a.vertexes.map((k) => {
                 const v = vx.get(k);
                 return `{x=${v.x},z=${v.z}}`;
             }).join(",")}},${a.left_vertex_inner_id + 1},` +
-            `{${a.uparea.map((s) => s.replace("Area_", "")).join(",")}},` +
-            `{${a.downarea.map((s) => s.replace("Area_", "")).join(",")}},` +
+            `{${a.uparea.join(",")}},` +
+            `{${a.downarea.join(",")}},` +
             `${a.callback || "function()end"})`);
     });
 
     const createTrack = Array();
     tr.forEach((t, k) => {
-        createTrack.push(`ct(s,"${k}",{${t.areas.map((a) => a.name.replace("Area_", "")).join(",")}})`);
+        createTrack.push(`ct(s,"${k}",{${t.areas.map((a) => a.name).join(",")}})`);
     });
 
     return luaBegin + createArea.join("\n") + "\n" + createTrack.join("\n") + luaEnd;
