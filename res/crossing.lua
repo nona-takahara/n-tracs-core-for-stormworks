@@ -110,7 +110,7 @@ return function(nt)
     ---@param deltaTicks number
     ---@param sys SoyaBridge
     return function(deltaTicks, sys)
-        local r
+        --[[local r
         r = CrossingShionagihama(deltaTicks, sys)
         sys.track_bridge["SNH_DC"].is_in_axle = function() return r.right end
         sys.track_bridge["SNH_UC"].is_in_axle = function() return r.left end
@@ -118,5 +118,6 @@ return function(nt)
         r = CrossingOhmori(sys)
         sys.track_bridge["OMR_DC"].is_in_axle = function() return r.right end
         sys.track_bridge["OMR_UC"].is_in_axle = function() return r.left end
+        ]]
     end
 end

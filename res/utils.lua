@@ -17,7 +17,8 @@ end
 function Utils.StandardAspectCallback_3rd_G_Y_R(nextSignal)
     return (function(self, nt)
         if self.HR then
-            if nt:get_signal(nextSignal).aspect >= 2 and self.aspect >= 2 then
+            local sig = nt:get_signal_may_nil(nextSignal)
+            if sig and sig.aspect >= 2 and self.aspect >= 2 then
                 return 4
             else
                 return 2
@@ -35,7 +36,8 @@ function Utils.StandardAspectCallback_3rd_multi(nextSignals)
         if self.HR then
             if self.aspect >= 2 then
                 for _, s in ipairs(nextSignals) do
-                    if nt:get_signal(s).aspect >= 2 then
+                    local sig = nt:get_signal_may_nil(s)
+                    if sig and sig.aspect >= 2 then
                         return 4
                     end
                 end
@@ -46,5 +48,69 @@ function Utils.StandardAspectCallback_3rd_multi(nextSignals)
         end
     end)
 end
+
+---@param area Area
+---@param data number[]
+function Utils.SendLeftAxle(area, data)
+    local p = Utils.GetLeftAxle(area)
+    if p then
+        for i, _ in ipairs(data) do
+            p.sending[i] = data[i]
+        end
+    end
+end
+
+---@param area Area
+---@param data number[]
+function Utils.SendRightAxle(area, data)
+    local p = Utils.GetLeftAxle(area)
+    if p then
+        for i, _ in ipairs(data) do
+            p.sending[i] = data[i]
+        end
+    end
+end
+
+---@param area Area
+---@param data number[]
+function Utils.SendAllAxle(area, data)
+    if area.axles and #area.axles > 0 then
+        for p, _ in ipairs(area.axles) do
+            for i, _ in ipairs(data) do
+                area.axles[p].sending[i] = data[i]
+            end
+        end
+    end
+end
+
+function Utils.GetLeftAxle(area)
+    return area.axles and area.axles[1]
+end
+
+function Utils.GetRightAxle(area)
+    return area.axles and area.axles[#area.axles]
+end
+
+function Utils.ATS_E() return { 0, 0 } end
+
+function Utils.ATS_Ea() return { 0, 1 } end
+
+function Utils.ATS_R() return { 1, 2 } end
+
+function Utils.ATS_T() return { 18, 4 } end
+
+function Utils.ATS_YY() return { 30, 6 } end
+
+function Utils.ATS_Y() return { 50, 8 } end
+
+function Utils.ATS_Yh() return { 60, 9 } end
+
+function Utils.ATS_YG() return { 70, 10 } end
+
+function Utils.ATS_YGh() return { 80, 11 } end
+
+function Utils.ATS_G() return { 100, 12 } end
+
+function Utils.ATS_Gh() return { 112, 13 } end
 
 return Utils
