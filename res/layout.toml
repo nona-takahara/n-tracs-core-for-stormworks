@@ -1,0 +1,47 @@
+# 連動図表レイアウト設定
+# grid: タイル形状グリッド (LR/UD/LD/LU/RD/RU/SW/.)
+# switches: "row,col" → 転換器定義 (normal/reverseはTILE_PATHSのキー)
+# tile_tracks: "row,col" → 軌道回路ID (フラットルックアップ)
+# signals: 信号てこ配置
+# platforms: ホーム配置
+
+[NHB]
+# row 0: 上り本線  row 1: 1番線（副本線）
+grid = [
+  "LR  SW  LR  SW  LR  LR",
+  "LR  LU  LR  UR  LR  LR",
+]
+
+[NHB.switches]
+"0,1" = { id = "NHB21", normal = "LR", reverse = "RD" }
+"0,3" = { id = "NHB22", normal = "LR", reverse = "LD" }
+
+[NHB.tile_tracks]
+"0,0" = "NHB5LT"
+"0,2" = "NHB21T"
+"0,4" = "NHB22AT"
+"1,0" = "NHB4LT"
+"1,2" = "NHB21T"
+"1,4" = "NHB13RT"
+
+[[NHB.signals]]
+lever = "NHB5R"
+at = { row = 0, col = 0, side = "right" }
+
+[[NHB.signals]]
+lever = "NHB4R"
+at = { row = 1, col = 0, side = "right" }
+
+[[NHB.signals]]
+lever = "NHB4L"
+at = { row = 0, col = 5, side = "left" }
+
+[[NHB.platforms]]
+name = "本線"
+row = 0
+cols = [2, 3, 4]
+
+[[NHB.platforms]]
+name = "1番線"
+row = 1
+cols = [2, 3]
