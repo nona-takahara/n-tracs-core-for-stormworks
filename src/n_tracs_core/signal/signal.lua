@@ -119,8 +119,8 @@ function Signal:process(deltaTick, nt)
     end
 
     if (not self.ASR) and self:isBookedTemporary(nt) then
-        -- 進路鎖錠の連鎖の始点は信号てこであるため、thisを代入する。
-        local routeLockBefore = self.itemName
+        nt:get_track(self.startTrack):book_start(self.itemName, nt)
+        local routeLockBefore = self.startTrack
         for _, track in ipairs(self.routeLock) do
             nt:get_track(track):book_route_lock(self.itemName, routeLockBefore, nt)
             routeLockBefore = track
@@ -169,10 +169,16 @@ end
 ---@param nt Ntracs
 ---@return boolean
 function Signal:isBookedTemporary(nt)
+    if self.startTrack and not nt:get_track(self.startTrack):is_booked_start(self.itemName, nt) then
+        return false
+    end
     for _, value in ipairs(self.routeLock) do
         if not nt:get_track(value):is_booked_temporary(self.itemName, nt) then
             return false
         end
+    end
+    if not nt:get_track(self.destination):is_booked_temporary(self.itemName, nt) then
+        return false
     end
     for _, value in ipairs(self.overrunLock) do
         if not nt:get_track(value):is_booked_temporary(self.itemName, nt) then
@@ -187,10 +193,16 @@ end
 ---@param nt Ntracs
 ---@param self Signal
 function Signal:bookTemporary(nt)
+    if self.startTrack and not nt:get_track(self.startTrack):is_ready_for_book_start(self.itemName, nt) then
+        return
+    end
     for _, value in ipairs(self.routeLock) do
         if not nt:get_track(value):is_ready_for_book_temporary(self.itemName, nt) then
             return
         end
+    end
+    if not nt:get_track(self.destination):is_ready_for_book_temporary(self.itemName, nt) then
+        return
     end
     for _, value in ipairs(self.overrunLock) do
         if not nt:get_track(value):is_ready_for_book_temporary(self.itemName, nt) then
@@ -198,9 +210,11 @@ function Signal:bookTemporary(nt)
         end
     end
 
+    if self.startTrack then nt:get_track(self.startTrack):book_start_temporary(self.itemName, nt) end
     for _, value in ipairs(self.routeLock) do
         nt:get_track(value):book_temporary(self.itemName, nt)
     end
+    nt:get_track(self.destination):book_temporary(self.itemName, nt)
     for _, value in ipairs(self.overrunLock) do
         nt:get_track(value):book_temporary(self.itemName, nt)
     end
@@ -262,10 +276,16 @@ end
 ---@param nt Ntracs
 ---@return boolean
 function Signal:isLocked(nt)
+    if self.startTrack and not nt:get_track(self.startTrack):is_start_locked(self.itemName, nt) then
+        return false
+    end
     for _, value in ipairs(self.routeLock) do
         if not nt:get_track(value):is_route_lock(self.itemName) then
             return false
         end
+    end
+    if not nt:get_track(self.destination):is_destination_locked(self.itemName) then
+        return false
     end
     for _, value in ipairs(self.overrunLock) do
         if not nt:get_track(value):is_over_run_lock(self.itemName, nt) then
