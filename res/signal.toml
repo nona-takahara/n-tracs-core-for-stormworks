@@ -46,7 +46,7 @@ overrun_lock_time = 0
 
 signal_track = ["HLT_NHB1T"]
 
-approach_track = []
+approach_track = ["NHB5LT"]
 approach_lock_time = 0
 
 update_callback = 'u.StandardAspectCallback_2nd(4)'
@@ -63,7 +63,7 @@ overrun_lock_time = 0
 
 signal_track = ["NHB5RT"]
 
-approach_track = ["NHB5LT"]
+approach_track = ["HLT_NHB1T"]
 approach_lock_time = 20
 
 update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("NHB5R")'
