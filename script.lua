@@ -1,7 +1,7 @@
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
-ADDON_VERSION = "v1.1.2"
-CTC_VERSION = "SoyaWS-2"
+ADDON_VERSION = "v2.0.0-beta4"
+CTC_VERSION = "SoyaWS-3"
 
 error = error or function(message)
 	debug.log("[N-TRACS] ERROR: " .. tostring(message))
@@ -84,7 +84,7 @@ function onTick()
 
 	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then
-		sw:get_vehicle_data()
+		sw:get_vehicle_data(6)
 	elseif Phase == 2 then
 		sw:before_process()
 	elseif Phase == 3 then
