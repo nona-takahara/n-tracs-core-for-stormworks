@@ -92,7 +92,7 @@ function Signal:process(deltaTick, nt)
         self:bookTemporary(nt)
     end
     -- バックチェックは仮予約機能で代用
-    self.TSSlR = not (self.HR or self.ASR or self:isEnterRoute(nt))
+    self.TSSlR = not (self.HR or self.ASR) and self:isEnterRoute(nt)
 
     -- ASRが扛上しているときだけ、この進路に関係する進路や転轍機が操作可能
     -- 「落下中は進路区分鎖錠を行う」と同義
@@ -120,7 +120,13 @@ function Signal:process(deltaTick, nt)
 
     if (not self.ASR) and self:isBookedTemporary(nt) then
         nt:get_track(self.startTrack):book_start(self.itemName, nt)
-        local routeLockBefore = self.startTrack
+        -- routeLockの前段(beforeRouteLockItem)に発点トラック(self.startTrack)を使ってはならない。
+        -- 発点トラックが前の進路の着点でもある場合(同一トラックが着点→発点)、前の進路の
+        -- 過走防護タイマーが切れてbookDest=DestinationExpiredになると、under_route_lock_b()が
+        -- trueを返す。この時、列車は発点に在線中(startTrack.short=true)だが、routeLock区間は
+        -- まだ不在線(short=false)なので解放条件が成立し、進路鎖錠が在線中に誤解放される。
+        -- 前段を信号機自身にすることで、Signal.ASR(信号が赤に戻った)でのみ解放される。
+        local routeLockBefore = self.itemName
         for _, track in ipairs(self.routeLock) do
             nt:get_track(track):book_route_lock(self.itemName, routeLockBefore, nt)
             routeLockBefore = track
@@ -138,12 +144,6 @@ function Signal:process(deltaTick, nt)
         (not self.TSSlR) and
         (not self.ASR) and
         self:isNoShort(nt)
-
-    if (self.itemName == "NHB2L") then
-        self.isLockedOut = self:isLocked(nt)
-        self.checkWLROut = self:checkSwitches(nt)
-        self.isNoShortOut = self:isNoShort(nt)
-    end
 
     self.nextAspect = self:updateCallback(nt, deltaTick)
     if not self.HR then
@@ -169,7 +169,7 @@ end
 ---@param nt Ntracs
 ---@return boolean
 function Signal:isBookedTemporary(nt)
-    if self.startTrack and not nt:get_track(self.startTrack):is_booked_start(self.itemName, nt) then
+    if not nt:get_track(self.startTrack):is_booked_start(self.itemName, nt) then
         return false
     end
     for _, value in ipairs(self.routeLock) do
@@ -193,7 +193,7 @@ end
 ---@param nt Ntracs
 ---@param self Signal
 function Signal:bookTemporary(nt)
-    if self.startTrack and not nt:get_track(self.startTrack):is_ready_for_book_start(self.itemName, nt) then
+    if not nt:get_track(self.startTrack):is_ready_for_book_start(self.itemName, nt) then
         return
     end
     for _, value in ipairs(self.routeLock) do
@@ -276,7 +276,7 @@ end
 ---@param nt Ntracs
 ---@return boolean
 function Signal:isLocked(nt)
-    if self.startTrack and not nt:get_track(self.startTrack):is_start_locked(self.itemName, nt) then
+    if not nt:get_track(self.startTrack):is_start_locked(self.itemName, nt) then
         return false
     end
     for _, value in ipairs(self.routeLock) do
