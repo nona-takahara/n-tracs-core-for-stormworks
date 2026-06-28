@@ -4,6 +4,8 @@
 ---@field description string
 ---@field command function
 
+local json = require("temp.json")
+
 ---@param sw SoyaBridge
 ---@return {COMMANDS: table<string, Command>, DELAY_ANNOUNE: function[], Announce: fun(message: string, peer_id: integer)}
 return function(sw)
@@ -98,14 +100,22 @@ return function(sw)
         description = "Get " .. ADDON_SHORT_NAME .. " item information for debug",
         command = (function(args, is_admin, is_auth, peer_id)
             local nm = args[2]
+            local tostr = (json and json.stringify) or tostring
             if sw.nt:get_signal_may_nil(nm) then
                 table.insert(DELAY_ANNOUNE, function()
-                    Announce("Singal \"" .. nm .. "\" aspect: " .. tostring(sw.nt:get_signal(nm).aspect), peer_id)
+                    Announce("Singal \"" .. nm .. "\" aspect: " .. tostr(sw.nt:get_signal(nm)), peer_id)
                 end)
             end
             if sw.nt:get_switch_may_nil(nm) then
                 table.insert(DELAY_ANNOUNE, function()
-                    Announce("Switch \"" .. nm .. "\" route: " .. tostring(sw.nt:get_switch(nm):getRealRoute()), peer_id)
+                    Announce("Switch \"" .. nm .. "\" route: " .. tostr(sw.nt:get_switch(nm)),
+                        peer_id)
+                end)
+            end
+            if sw.nt:get_track_may_nil(nm) then
+                table.insert(DELAY_ANNOUNE, function()
+                    Announce("Track \"" .. nm .. "\" route: " .. tostr(sw.nt:get_track(nm)),
+                        peer_id)
                 end)
             end
         end)
@@ -191,6 +201,7 @@ return function(sw)
 
     Announce = function(message, peer_id)
         server.announce("[" .. ADDON_SHORT_NAME .. "]", message, peer_id)
+        dlog("[" .. ADDON_SHORT_NAME .. "]:" .. message)
     end
 
     return {

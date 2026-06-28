@@ -52,7 +52,7 @@ function SoyaBridge:create_track(track_id, area_ids)
     for _, v in pairs(area_ids) do
         if self.areas[v] then table.insert(self.areas[v].relatedTracks, track_id) end
     end
-    self.nt:crate_track(track_id)
+    self.nt:create_track(track_id)
 end
 
 ---@param name string てこ名称
@@ -67,7 +67,7 @@ end
 ---@param lockTime number 接近・保留鎖錠の時間(sec)
 ---@param overrunTime number 過走防護鎖錠の時間(sec)
 ---@param controls string[]|nil このてこが総括制御するてこ名一覧
----@param updateCallback fun(lever: Signal, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
+---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 function SoyaBridge:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
                                   approachTrack, lockTime, overrunTime, controls, updateCallback)
     self.nt:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
@@ -76,20 +76,18 @@ end
 
 ---@param name string てこ名称
 ---@param direction RouteDirection 進路てこの方向
+---@param switches SwitchRoute[] 開通方向を確認する転てつ器リスト
 ---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
-function SoyaBridge:create_auto_signal(name, track, direction, updateCallback)
-    self.nt:create_auto_signal(name, track, direction, updateCallback)
+function SoyaBridge:create_auto_signal(name, track, direction, switches, updateCallback)
+    self.nt:create_auto_signal(name, track, direction, switches, updateCallback)
 end
 
 ---@param name string
----@param pairName string
----@param myDirection SetRoute
----@param isAcceptLever boolean
----@param mySwitchName string
----@param anotherSwitchName string
-function SoyaBridge:create_traffic_direction_lever(name, pairName, myDirection, isAcceptLever, mySwitchName,
-                                                   anotherSwitchName)
-    self.nt:create_traffic_direction_lever(name, pairName, myDirection, isAcceptLever, mySwitchName, anotherSwitchName)
+---@param myDirection SetRoute 反位方向（出し側として書き込む値）。両端で同じ値を使うこと
+---@param mySwitchName string 自端の仮想方向スイッチ名
+---@param anotherSwitchName string 相手端の仮想方向スイッチ名
+function SoyaBridge:create_traffic_direction_lever(name, myDirection, mySwitchName, anotherSwitchName)
+    self.nt:create_traffic_direction_lever(name, myDirection, mySwitchName, anotherSwitchName)
 end
 
 ---@param name string
@@ -116,13 +114,13 @@ function SoyaBridge:set_lever_alias(alias, target)
     self.lever_alias[alias] = target
 end
 
-function SoyaBridge:get_vehicle_data()
+function SoyaBridge:get_vehicle_data(dt)
     for _, area in pairs(self.areas) do
         area:initialize_for_process()
     end
 
     for _, data in pairs(self.vehicle_table) do
-        data:get_vehicle_data()
+        data:get_vehicle_data(dt)
     end
 end
 
@@ -155,7 +153,7 @@ end
 function SoyaBridge:before_broadcast(deltaTicks)
     -- Areaのコールバック
     for _, area in pairs(self.areas) do
-        area.cbdata = area.updateCallback and area.updateCallback(area, deltaTicks)
+        area.cbdata = area.updateCallback and area.updateCallback(area, self.nt, deltaTicks)
     end
 end
 

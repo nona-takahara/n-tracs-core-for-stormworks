@@ -12,7 +12,7 @@ local Area         = {}
 ---@field leftAreaIds number[] @隣り合うエリア・ポリゴンへの参照
 ---@field rightAreaIds number[] @隣り合うエリア・ポリゴンへの参照
 ---@field relatedTracks string[]
----@field updateCallback fun(self: Area, deltaTick?: number): any
+---@field updateCallback fun(self: Area, nt: Ntracs, deltaTick?: number): any
 ---@field cbdata any @コールバック関数で使えるデータ
 
 ---@param name number
@@ -20,7 +20,7 @@ local Area         = {}
 ---@param leftVertexId number
 ---@param leftAreaIds number[] @隣り合うエリア・ポリゴンへの参照
 ---@param rightAreaIds number[] @隣り合うエリア・ポリゴンへの参照
----@param updateCallback fun(self: Area, deltaTick?: number): any @コールバック関数で使えるデータ
+---@param updateCallback fun(self: Area, nt: Ntracs, deltaTick?: number): any @コールバック関数で使えるデータ
 ---@return Area
 function Area.new(name, vertexs, leftVertexId, leftAreaIds, rightAreaIds, updateCallback)
     local obj = NtracsObject.create_instance(NtracsObject.new(), Area)
@@ -75,13 +75,11 @@ end
 function Area:insert_axle(axle)
     local lv = self.vertexs[self.leftVertexId]
     local lself = len2(lv, axle.real_pos)
-    local i = 0
+    local i = #self.axles
 
     for index, value in ipairs(self.axles) do
-        local l = len2(lv, value.real_pos)
-        if lself > l then
-            i = index
-        else
+        if lself <= len2(lv, value.real_pos) then
+            i = index - 1
             break
         end
     end

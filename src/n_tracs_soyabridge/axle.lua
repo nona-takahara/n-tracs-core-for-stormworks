@@ -17,7 +17,9 @@ local Axle = {}
 ---@field itemName string
 ---@field vehicle_id number @車軸のあるビークルID
 ---@field voxel_pos Vector3d | nil @車軸のボクセル
----@field real_pos Vector2d @実際の位置
+---@field real_pos Vector3d @実際の位置
+---@field delta_pos Vector3d @前回との位置差
+---@field velocity number @速さの絶対値
 ---@field area number | nil @現在のエリア
 ---@field sending number[]
 ---@field arc number
@@ -34,16 +36,18 @@ function Axle.new(vehicle_id, name, voxelPos)
     obj.name = "Axle"
     obj.itemName = name
     obj.voxel_pos = voxelPos
-    obj.real_pos = { x = 0, z = 0 }
+    obj.real_pos = { x = 0, y = 0, z = 0 }
     obj.area = nil
     obj.arc = 0
     obj.disable_short = false
+    obj.velocity = 0
     return obj
 end
 
 ---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle:get_position()
+---@param dt number
+function Axle:get_position(dt)
     ---@type SWMatrix
     local mtx
     ---@type boolean
@@ -57,7 +61,13 @@ function Axle:get_position()
 
     if ss then
         local x, y, z = matrix.position(mtx)
-        self.real_pos = { x = x, z = z }
+        self.delta_pos = {
+            x = (x - self.real_pos.x) / (dt / 60),
+            y = (y - self.real_pos.y) / (dt / 60),
+            z = (z - self.real_pos.z) / (dt / 60)
+        }
+        self.velocity = math.sqrt(self.delta_pos.x ^ 2 + self.delta_pos.y ^ 2 + self.delta_pos.z ^ 2)
+        self.real_pos = { x = x, y = y, z = z }
     end
 
     ---@type SWVehicleDialData
@@ -75,6 +85,11 @@ function Axle:get_position()
     end
 end
 
+function Axle:clear_velocity()
+    self.delta_pos = { x = 0, y = 0, z = 0 }
+    self.velocity = 0
+end
+
 ---輪軸の現在地を更新します
 ---@param sw SoyaBridge
 function Axle:search(sw)
@@ -86,6 +101,7 @@ function Axle:search(sw)
 
     ---@type number[]
     local queue = {}
+    local visited = {}
     local front = 1
 
     ---@type Area
@@ -93,6 +109,7 @@ function Axle:search(sw)
     local found = false
 
     table.insert(queue, self.area)
+    visited[self.area] = true
     -- BFS
     while front <= #queue do
         targetArea = sw.areas[queue[front]]
@@ -102,33 +119,16 @@ function Axle:search(sw)
             break
         end
 
-        -- 隣接エリアをキューに追加
         for _, adjacentArea in ipairs(targetArea.leftAreaIds) do
-            -- 重複チェック
-            local alreadyExist = false
-            for _, a in ipairs(queue) do
-                if a == adjacentArea then
-                    alreadyExist = true
-                    break
-                end
-            end
-
-            if not alreadyExist then
+            if not visited[adjacentArea] then
+                visited[adjacentArea] = true
                 table.insert(queue, adjacentArea)
             end
         end
 
         for _, adjacentArea in ipairs(targetArea.rightAreaIds) do
-            -- 重複チェック
-            local alreadyExist = false
-            for _, a in ipairs(queue) do
-                if a == adjacentArea then
-                    alreadyExist = true
-                    break
-                end
-            end
-
-            if not alreadyExist then
+            if not visited[adjacentArea] then
+                visited[adjacentArea] = true
                 table.insert(queue, adjacentArea)
             end
         end
@@ -150,6 +150,7 @@ function Axle:send(sign)
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1])
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", 1 * sign)
     server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[2])
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_A", self.area or -1)
     self.sending = { 0, 0 }
 end
 

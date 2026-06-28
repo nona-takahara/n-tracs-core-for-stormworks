@@ -20,7 +20,10 @@ local function load_axles(vehicle_id, vdata, forceRegister)
     local axles = {}
     for _, sign in ipairs(vdata.components.signs) do
         if sign.name:find("TRAIN") == 1 then
-            table.insert(axles, Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z }))
+            local a = Axle.new(vehicle_id, sign.name, { x = sign.pos.x, y = sign.pos.y, z = sign.pos.z })
+            a:get_position(0)
+            a:clear_velocity()
+            table.insert(axles, a)
         end
     end
 
@@ -133,10 +136,10 @@ function VehicleInfo:send(sign, sw)
     end
 end
 
-function VehicleInfo:get_vehicle_data()
+function VehicleInfo:get_vehicle_data(dt)
     if self.axles then
         for _, axle in ipairs(self.axles) do
-            axle:get_position()
+            axle:get_position(dt)
         end
     end
 
@@ -157,6 +160,8 @@ function VehicleInfo:charge_battery(isCheatBattery)
     if isCheatBattery then
         server.setVehicleBattery(self.vehicle_id, "signal_bat", 3)
         server.setVehicleBattery(self.vehicle_id, "cheat_battery", 1)
+        server.setVehicleBattery(self.vehicle_id, "cheat_battery1", 1)
+        server.setVehicleBattery(self.vehicle_id, "cheat_battery2", 2)
     else
         server.setVehicleBattery(self.vehicle_id, "signal_bat", 3)
     end
