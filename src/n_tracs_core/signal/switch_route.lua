@@ -19,7 +19,7 @@ end
 
 ---@param nt Ntracs
 function SwitchRoute:check(nt)
-    return nt:get_switch(self.switch).K ~= self.target
+    return nt:get_switch(self.switch):getRealRoute() ~= self.target
 end
 
 return SwitchRoute

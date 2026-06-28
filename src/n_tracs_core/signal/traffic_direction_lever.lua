@@ -6,26 +6,20 @@ local SignalBase = require("src.n_tracs_core.signal.signal_base")
 
 ---@class TrafficDirectionLever:SignalBase
 ---@field myFrDirection SetRoute
----@field isAcceptLever boolean
 ---@field myFrName string
 ---@field anotherFrName string
----@field pairLeverName string
 ---@field private input boolean
 local TrafficDirectionLever = {}
 
 ---@param name string
----@param pairLeverName string
----@param myFrDirection SetRoute
----@param isAcceptLever boolean
----@param myFrName string
----@param anotherFrName string
+---@param myFrDirection SetRoute 反位方向（出し側として書き込む値）。両端で同じ値を使うこと
+---@param myFrName string 自端の仮想方向スイッチ名
+---@param anotherFrName string 相手端の仮想方向スイッチ名
 ---@return TrafficDirectionLever
-function TrafficDirectionLever.new(name, pairLeverName, myFrDirection, isAcceptLever, myFrName, anotherFrName)
+function TrafficDirectionLever.new(name, myFrDirection, myFrName, anotherFrName)
     local obj = NtracsObject.create_instance(SignalBase.new(), TrafficDirectionLever)
     obj.name = "TrafficDirectionLever"
     obj.itemName = name
-    obj.pairLeverName = pairLeverName
-    obj.isAcceptLever = isAcceptLever
     obj.myFrDirection = myFrDirection
     obj.myFrName = myFrName
     obj.anotherFrName = anotherFrName
@@ -37,26 +31,21 @@ end
 ---@param nt Ntracs
 function TrafficDirectionLever:process(deltaTick, nt)
     if self.input then
-        if self.isAcceptLever then
-            --NOTE: てっ査鎖錠条件はmove関数で照査されるため、これを区間内在線判定に使用
-            nt:get_switch(self.myFrName):move(self.myFrDirection, nt)
-        elseif nt:get_switch(self.anotherFrName):getRealRoute() == self.myFrDirection then
+        -- 反位 = 出し側: 相手端が同方向を向いていることを確認してから書き込む
+        if nt:get_switch(self.anotherFrName):getRealRoute() == self.myFrDirection then
             nt:get_switch(self.myFrName):move(self.myFrDirection, nt)
         end
+    else
+        -- 定位 = 受け側: 逆方向を書き込む（出し側チェックが成立する値をセット）
+        nt:get_switch(self.myFrName):move(-self.myFrDirection, nt)
     end
 end
 
 ---@param input boolean
----@param nt Ntracs
+---@param nt Ntracs|nil
 ---@param fromControl boolean|nil
----@param fromPair boolean|nil
-function TrafficDirectionLever:setInput(input, nt, fromControl, fromPair)
+function TrafficDirectionLever:setInput(input, nt, fromControl)
     self.input = input
-    if fromPair or (not nt) then
-        return
-    end
-    ---@diagnostic disable-next-line: inject-field
-    nt:get_signal(self.pairLeverName):setInput(input, nt, fromControl, true)
 end
 
 function TrafficDirectionLever:before_process()
