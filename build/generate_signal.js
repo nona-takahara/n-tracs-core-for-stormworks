@@ -32,7 +32,10 @@ function absoluteLeverLuaCode(name, data, controls) {
     const overrunLockMake = (data.overrun_lock || []).map((v) => `"${v}"`);
     const signalTrackMake = (data.signal_track || []).map((v) => `"${v}"`);
     const approachTrackMake = (data.approach_track || []).map((v) => `"${v}"`);
-    const controlsMake = controls.map((v) => `"${v}"`);
+    // extra_controls: TOML外のてこ（TrafficDirectionLeverなど）を総括制御対象に追加する。
+    // DFSの循環検出対象外のため、循環チェックは行われない（リーフノードであることが前提）。
+    const allControls = [...new Set([...controls, ...(data.extra_controls || [])])];
+    const controlsMake = allControls.map((v) => `"${v}"`);
 
     return "cs(s," +
         `"${name}",` +
@@ -53,10 +56,14 @@ function absoluteLeverLuaCode(name, data, controls) {
 
 function autoLeverLuaCode(name, data) {
     const signalTrackMake = (data.signal_track || []).map((v) => `"${v}"`);
+    const switchesMake = (data.switches || []).map(
+        (v) => `sr("${v.sw}",SignalRoute.${capitalize(v.t)})`
+    );
     return "cas(s," +
         `"${name}",` +
         `{${signalTrackMake.join(",")}},` +
         `RouteDirection.${capitalize(data.direction)},` +
+        `{${switchesMake.join(",")}},` +
         `${data.update_callback}` +
         ")";
 }
@@ -66,6 +73,33 @@ function capitalize(str) {
         return str;
     }
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function detectControlsCycle(controlsMap) {
+    // DFS cycle detection on the controls directed graph.
+    // Build-time check guarantees setInput propagation cannot loop infinitely at runtime.
+    const WHITE = 0, GRAY = 1, BLACK = 2;
+    const color = {};
+    Object.keys(controlsMap).forEach(k => color[k] = WHITE);
+
+    function dfs(node, path) {
+        color[node] = GRAY;
+        for (const neighbor of (controlsMap[node] || [])) {
+            if (color[neighbor] === GRAY) {
+                throw new Error(
+                    `controls に循環が検出されました: ${[...path, node, neighbor].join(" -> ")}`
+                );
+            }
+            if (color[neighbor] === WHITE) {
+                dfs(neighbor, [...path, node]);
+            }
+        }
+        color[node] = BLACK;
+    }
+
+    Object.keys(controlsMap).forEach(k => {
+        if (color[k] === WHITE) dfs(k, []);
+    });
 }
 
 function buildControlsMap(obj) {
@@ -83,4 +117,4 @@ function buildControlsMap(obj) {
     return controlsMap;
 }
 
-module.exports = generateSignal;
+module.exports = { generateSignal, buildControlsMap, detectControlsCycle };
