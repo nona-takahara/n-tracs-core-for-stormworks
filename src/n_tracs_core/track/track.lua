@@ -272,6 +272,18 @@ function Track:process(deltaTick, nt)
             self.bookDest = BookType.NoBook
         end
     end
+
+    if self.book == BookType.NoBook then
+        self.relatedLever = ""
+        self.beforeRouteLockItem = ""
+        self.direction = RouteDirection.None
+    end
+    if self.bookDest == BookType.NoBook then
+        self.destRelatedLever = ""
+        self.destBeforeRouteLockItem = ""
+        self.destDirection = RouteDirection.None
+        self.destTimer = -1
+    end
 end
 
 return Track
