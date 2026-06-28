@@ -92,7 +92,6 @@ function Signal:process(deltaTick, nt)
         self:bookTemporary(nt)
     end
     -- バックチェックは仮予約機能で代用
-
     self.TSSlR = not (self.HR or self.ASR or self:isEnterRoute(nt))
 
     -- ASRが扛上しているときだけ、この進路に関係する進路や転轍機が操作可能
@@ -139,6 +138,12 @@ function Signal:process(deltaTick, nt)
         (not self.TSSlR) and
         (not self.ASR) and
         self:isNoShort(nt)
+
+    if (self.itemName == "NHB2L") then
+        self.isLockedOut = self:isLocked(nt)
+        self.checkWLROut = self:checkSwitches(nt)
+        self.isNoShortOut = self:isNoShort(nt)
+    end
 
     self.nextAspect = self:updateCallback(nt, deltaTick)
     if not self.HR then
@@ -317,10 +322,11 @@ function Signal:setInput(input, nt, fromControl)
     if fromControl or (not nt) then
         return
     end
+    -- controlsの循環はビルド時(generate_signal.js)に検出されるため、ここでの cycle guard は不要
     for _, signalName in ipairs(self.controls) do
         local signal = nt:get_signal_may_nil(signalName)
         if signal and signal ~= self and type(signal.setInput) == "function" then
-            signal:setInput(input, nt, true)
+            signal:setInput(input, nt, false)
         end
     end
 end

@@ -5,15 +5,17 @@ local NtracsOjbect = require("src.n_tracs_core.n_tracs_object")
 ---てこに関する操作を行います
 ---@class AutoSignal:SignalBase
 ---@field private signalTrack string[]
+---@field private switches SwitchRoute[]
 local AutoSignal   = {}
 
 ---てこ構造体のインスタンスを作成します
 ---@param itemName string てこ名称
 ---@param signalTrack string[] 信号現示に関連する抽象軌道回路
 ---@param direction RouteDirection 進路てこの方向
+---@param switches SwitchRoute[] 開通方向を確認する転てつ器リスト
 ---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return AutoSignal
-function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
+function AutoSignal.new(itemName, signalTrack, direction, switches, updateCallback)
     local obj = NtracsOjbect.create_instance({}, AutoSignal)
     obj.name = "AutoSignal"
     obj.itemName = itemName
@@ -21,7 +23,9 @@ function AutoSignal.new(itemName, signalTrack, direction, updateCallback)
     obj.nextAspect = 0
     obj.signalTrack = signalTrack
     obj.direction = direction
+    obj.switches = switches
     obj.updateCallback = updateCallback
+    obj.HR = false
     return obj
 end
 
@@ -47,11 +51,20 @@ function AutoSignal:is_no_short(nt)
     return true
 end
 
+---@param nt Ntracs
+---@return boolean
+function AutoSignal:checkSwitches(nt)
+    for _, sr in ipairs(self.switches) do
+        if sr:check(nt) then return false end
+    end
+    return true
+end
+
 ---毎ループごとに呼び出してください
 ---@param deltaTick number
 ---@param nt Ntracs
 function AutoSignal:process(deltaTick, nt)
-    self.HR = self:is_no_short(nt)
+    self.HR = self:is_no_short(nt) and self:checkSwitches(nt)
     self.nextAspect = self:updateCallback(nt, deltaTick)
     if not self.HR then
         self.nextAspect = 0

@@ -40,7 +40,7 @@ end
 ---@return Signal
 function Ntracs:get_signal(signal_id)
     return (type(signal_id) == "string" and self.signal[signal_id]) or
-        error(debug.traceback(tostring(signal_id) .. " is not found."))
+        error(tostring(signal_id) .. " is not found.")
 end
 
 ---論理軌道回路を取得します
@@ -48,7 +48,7 @@ end
 ---@return Track
 function Ntracs:get_track(track_id)
     return (type(track_id) == "string" and self.track[track_id]) or
-        error(debug.traceback(tostring(track_id) .. " is not found."))
+        error(tostring(track_id) .. " is not found.")
 end
 
 ---論理分岐器を取得します
@@ -56,7 +56,7 @@ end
 ---@return Switch
 function Ntracs:get_switch(switch_id)
     return (type(switch_id) == "string" and self.switch[switch_id]) or
-        error(debug.traceback(tostring(switch_id) .. " is not found."))
+        error(tostring(switch_id) .. " is not found.")
 end
 
 ---信号機を取得します
@@ -87,26 +87,23 @@ function Ntracs:create_signal(signal_id, startTrack, destination, switches, rout
         signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
 end
 
-function Ntracs:create_auto_signal(signal_id, track, direction, updateCallback)
+---@param switches SwitchRoute[]
+function Ntracs:create_auto_signal(signal_id, track, direction, switches, updateCallback)
     if self.signal[signal_id] then error(signal_id .. " is defined") end
-    self.signal[signal_id] = AutoSignal.new(signal_id, track, direction, updateCallback)
+    self.signal[signal_id] = AutoSignal.new(signal_id, track, direction, switches, updateCallback)
 end
 
 ---@param signal_id string
----@param pair_signal_id string
----@param my_direction SetRoute
----@param is_accept_lever boolean
----@param my_switch_id string
----@param another_switch_id string
-function Ntracs:create_traffic_direction_lever(signal_id, pair_signal_id, my_direction, is_accept_lever, my_switch_id,
-                                               another_switch_id)
+---@param my_direction SetRoute 反位方向（出し側として書き込む値）。両端で同じ値を使うこと
+---@param my_switch_id string 自端の仮想方向スイッチ名
+---@param another_switch_id string 相手端の仮想方向スイッチ名
+function Ntracs:create_traffic_direction_lever(signal_id, my_direction, my_switch_id, another_switch_id)
     if self.signal[signal_id] then error(signal_id .. " is defined") end
-    self.signal[signal_id] = TrafficDirectionLever.new(signal_id, pair_signal_id, my_direction, is_accept_lever,
-        my_switch_id, another_switch_id)
+    self.signal[signal_id] = TrafficDirectionLever.new(signal_id, my_direction, my_switch_id, another_switch_id)
 end
 
 ---@param track_id string
-function Ntracs:crate_track(track_id)
+function Ntracs:create_track(track_id)
     if self.track[track_id] then error(track_id .. " is defined") end
     self.track[track_id] = Track.new(track_id)
 end
