@@ -1,38 +1,32 @@
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 ---@class TrackBridge
-TrackBridge = TrackBridge or {}
+local TrackBridge = {}
 
----@class TrackBridge
+---@class TrackBridge:NtracsObject
 ---@field name string
 ---@field itemName string
----@field areas Area[]
-
+---@field area_ids number[]
 
 ---@param itemName string
----@param areas Area[]
+---@param area_ids number[]
 ---@return TrackBridge
-function TrackBridge.new(itemName, areas)
-    return TrackBridge.overWrite(nil, itemName, areas)
-end
-
----
----@param baseObject any
----@param itemName string
----@param areas Area[]
----@return TrackBridge
-function TrackBridge.overWrite(baseObject, itemName, areas)
-    baseObject = baseObject or {}
-    baseObject.name = "TrackBridge"
-    baseObject.itemName = itemName
-    baseObject.areas = areas
-    return baseObject
+function TrackBridge.new(itemName, area_ids)
+    local obj = NtracsObject.create_instance({}, TrackBridge)
+    obj.name = "TrackBridge"
+    obj.itemName = itemName
+    obj.area_ids = area_ids
+    return obj
 end
 
 ---エリア群の中に輪軸が存在するか判定します
----@param self TrackBridge
+---@param sw SoyaBridge
 ---@return boolean
-function TrackBridge.isInAxle(self)
-    for _, area in ipairs(self.areas) do
-        if #(area.axles) > 0 then return true end
+function TrackBridge:is_in_axle(sw)
+    for _, area in ipairs(self.area_ids) do
+        if sw.areas[area] and #(sw.areas[area].axles) > 0 then return true end
+        --if #(sw.areas[area].axles) > 0 then return true end
     end
     return false
 end
+
+return TrackBridge

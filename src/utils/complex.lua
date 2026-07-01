@@ -1,5 +1,5 @@
 ---@class Complex
-Complex = Complex or {}
+local Complex = {}
 
 ---複素数
 ---@class Complex
@@ -37,7 +37,7 @@ end
 ---偏角1/2倍、絶対値1/2乗の値を求める 偏角は-90度～0度～90度の範囲になる
 ---@params a Complex
 ---@return Complex
-function Complex.halfArgument(a)
+function Complex.half_argument(a)
     local r = math.sqrt(a.re ^ 2 + a.im ^ 2)
     local sign = 0
     if a.im > 0 then
@@ -50,3 +50,5 @@ function Complex.halfArgument(a)
         im = sign * math.sqrt((-a.re + r) / 2)
     }
 end
+
+return Complex

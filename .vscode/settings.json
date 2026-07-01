@@ -11,5 +11,19 @@
   "[json]": {
     "editor.formatOnSave": true
   },
-  "Lua.runtime.version": "Lua 5.3"
+  "Lua.runtime.version": "Lua 5.3",
+  "Lua.diagnostics.globals": [
+    "server",
+    "property",
+    "matrix",
+    "onCreate",
+    "onDestroy",
+    "onPlayerJoin",
+    "onPlayerLeave",
+    "onTick",
+    "onVehicleLoad",
+    "onVehicleDespawn",
+    "onButtonPress",
+    "g_savedata"
+  ]
 }

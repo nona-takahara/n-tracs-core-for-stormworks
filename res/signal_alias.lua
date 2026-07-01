@@ -1,17 +1,18 @@
----@type table<string, Lever>
-BRIDGE_LEVER_ALIAS = BRIDGE_LEVER_ALIAS or {}
-BRIDGE_LEVER_ALIAS["aNHB_3d"] = LEVERS["NHB5R"] -- 3番線 潮凪浜方
---BRIDGE_LEVER_ALIAS["aNHB_3u"]=LEVERS[""] -- 3番線 掘戸方
-BRIDGE_LEVER_ALIAS["aNHB_4d"] = LEVERS["NHB4R"] -- 4番線 潮凪浜方
-BRIDGE_LEVER_ALIAS["aAKA_D"] = LEVERS["WAK_SGN4"]
-BRIDGE_LEVER_ALIAS["aAKA_U"] = LEVERS["WAK4L"]
-BRIDGE_LEVER_ALIAS["aONL_D"] = LEVERS["WAK_SGN1"]
-BRIDGE_LEVER_ALIAS["aONL_U"] = LEVERS["SGN_WAK3"]
-BRIDGE_LEVER_ALIAS["aSGN_D"] = LEVERS["SGN2R"]
---BRIDGE_LEVER_ALIAS["aSGN_DS"] = LEVERS["SGN3R"]
-BRIDGE_LEVER_ALIAS["aSGN_U"] = LEVERS["SGN_WAK5"]
-BRIDGE_LEVER_ALIAS["aKGM_D"] = LEVERS["SGN_SNH1"]
-BRIDGE_LEVER_ALIAS["aKGM_U"] = LEVERS["SNH_SGN2"]
---BRIDGE_LEVER_ALIAS["aSNH_D"] = LEVERS[""] -- 2番線 入守山方
-BRIDGE_LEVER_ALIAS["aSNH_U"] = LEVERS["SNH2L"] -- 1番線 掘戸方
---BRIDGE_LEVER_ALIAS["aSNH_Ud"] = LEVERS[""] -- 1番線 入守山方
+---@param sw SoyaBridge
+return function(sw)
+    --[[sw:set_lever_alias("aNHB_3d", "NHB5R") -- 3番線 潮凪浜方
+    --sys:setLeverAlias("aNHB_3u")=LEVERS["") -- 3番線 掘戸方
+    sw:set_lever_alias("aNHB_4d", "NHB4R") -- 4番線 潮凪浜方
+    sw:set_lever_alias("aAKA_D", "WAK_SGN4")
+    sw:set_lever_alias("aAKA_U", "WAK4L")
+    sw:set_lever_alias("aONL_D", "WAK_SGN1")
+    sw:set_lever_alias("aONL_U", "SGN_WAK3")
+    sw:set_lever_alias("aSGN_D", "SGN1R")
+    --sys:setLeverAlias("aSGN_DS", "SGN3R")
+    sw:set_lever_alias("aSGN_U", "SGN_WAK5")
+    sw:set_lever_alias("aKGM_D", "SGN_SNH1")
+    sw:set_lever_alias("aKGM_U", "SNH_SGN2")
+    --sys:setLeverAlias("aSNH_D", "") -- 2番線 入守山方
+    sw:set_lever_alias("aSNH_U", "SNH2L") -- 1番線 掘戸方
+    --sys:setLeverAlias("aSNH_Ud", "") -- 1番線 入守山方]]
+end

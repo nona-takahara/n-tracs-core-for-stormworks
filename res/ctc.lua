@@ -1,3 +1,4 @@
+--[[
 CTC = nil
 CTC_AVAILABLE = true
 CTC_ACTIVE = false
@@ -305,3 +306,4 @@ function Setbit(t, b, v)
     end
     return t
 end
+]]

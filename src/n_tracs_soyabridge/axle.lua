@@ -1,5 +1,7 @@
----@class Axle
-Axle = Axle or {}
+local Area = require("src.n_tracs_soyabridge.area")
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
+---@class Axle:NtracsObject
+local Axle = {}
 
 ---@class Vector3d
 ---@field x number
@@ -15,10 +17,13 @@ Axle = Axle or {}
 ---@field itemName string
 ---@field vehicle_id number @車軸のあるビークルID
 ---@field voxel_pos Vector3d | nil @車軸のボクセル
----@field real_pos Vector2d @実際の位置
----@field area Area | nil @現在のエリア
+---@field real_pos Vector3d @実際の位置
+---@field delta_pos Vector3d @前回との位置差
+---@field velocity number @速さの絶対値
+---@field area number | nil @現在のエリア
 ---@field sending number[]
 ---@field arc number
+---@field disable_short boolean
 
 ---輪軸を初期化します
 ---@param vehicle_id number
@@ -26,20 +31,23 @@ Axle = Axle or {}
 ---@param voxelPos Vector3d | nil
 ---@return Axle
 function Axle.new(vehicle_id, name, voxelPos)
-    return {
-        vehicle_id = vehicle_id,
-        name = "Axle",
-        itemName = name,
-        voxel_pos = voxelPos,
-        real_pos = {x = 0, z = 0},
-        area = DEFAULT_AREA,
-        arc = 0
-    }
+    local obj = NtracsObject.create_instance({}, Axle)
+    obj.vehicle_id = vehicle_id
+    obj.name = "Axle"
+    obj.itemName = name
+    obj.voxel_pos = voxelPos
+    obj.real_pos = { x = 0, y = 0, z = 0 }
+    obj.area = nil
+    obj.arc = 0
+    obj.disable_short = false
+    obj.velocity = 0
+    return obj
 end
 
 ---輪軸のStormworks座標を取得します
 ---@param self Axle
-function Axle.initializeForProcess(self)
+---@param dt number
+function Axle:get_position(dt)
     ---@type SWMatrix
     local mtx
     ---@type boolean
@@ -53,7 +61,13 @@ function Axle.initializeForProcess(self)
 
     if ss then
         local x, y, z = matrix.position(mtx)
-        self.real_pos = {x = x, z = z}
+        self.delta_pos = {
+            x = (x - self.real_pos.x) / (dt / 60),
+            y = (y - self.real_pos.y) / (dt / 60),
+            z = (z - self.real_pos.z) / (dt / 60)
+        }
+        self.velocity = math.sqrt(self.delta_pos.x ^ 2 + self.delta_pos.y ^ 2 + self.delta_pos.z ^ 2)
+        self.real_pos = { x = x, y = y, z = z }
     end
 
     ---@type SWVehicleDialData
@@ -62,42 +76,59 @@ function Axle.initializeForProcess(self)
     if ss then
         self.arc = dialArc.value
     end
+
+    ---@type SWVehicleDialData
+    local dial_disable_short
+    dial_disable_short, ss = server.getVehicleDial(self.vehicle_id, "TRAIN_SHORT")
+    if ss then
+        self.disable_short = dial_disable_short.value == 1
+    end
+end
+
+function Axle:clear_velocity()
+    self.delta_pos = { x = 0, y = 0, z = 0 }
+    self.velocity = 0
 end
 
 ---輪軸の現在地を更新します
----@param self Axle
-function Axle.search(self)
-    self.area = self.area or DEFAULT_AREA
+---@param sw SoyaBridge
+function Axle:search(sw)
+    self.area = self.area or sw.default_area
+    if self.disable_short then
+        self.area = nil
+        return
+    end
 
-    ---@type Area[]
+    ---@type number[]
     local queue = {}
+    local visited = {}
     local front = 1
+
     ---@type Area
     local targetArea
     local found = false
 
     table.insert(queue, self.area)
+    visited[self.area] = true
     -- BFS
     while front <= #queue do
-        targetArea = queue[front]
+        targetArea = sw.areas[queue[front]]
 
-        if Area.isInArea(targetArea, self.real_pos) then
+        if targetArea:is_in_area(self.real_pos) then
             found = true
             break
         end
 
-        -- 隣接エリアをキューに追加
-        for _, adjacentArea in ipairs(targetArea.nodeToArea) do
-            -- 重複チェック
-            local alreadyExist = false
-            for _, a in ipairs(queue) do
-                if a == adjacentArea then
-                    alreadyExist = true
-                    break
-                end
+        for _, adjacentArea in ipairs(targetArea.leftAreaIds) do
+            if not visited[adjacentArea] then
+                visited[adjacentArea] = true
+                table.insert(queue, adjacentArea)
             end
+        end
 
-            if not alreadyExist then
+        for _, adjacentArea in ipairs(targetArea.rightAreaIds) do
+            if not visited[adjacentArea] then
+                visited[adjacentArea] = true
                 table.insert(queue, adjacentArea)
             end
         end
@@ -106,41 +137,21 @@ function Axle.search(self)
     end
 
     if found then
-        self.area = targetArea
-        Area.insertAxle(targetArea, self)
-    end
-end
-
----comment
----@param vehicle_id number
----@param vdata SWVehicleData
----@param forceRegister boolean
----@return Axle[] | nil
-function LoadAxles(vehicle_id, vdata, forceRegister)
-    ---@type Axle[]
-    local axles = {}
-    for _, sign in ipairs(vdata.components.signs) do
-        if sign.name:find("TRAIN") == 1 then
-            table.insert(axles, Axle.new(vehicle_id, sign.name, {x = sign.pos.x, y = sign.pos.y, z = sign.pos.z}))
-        end
-    end
-
-    if forceRegister and #axles == 0 then
-        axles = {[1] = Axle.new(vehicle_id, "", nil)}
-    end
-    return axles
-end
-
-function Axle.send(self)
-    local sending = self.sending or {0, 0, 0}
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I1", sending[1] or 0)
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_I2", (sending[2] or 0) * SendingSign)
-    if sending[2] == 0 or sending[2] == 14 then
-        server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", 0)
+        self.area = targetArea.itemName
+        targetArea:insert_axle(self)
     else
-        server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1] or 1)
+        self.area = nil
     end
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", SendingSign)
-    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[3])
-    self.sending = {0, 0, 0}
 end
+
+---@param sign number
+function Axle:send(sign)
+    local sending = self.sending or { 0, 0 }
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H0", sending[1])
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H1", 1 * sign)
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_H2", sending[2])
+    server.setVehicleKeypad(self.vehicle_id, self.itemName .. "_A", self.area or -1)
+    self.sending = { 0, 0 }
+end
+
+return Axle

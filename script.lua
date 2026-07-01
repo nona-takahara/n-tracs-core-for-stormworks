@@ -1,46 +1,44 @@
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
-ADDON_VERSION = "v1.1.2"
-CTC_VERSION = "SoyaWS-2"
+ADDON_VERSION = "v2.0.0-beta5"
+CTC_VERSION = "SoyaWS-3"
 
--- 1. Load N-TRACS Core
-require("src.n_tracs_core")
+error = error or function(message)
+	debug.log("[N-TRACS] ERROR: " .. tostring(message))
+end
 
--- 2. Load bridge
-require("src.n_tracs_soyabridge")
+dlog = function(message)
+	debug.log("[N-TRACS] DEBUG: " .. tostring(message))
+end
 
--- 3. Load settings
-require("res.utils")
-require("res.area_track")
-require("res.signal")
-require("res.signal_alias")
-require("res.switch")
-require("res.crossing")
-require("res.ctc")
+local soya_bridge = require("src.n_tracs_soyabridge.soya_bridge")
+local sw = soya_bridge.new()
+local apply_area_track = require("res.area_track")
+local apply_signal = require("res.signal")
+local apply_switch = require("res.switch")
+local apply_signal_alias = require("res.signal_alias")
+local crossing_factory = require("res.crossing")
+local apply_command = require("src.n_tracs_soyabridge.command")
 
-DEFAULT_AREA = AreaGetter(2)
-Lever.setInput(LEVERS["WAK1R"], true, false)
-Lever.setInput(LEVERS["WAK4L"], true, false)
-Lever.setInput(LEVERS["SGN1R"], true, false)
-Lever.setInput(LEVERS["SGN2R"], true, false)
-Lever.setInput(LEVERS["SGN5L"], true, false)
+apply_area_track(sw)
+apply_signal(sw)
+apply_switch(sw)
+apply_signal_alias(sw)
 
--- Stormworksを騙す。関数の後にコンマを入れないと認識してくれないようである。
-fake_property =
-[[
+local crossing = crossing_factory(sw)
+local command_module = apply_command(sw)
+
+dofile("res.maplabel")
+
+sw.default_area = 2
+
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
 	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
 }
---]]
-
-_ENV["g_savedata"] = {
-	recommendedSettings = property.checkbox("Start with no wind and damage", true),
-	cheatBattery = property.checkbox("Enable cheat_battery feature", true)
-}
 
 function onCreate(is_world_create)
-	if is_world_create and _ENV["g_savedata"].recommendedSettings then
+	if is_world_create and g_savedata.recommendedSettings then
 		server.setGameSetting("vehicle_damage", false)
 		server.setGameSetting("player_damage", false)
 		server.setGameSetting("npc_damage", false)
@@ -50,28 +48,20 @@ function onCreate(is_world_create)
 		server.setWeather(weather.fog, weather.rain, 0)
 	end
 
-	if not _ENV["g_savedata"].ui_id then
+	if not g_savedata.ui_id then
 		AddMapLabels(0)
 	end
 end
 
 function onDestroy()
 	local playerlist = server.getPlayers()
-	local ui_id = _ENV["g_savedata"].ui_id
+	local ui_id = g_savedata.ui_id
 	if ui_id then
 		for _, v in pairs(playerlist) do
 			server.removeMapID(v.id, ui_id)
 		end
 	end
-	_ENV["g_savedata"] = nil
-end
-
----@type PointSetter[]
-POINTLIST = {}
-for _, data in pairs(BRIDGE_SWITCH) do
-	for key, _ in pairs(data.pointAndRoute) do
-		POINTLIST[key] = SwitchBridge.getPointSetter(data, key)
-	end
+	g_savedata = nil
 end
 
 function onPlayerJoin(steam_id, name, peer_id, is_admin, is_auth)
@@ -79,138 +69,77 @@ function onPlayerJoin(steam_id, name, peer_id, is_admin, is_auth)
 end
 
 function onPlayerLeave(steam_id, name, peer_id, is_admin, is_auth)
-	if _ENV["g_savedata"].ui_id then
-		server.removeMapID(peer_id, _ENV["g_savedata"].ui_id)
+	if g_savedata.ui_id then
+		server.removeMapID(peer_id, g_savedata.ui_id)
 	end
 end
 
 ---[Stormworks] onTick function.
 -- 1 Tickごとに呼び出されます.
----@diagnostic disable-next-line: lowercase-global
 function onTick()
 	TickCounter = (TickCounter or 0) + 1
 
 	-- 毎Tick実行しないとsignal_batを3に充電できない
-	if _ENV["g_savedata"].cheatBattery then
-		for vehicle_id, _ in pairs(VehicleTable) do
-			server.setVehicleBattery(vehicle_id, "signal_bat", 3)
-			server.setVehicleBattery(vehicle_id, "cheat_battery", 1)
-		end
-	else
-		for vehicle_id, _ in pairs(VehicleTable) do
-			server.setVehicleBattery(vehicle_id, "signal_bat", 3)
-		end
-	end
+	sw:charge_battery(g_savedata.cheatBattery)
 
 	Phase = ((Phase or 0) + 1) % 6
 	if Phase == 1 then
-		-- データの初期化及びビークルデータの取得フェーズ
-		for _, area in pairs(AREAS) do
-			area:initializeForProcess()
-		end
-
-		for vehicle_id, data in pairs(VehicleTable) do
-			if data.axles then
-				for _, axle in ipairs(data.axles) do
-					Axle.initializeForProcess(axle)
-					--axle:initializeForProcess()
-				end
-			end
-
-			if data.bridges then
-				for _, setter in ipairs(data.bridges.points) do
-					local dial, ss = server.getVehicleDial(vehicle_id, setter.pointName .. "K")
-					if ss then
-						setter.set(dial.value)
-						--else
-						--ARCを実装したら 0 にするようにする。
-						--setter.set(0)
-					end
-				end
-			end
-		end
-
-		-- CTCデータ取得
-		if CTC_AVAILABLE and CTC then
-			GetCtcState()
-		end
+		sw:get_vehicle_data(6)
 	elseif Phase == 2 then
-		-- 取得データをCoreに処理させるのに適した状態に変換するフェーズ
-		for _, data in pairs(VehicleTable) do
-			if data.axles then
-				for _, axle in ipairs(data.axles) do
-					Axle.search(axle)
-					--axle:search()
-				end
-			end
-		end
-
-		-- CTC取得データの変換
-		if CTC_AVAILABLE and CTC_ACTIVE then
-			SetCtcState()
-		end
+		sw:before_process()
 	elseif Phase == 3 then
-		for _, data in pairs(BRIDGE_TRACK) do
-			TRACKS[data.itemName]:beforeProcess(TrackBridge.isInAxle(data))
-			-- TRACKS[data.itemName]:beforeProcess(data:isInAxle())
-		end
-
-		-- 方向てこなどの処理が必要な場合はここまでの段階でBRIDGE_SWITCHに入れておく
-		for _, data in pairs(BRIDGE_SWITCH) do
-			SWITCHES[data.itemName]:beforeProcess(SwitchBridge.getState(data))
-			-- SWITCHES[data.itemName]:beforeProcess(data:getState())
-		end
-
-		for _, data in pairs(LEVERS) do
-			data:beforeProcess()
-		end
+		sw:process(6)
+		crossing(6, sw)
 	elseif Phase == 4 then
-		-- Coreで処理するフェーズ
-		for _, track in pairs(TRACKS) do
-			track:process(6)
-		end
-
-		for _, lever in pairs(LEVERS) do
-			lever:process(6)
-		end
-
-		-- 特殊処理
-		BridgeCrossing(6)
+		sw:before_broadcast(6)
 	elseif Phase == 5 then
-		-- Coreで処理したデータを配信用に加工するフェーズ
-		for _, area in pairs(AREAS) do
-			area.cbdata = area.updateCallback and area.updateCallback(area, 6)
-		end
-
-		-- CTCデータ生成
-		if CTC_AVAILABLE and CTC then
-			MakeCtcData()
-		end
-	elseif Phase == 0 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
-		for vehicle_id, data in pairs(VehicleTable) do
-			if data.axles then
-				for _, axle in ipairs(data.axles) do
-					Axle.send(axle)
-					--axle:send()
-				end
-			end
+		sw:broadcast(SendingSign)
 
-			if data.bridges then
-				SendBridge(vehicle_id, data.bridges)
-			end
-		end
-
-		if CTC_AVAILABLE and CTC then
-			SendCtcData(SendingSign)
-		end
-
-		while #DELAY_ANNOUNE > 0 do
-			local calls = table.remove(DELAY_ANNOUNE, 1)
+		while #command_module.DELAY_ANNOUNE > 0 do
+			local calls = table.remove(command_module.DELAY_ANNOUNE, 1)
 			if type(calls) == "function" then
 				calls()
 			end
 		end
 	end
+end
+
+---@diagnostic disable-next-line: lowercase-global
+function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
+	if command == "?ntracs" or command == "?nt" then
+		local args = { ... }
+		if command_module.COMMANDS[args[1]] then
+			local cmd = command_module.COMMANDS[args[1]]
+			if (not cmd.admin or (cmd.admin and is_admin)) and (not cmd.auth or (cmd.auth and is_auth)) then
+				cmd.command(args, is_admin, is_auth, peer_id)
+			end
+		else
+			command_module.Announce(
+				"ERROR! " .. ADDON_SHORT_NAME .. " command '" .. tostring(args[1]) .. "' is not found", peer_id)
+		end
+	end
+
+	if command == "?help" then
+		command_module.Announce("For more help, use ?nt help", peer_id)
+	end
+end
+
+function onVehicleLoad(vehicle_id)
+	sw:load_vehicle(vehicle_id)
+end
+
+function onVehicleDespawn(vehicle_id)
+	sw:despawn_vehicle(vehicle_id)
+end
+
+function onButtonPress(vehicle_id, peer_id, button_name)
+	if button_name == "N-TRACS RESET" then
+		sw:load_vehicle(vehicle_id)
+	end
+
+	--if button_name == "Activate CTC" then
+	--	CTC = vehicle_id
+	--end
 end

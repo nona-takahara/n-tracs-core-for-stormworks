@@ -1,10 +1,12 @@
+local SetRoute = require("src.n_tracs_core.switch.set_route")
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 ---@class SwitchBridge
-SwitchBridge = SwitchBridge or {}
+local SwitchBridge = {}
 
----@class SwitchBridge
+---@class SwitchBridge:NtracsObject
 ---@field name string
 ---@field itemName string
----@field pointAndRoute table<string,TargetRoute>
+---@field points table<string,SetRoute>
 
 ---@class PointSetter
 ---@field name string
@@ -15,50 +17,39 @@ SwitchBridge = SwitchBridge or {}
 -- 役割：複数ビークルからなるSwitchを束ねる
 
 function SwitchBridge.new(itemName, pointlist)
-    return SwitchBridge.overWrite({}, itemName, pointlist)
-end
-
----comments
----@param baseObject any
----@param itemName string
----@param pointlist string[]
----@return SwitchBridge
-function SwitchBridge.overWrite(baseObject, itemName, pointlist)
-    baseObject = baseObject or {}
-    baseObject.name = "SwitchBridge"
-    baseObject.itemName = itemName
+    local obj = NtracsObject.create_instance({}, SwitchBridge)
+    obj.name = "SwitchBridge"
+    obj.itemName = itemName
     local par = {}
     for _, key in ipairs(pointlist) do
-        par[key] = TargetRoute.Indefinite
+        par[key] = SetRoute.Indefinite
     end
-    baseObject.pointAndRoute = par
-    return baseObject
+    obj.points = par
+    return obj
 end
 
----comments
----@param self SwitchBridge
 ---@param name string
 ---@return PointSetter
-function SwitchBridge.getPointSetter(self, name)
+function SwitchBridge:get_point_setter(name)
     return {
         name = "PointSetter",
         pointName = name,
         switchName = self.itemName,
         set = function(state)
-            self.pointAndRoute[name] = state
+            self.points[name] = state
         end
     }
 end
 
----comments
----@param self SwitchBridge
----@return TargetRoute
-function SwitchBridge.getState(self)
-    ---@type TargetRoute | nil
+---@return SetRoute
+function SwitchBridge:get_state()
+    ---@type SetRoute | nil
     local s = nil
-    for _, value in pairs(self.pointAndRoute) do
+    for _, value in pairs(self.points) do
         if s == nil then s = value end
-        if s ~= value then return TargetRoute.Indefinite end
+        if s ~= value then return SetRoute.Indefinite end
     end
-    return s or TargetRoute.Indefinite
+    return s or SetRoute.Indefinite
 end
+
+return SwitchBridge

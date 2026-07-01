@@ -1,7 +1,0 @@
-require("src.n_tracs_core.n_tracs_object")
-require("src.n_tracs_core.signal_base")
-require("src.n_tracs_core.lever")
-require("src.n_tracs_core.auto_signal")
-require("src.n_tracs_core.track")
-require("src.n_tracs_core.switch")
-require("src.n_tracs_core.switch_route")
