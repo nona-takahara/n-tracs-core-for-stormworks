@@ -115,6 +115,7 @@ function Track:is_ready_for_book_temporary(lever, nt)
     local dir = nt:get_signal(lever).direction
     local mainOk = (self.book == BookType.NoBook)
         or (self.book == BookType.Temporary and self.relatedLever == lever)
+        or (self.book == BookType.Start and self.direction == dir)
     if not mainOk then return false end
     return (self.bookDest == BookType.NoBook)
         or (self.bookDest == BookType.RouteOver and self.destDirection == dir)
@@ -140,6 +141,7 @@ end
 function Track:is_booked_temporary(lever, nt)
     local dir = nt:get_signal(lever).direction
     return (self.book == BookType.Temporary and self.relatedLever == lever)
+        or (self.book == BookType.Start and self.direction == dir)
         or (self.bookDest == BookType.RouteOver and self.destDirection == dir)
 end
 
