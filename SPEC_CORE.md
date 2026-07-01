@@ -131,10 +131,14 @@ end
 #### 進路鎖錠・着点・過走防護トラック用（`is_ready_for_book_temporary`）
 
 ```
-メイン == NoBook  または  メイン == Temporary(同てこ)
+メイン == NoBook
+  または  メイン == Temporary(同てこ)
+  または  メイン == Start(同方向)
 AND
 サブ == NoBook  または  サブ == RouteOver(同方向)
 ```
+
+`メイン == Start(同方向)` の許容は継続進行（前方進路の着点トラックが後方進路の発点トラックと同一）に対応するためのものです。前方信号が既に発点として `Start` を書き込んだトラックに対し、後方信号が同一方向で着点仮予約を行えるようにします。この節は `is_booked_temporary`（本予約確定チェック）にも同様に存在します。方向が一致する場合のみ許容し、**対向方向は排除**します（対向進路が同時に進行現示を得るのを防ぐ安全上の要件）。`book_temporary()` は `book == NoBook` のときのみ書き込むため他てこの `Start` を上書きせず、`book_destination()` も `Temporary`（同一てこ）のときのみ `book` をクリアするため、既存の `Start` 予約は保持されます。
 
 #### 発点トラック用（`is_ready_for_book_start`）
 
