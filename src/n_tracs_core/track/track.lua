@@ -167,8 +167,43 @@ end
 ---@return boolean
 function Track:is_over_run_lock(lever, nt)
     local dir = nt:get_signal(lever).direction
-    return (self.bookDest == BookType.RouteOver and self.destRelatedLever == lever)
-        or (self.book == BookType.RouteLock and self.direction == dir)
+    if self.bookDest == BookType.RouteOver and self.destRelatedLever == lever then
+        return true
+    end
+    if self.book == BookType.RouteLock and self.direction == dir then
+        return true
+    end
+    if self.bookDest == BookType.RouteOver and self.destDirection == dir then
+        local owner = nt:get_signal_may_nil(self.destRelatedLever)
+        if owner and type(owner.is_opening_lever) == "function" and owner:is_opening_lever() then
+            return true
+        end
+    end
+    return false
+end
+
+---開通てこが当該区間を(再)宣言できる状態か確認します。空き、または既に自分自身が保持している場合のみtrueです。
+---@param lever string
+---@return boolean
+function Track:is_claimable_for_opening(lever)
+    return self.bookDest == BookType.NoBook
+        or (self.bookDest == BookType.RouteOver and self.destRelatedLever == lever)
+end
+
+---開通てこによる過走防護方向の予約(bookDestのみ変更)。
+---destBeforeRouteLockItemに開通てこ自身(lever)を設定することで、under_route_lock_b()が常にfalseを返す
+---開通てこの性質を利用し、在線解除だけでは自動的に解放されないようにします(実信号機の本予約で明示的に
+---book_over_run()が呼ばれるまで保持し続けます)。既存のbook_over_run()をそのまま流用すると
+---destBeforeRouteLockItemがnt:get_signal(lever).destinationを参照しようとしてnilになり
+---(開通てこにはdestinationフィールドが存在しないため)、非在線時に毎ティック自動解放されてしまうため、
+---専用の関数として新設しています。
+---@param lever string
+---@param nt Ntracs
+function Track:book_opening(lever, nt)
+    self.bookDest = BookType.RouteOver
+    self.destRelatedLever = lever
+    self.destBeforeRouteLockItem = lever
+    self.destDirection = nt:get_signal(lever).direction
 end
 
 ---@param lever string

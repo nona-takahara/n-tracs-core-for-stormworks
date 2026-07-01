@@ -1,6 +1,7 @@
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local Signal = require("src.n_tracs_core.signal.signal")
 local TrafficDirectionLever = require("src.n_tracs_core.signal.traffic_direction_lever")
+local OpeningLever = require("src.n_tracs_core.signal.opening_lever")
 local Track = require("src.n_tracs_core.track.track")
 local AutoSignal = require("src.n_tracs_core.signal.auto_signal")
 local Switch = require("src.n_tracs_core.switch.switch")
@@ -81,10 +82,11 @@ function Ntracs:get_switch_may_nil(switch_id)
 end
 
 function Ntracs:create_signal(signal_id, startTrack, destination, switches, routeLock, overrunLock,
-                              signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
+                              signalTrack, direction, approachTrack, lockTime, overrunTime, overrunLockFallback,
+                              controls, updateCallback)
     if self.signal[signal_id] then error(signal_id .. " is defined") end
     self.signal[signal_id] = Signal.new(signal_id, startTrack, destination, switches, routeLock, overrunLock,
-        signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
+        signalTrack, direction, approachTrack, lockTime, overrunTime, overrunLockFallback, controls, updateCallback)
 end
 
 ---@param switches SwitchRoute[]
@@ -100,6 +102,14 @@ end
 function Ntracs:create_traffic_direction_lever(signal_id, my_direction, my_switch_id, another_switch_id)
     if self.signal[signal_id] then error(signal_id .. " is defined") end
     self.signal[signal_id] = TrafficDirectionLever.new(signal_id, my_direction, my_switch_id, another_switch_id)
+end
+
+---@param signal_id string
+---@param direction RouteDirection 既定の開通方向
+---@param overrunLock string[] 開通(過走防護)を既定で認める対象区間
+function Ntracs:create_opening_lever(signal_id, direction, overrunLock)
+    if self.signal[signal_id] then error(signal_id .. " is defined") end
+    self.signal[signal_id] = OpeningLever.new(signal_id, direction, overrunLock)
 end
 
 ---@param track_id string

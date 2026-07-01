@@ -66,12 +66,13 @@ end
 ---@param approachTrack string[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(sec)
 ---@param overrunTime number 過走防護鎖錠の時間(sec)
+---@param overrunLockFallback boolean 過走防護区間が仮予約できなくても本予約を進めるか
 ---@param controls string[]|nil このてこが総括制御するてこ名一覧
 ---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 function SoyaBridge:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack, direction,
-                                  approachTrack, lockTime, overrunTime, controls, updateCallback)
+                                  approachTrack, lockTime, overrunTime, overrunLockFallback, controls, updateCallback)
     self.nt:create_signal(name, startTrack, destination, switches, routeLock, overrunLock, signalTrack,
-        direction, approachTrack, lockTime * 60, overrunTime * 60, controls, updateCallback)
+        direction, approachTrack, lockTime * 60, overrunTime * 60, overrunLockFallback, controls, updateCallback)
 end
 
 ---@param name string てこ名称
@@ -88,6 +89,13 @@ end
 ---@param anotherSwitchName string 相手端の仮想方向スイッチ名
 function SoyaBridge:create_traffic_direction_lever(name, myDirection, mySwitchName, anotherSwitchName)
     self.nt:create_traffic_direction_lever(name, myDirection, mySwitchName, anotherSwitchName)
+end
+
+---@param name string
+---@param direction RouteDirection 既定の開通方向
+---@param overrunLock string[] 開通(過走防護)を既定で認める対象区間
+function SoyaBridge:create_opening_lever(name, direction, overrunLock)
+    self.nt:create_opening_lever(name, direction, overrunLock)
 end
 
 ---@param name string
