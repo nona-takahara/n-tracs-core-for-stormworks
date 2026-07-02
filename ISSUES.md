@@ -38,6 +38,12 @@
 - **影響**: 継続進行を意図して両信号を進行にした際、後方信号（NHB2L）のてこが `true` のまま自動復位せず永久に固着する。信号現示は列車通過中ずっと停止（赤）のままで、列車が該当区間を通過し終えた後になって進行（緑）に変化することさえある。運転士は司令の意図（継続進行）に反して赤信号を現示され続けるため、安全上の混乱を招く。
 - **対応**: `is_ready_for_book_temporary()` の `mainOk` と `is_booked_temporary()` に `self.book == BookType.Start and self.direction == dir`（同一方向のみ）の許容節を追加。`book_temporary()`（`book == NoBook` のみ書き込み）・`book_destination()`（`book == Temporary` かつ同一てこのときのみ `book` をクリア）は他てこの `Start` を破壊しないため変更不要。**方向条件 `self.direction == dir` により対向進路の割り込みは従来通り排除**され、正面衝突相当の危険な同時進行は許容しない。Lua シミュレーションで両順序が同一・正常に動作すること、対向方向が正しく拒否されることを確認済み。
 
+### C-7. `auto_reset` が `self.input` を直接書き換え、総括制御(`controls`/`extra_controls`)先のてこに復位が伝播しない ✅ 修正済み
+- **ファイル**: `src/n_tracs_core/signal/signal.lua` `Signal:process()` 冒頭
+- **問題**: `auto_reset` による自動復位は `if self.auto_reset and self.TSSlR then self.input = false end` と `self.input` を直接書き換えているだけで、`controls`（`extra_controls` を含む）への伝播を行う `setInput()` を経由していなかった。`TrafficDirectionLever`（方向てこ）は `NHB2L`（`extra_controls = ["NHB1L"]`）や `HLT1R`（`extra_controls = ["HLT2R"]`）のように総括制御でのみ操作され、自身が単独で反位・定位を切り替える手段を持たない。そのため、総括元の信号てこが `auto_reset` で復位しても、方向てこ側の `input` は `true` のまま永久に固着する。
+- **影響**: 掘戸町(HLT)〜北港(NHB)間の単線区間で、`NHB2L`→`HLT1L` と進んで列車が `HLT1LT` に到着した後、`NHB2L` の総括制御下にある方向てこ `NHB1L` が固着したままになる。`NHB1L` は「出し側」動作を続けて自区間の仮想方向分岐器 `NHB_HLT_FR` を上り方向(`Reverse`)に固定し続けるため、折り返し方向の `HLT1R`（`extra_controls = ["HLT2R"]`）が `HLT2R` を反位にしても相手端の確認条件が成立せず、`HLT_NHB_FR` を `normal` に転換できない。結果として `HLT1R` 自身の転てつ器条件（`switches = [{ sw = "HLT_NHB_FR", t = "normal" }]`）が恒久的に不成立となり、`checkSwitches()` が常に `false` を返すため `ZR`・`HR` が絶対に成立せず、`HLT1R` は何度てこを反位にしても進行現示にならない。
+- **対応**: `self.input = false` を `self:setInput(false, nt)` に変更し、`auto_reset` による復位も `controls`/`extra_controls` に正しく伝播するようにした。`setInput()` 側は既存の cycle-safe な多段伝播（C-3 対応）をそのまま利用する。Lua シミュレーション（`NHB2L`/`HLT1L`/`NHB1L`/`HLT1R`/`HLT2R` 相当の最小構成）で、修正前は総括制御下の方向てこが固着して `HLT1R` の `HR` が永久に `false` のままであること、修正後は `auto_reset` 発火の翌ティックで方向てこが正しく復位し `HLT1R.HR` が `true` になることを確認済み。
+
 ---
 
 ## 高（データ整合性・状態破損）
@@ -114,6 +120,7 @@
 | C-4 | クリティカル | ✅ 修正済み |
 | C-5 | クリティカル | ✅ 修正済み |
 | C-6 | クリティカル | ✅ 修正済み |
+| C-7 | クリティカル | ✅ 修正済み |
 | H-1 | 高 | ✅ 仕様確認済み（対応不要） |
 | H-2 | 高 | ✅ 仕様確認済み（対応不要） |
 | H-3 | 高 | ✅ 仕様確認済み（対応不要） |
