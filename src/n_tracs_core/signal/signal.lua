@@ -23,7 +23,8 @@ local SwitchRoute = require("src.n_tracs_core.signal.switch_route")
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
 ---@field private overrunLockFallback boolean 過走防護区間の仮予約に失敗しても本予約を進めるフラグ(TOML opt-in)
----@field HyR boolean 警戒信号現示リレー。HRより下位の階梯にあたり、HRがtrueの間は常にtrue(HR=falseならfalse)
+---@field HyR boolean 警戒信号現示リレー。HRがtrueの間は常にtrue。加えてoverrunLockFallbackが有効な信号は、
+---過走防護区間が予約できていなくても進路鎖錠(発点・進路鎖錠・着点)が成立していればtrueになる
 ---@field aspect number
 local Signal = {}
 
@@ -145,21 +146,28 @@ function Signal:process(deltaTick, nt)
         end
     end
 
-    self.HR =
+    -- HRの成立に必要な、過走防護区間の成否を除いた共通条件(進路鎖錠に関わらない部分)
+    local baseOk =
         ZR and
-        self:isLocked(nt) and
         self:checkWLR(nt) and
         (not self.TSSlR) and
         (not self.ASR) and
         self:isNoShort(nt)
 
-    -- HyR(警戒信号現示リレー)はHRが成立する限り必ずtrueとなる(HRはHyRより上位の階梯であるため)。
-    -- 過走防護が完全に成立しているか否かで現示を出し分けたいupdate_callbackは、
-    -- lever:isOverrunProtected(nt)を直接参照すること。
-    self.HyR = self.HR
+    -- HR(信号扛上リレー)は、signal.tomlに記載された過走防護区間(overrunLock)が
+    -- 全て予約できている場合にのみtrueになる(overrunLockFallbackの有無に関わらず、
+    -- 元のisLockedの定義から一切緩めない)。
+    self.HR = baseOk and self:isLocked(nt)
+
+    -- HyR(警戒信号現示リレー)は、HRが成立していれば常にtrue。加えて、overrunLockFallbackが
+    -- 有効な信号てこに限り、過走防護区間が予約できていなくても進路鎖錠(発点・進路鎖錠・着点)さえ
+    -- 成立していればtrueになる。
+    self.HyR =
+        self.HR or
+        (baseOk and self.overrunLockFallback and self:isRouteLocked(nt))
 
     self.nextAspect = self:updateCallback(nt, deltaTick)
-    if not self.HR then
+    if not (self.HR or self.HyR) then
         self.nextAspect = 0
     end
 end
@@ -295,26 +303,11 @@ function Signal:isEnterRoute(nt)
     end
 end
 
----過走防護区間が完全に鎖錠できているか確認します(開通テコ経由の保護を含みます)。
----overrun_lock_fallbackを使う信号のupdate_callbackから、HyRだけでは区別できない
----「過走防護が完全に成立しているか(=フォールバックで通していないか)」を判定したい場合に、
----lever:isOverrunProtected(nt)として直接呼び出してよい公開メソッドです。
----@param nt Ntracs
----@return boolean
-function Signal:isOverrunProtected(nt)
-    for _, value in ipairs(self.overrunLock) do
-        if not nt:get_track(value):is_over_run_lock(self.itemName, nt) then
-            return false
-        end
-    end
-    return true
-end
-
----進路鎖錠と過走防護区間をロックできたか確認します
+---発点・進路鎖錠・着点が鎖錠できているか確認します(過走防護区間は含みません)
 ---@private
 ---@param nt Ntracs
 ---@return boolean
-function Signal:isLocked(nt)
+function Signal:isRouteLocked(nt)
     if not nt:get_track(self.startTrack):is_start_locked(self.itemName, nt) then
         return false
     end
@@ -326,7 +319,30 @@ function Signal:isLocked(nt)
     if not nt:get_track(self.destination):is_destination_locked(self.itemName) then
         return false
     end
-    return self:isOverrunProtected(nt) or self.overrunLockFallback
+    return true
+end
+
+---過走防護区間が完全に鎖錠できているか確認します(開通テコ経由の保護を含みます)
+---@private
+---@param nt Ntracs
+---@return boolean
+function Signal:isOverrunProtected(nt)
+    for _, value in ipairs(self.overrunLock) do
+        if not nt:get_track(value):is_over_run_lock(self.itemName, nt) then
+            return false
+        end
+    end
+    return true
+end
+
+---進路鎖錠と過走防護区間をロックできたか確認します。overrunLockFallbackの有無に関わらず、
+---過走防護区間(overrunLock)が全て予約できている場合にのみtrueになります
+---(フォールバックによる緩和はHyR側でのみ行われ、isLocked/HRはここでは緩めません)。
+---@private
+---@param nt Ntracs
+---@return boolean
+function Signal:isLocked(nt)
+    return self:isRouteLocked(nt) and self:isOverrunProtected(nt)
 end
 
 ---すべての転轍機が鎖錠できたか確認します
