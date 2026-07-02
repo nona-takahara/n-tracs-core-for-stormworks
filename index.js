@@ -55,6 +55,24 @@ function checkCrossReferences(signalObj, areaTrackObj) {
     }
 }
 
+function detectOpeningLeverConflicts(signalObj) {
+    const owner = {};
+    const errors = [];
+    Object.entries(signalObj).forEach(([name, data]) => {
+        if (data.opening_lever !== true) return;
+        (data.overrun_lock || []).forEach((track) => {
+            if (owner[track]) {
+                errors.push(`開通てこの対象区間が重複しています: '${track}' は '${owner[track]}' と '${name}' の両方に指定されています`);
+            } else {
+                owner[track] = name;
+            }
+        });
+    });
+    if (errors.length > 0) {
+        throw new Error(errors.join("\n"));
+    }
+}
+
 async function main() {
     const [signalSrc, areaTrackSrc] = await Promise.all([
         fs.promises.readFile("res/signal.toml",     "utf8"),
@@ -62,6 +80,7 @@ async function main() {
     ]);
     const signalObj = toml.parse(signalSrc);
     checkCrossReferences(signalObj, JSON.parse(areaTrackSrc));
+    detectOpeningLeverConflicts(signalObj);
 
     if (isStale("res/signal.lua", "res/signal.toml")) {
         detectControlsCycle(buildControlsMap(signalObj));

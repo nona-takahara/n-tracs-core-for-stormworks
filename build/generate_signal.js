@@ -7,7 +7,7 @@ function generateSignal(obj) {
     out.push('local u = require("res.utils")');
     out.push("---@param s SoyaBridge");
     out.push("return function(s)");
-    out.push("local cas,cs,sr=s.create_auto_signal,s.create_signal,SwitchRoute.new");
+    out.push("local cas,cs,sr,col=s.create_auto_signal,s.create_signal,SwitchRoute.new,s.create_opening_lever");
 
     Object.entries(obj).forEach(([name, data]) => {
         out.push(leverLuaCode(name, data, controlsMap[name] || []));
@@ -18,10 +18,22 @@ function generateSignal(obj) {
 }
 
 function leverLuaCode(name, data, controls) {
+    if (data.opening_lever === true) {
+        return openingLeverLuaCode(name, data);
+    }
     if (data.auto === true) {
         return autoLeverLuaCode(name, data);
     }
     return absoluteLeverLuaCode(name, data, controls);
+}
+
+function openingLeverLuaCode(name, data) {
+    const overrunLockMake = (data.overrun_lock || []).map((v) => `"${v}"`);
+    return "col(s," +
+        `"${name}",` +
+        `RouteDirection.${capitalize(data.direction)},` +
+        `{${overrunLockMake.join(",")}}` +
+        ")";
 }
 
 function absoluteLeverLuaCode(name, data, controls) {
@@ -49,6 +61,7 @@ function absoluteLeverLuaCode(name, data, controls) {
         `{${approachTrackMake.join(",")}},` +
         `${data.approach_lock_time},` +
         `${data.overrun_lock_time},` +
+        `${data.overrun_lock_fallback === true},` +
         `{${controlsMake.join(",")}},` +
         `${data.update_callback}` +
         ")";

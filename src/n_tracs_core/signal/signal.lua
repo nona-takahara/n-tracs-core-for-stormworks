@@ -22,6 +22,9 @@ local SwitchRoute = require("src.n_tracs_core.signal.switch_route")
 ---@field private controls string[]
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
+---@field private overrunLockFallback boolean 過走防護区間の仮予約に失敗しても本予約を進めるフラグ(TOML opt-in)
+---@field HyR boolean 警戒信号現示リレー。HRがtrueの間は常にtrue。加えてoverrunLockFallbackが有効な信号は、
+---過走防護区間が予約できていなくても進路鎖錠(発点・進路鎖錠・着点)が成立していればtrueになる
 ---@field aspect number
 local Signal = {}
 
@@ -37,11 +40,12 @@ local Signal = {}
 ---@param approachTrack string[] 接近鎖錠を行う抽象軌道回路。保留鎖錠の場合は空テーブル
 ---@param lockTime number 接近・保留鎖錠の時間(Tick)
 ---@param overrunTime number 過走防護鎖錠の時間(Tick)
+---@param overrunLockFallback boolean 過走防護区間が仮予約できなくても本予約を進めるか
 ---@param controls string[]|nil このてこが総括制御するてこ名一覧
 ---@param updateCallback fun(lever: Signal, nt: Ntracs, deltaTick: number):number 信号現示コールバック。新しい信号現示(>=0, 0は停止)を返す関数です
 ---@return Signal
 function Signal.new(itemName, startTrack, destination, switches, routeLock, overrunLock,
-                    signalTrack, direction, approachTrack, lockTime, overrunTime, controls, updateCallback)
+                    signalTrack, direction, approachTrack, lockTime, overrunTime, overrunLockFallback, controls, updateCallback)
     local obj = NtracsObject.create_instance(SignalBase.new(), Signal)
     obj.name = "Lever"
     obj.itemName = itemName
@@ -64,6 +68,8 @@ function Signal.new(itemName, startTrack, destination, switches, routeLock, over
     obj.direction = direction
     obj.lockTime = lockTime
     obj.overrunTime = overrunTime
+    obj.overrunLockFallback = overrunLockFallback
+    obj.HyR = false
     obj.updateCallback = updateCallback
     obj.auto_reset = true
     return obj
@@ -133,20 +139,35 @@ function Signal:process(deltaTick, nt)
         end
         nt:get_track(self.destination):book_destination(self.itemName, routeLockBefore, nt)
         for _, track in ipairs(self.overrunLock) do
-            nt:get_track(track):book_over_run(self.itemName, nt)
+            local t = nt:get_track(track)
+            if t:is_booked_temporary(self.itemName, nt) and not t:is_over_run_lock(self.itemName, nt) then
+                t:book_over_run(self.itemName, nt)
+            end
         end
     end
 
-    self.HR =
+    -- HRの成立に必要な、過走防護区間の成否を除いた共通条件(進路鎖錠に関わらない部分)
+    local baseOk =
         ZR and
-        self:isLocked(nt) and
         self:checkWLR(nt) and
         (not self.TSSlR) and
         (not self.ASR) and
         self:isNoShort(nt)
 
+    -- HR(信号扛上リレー)は、signal.tomlに記載された過走防護区間(overrunLock)が
+    -- 全て予約できている場合にのみtrueになる(overrunLockFallbackの有無に関わらず、
+    -- 元のisLockedの定義から一切緩めない)。
+    self.HR = baseOk and self:isLocked(nt)
+
+    -- HyR(警戒信号現示リレー)は、HRが成立していれば常にtrue。加えて、overrunLockFallbackが
+    -- 有効な信号てこに限り、過走防護区間が予約できていなくても進路鎖錠(発点・進路鎖錠・着点)さえ
+    -- 成立していればtrueになる。
+    self.HyR =
+        self.HR or
+        (baseOk and self.overrunLockFallback and self:isRouteLocked(nt))
+
     self.nextAspect = self:updateCallback(nt, deltaTick)
-    if not self.HR then
+    if not (self.HR or self.HyR) then
         self.nextAspect = 0
     end
 end
@@ -180,6 +201,9 @@ function Signal:isBookedTemporary(nt)
     if not nt:get_track(self.destination):is_booked_temporary(self.itemName, nt) then
         return false
     end
+    if self.overrunLockFallback then
+        return true
+    end
     for _, value in ipairs(self.overrunLock) do
         if not nt:get_track(value):is_booked_temporary(self.itemName, nt) then
             return false
@@ -204,10 +228,16 @@ function Signal:bookTemporary(nt)
     if not nt:get_track(self.destination):is_ready_for_book_temporary(self.itemName, nt) then
         return
     end
+
+    local overrunReady = true
     for _, value in ipairs(self.overrunLock) do
         if not nt:get_track(value):is_ready_for_book_temporary(self.itemName, nt) then
-            return
+            overrunReady = false
+            break
         end
+    end
+    if (not overrunReady) and (not self.overrunLockFallback) then
+        return
     end
 
     if self.startTrack then nt:get_track(self.startTrack):book_start_temporary(self.itemName, nt) end
@@ -215,8 +245,10 @@ function Signal:bookTemporary(nt)
         nt:get_track(value):book_temporary(self.itemName, nt)
     end
     nt:get_track(self.destination):book_temporary(self.itemName, nt)
-    for _, value in ipairs(self.overrunLock) do
-        nt:get_track(value):book_temporary(self.itemName, nt)
+    if overrunReady then
+        for _, value in ipairs(self.overrunLock) do
+            nt:get_track(value):book_temporary(self.itemName, nt)
+        end
     end
 end
 
@@ -271,11 +303,11 @@ function Signal:isEnterRoute(nt)
     end
 end
 
----進路鎖錠と過走防護区間をロックできたか確認します
+---発点・進路鎖錠・着点が鎖錠できているか確認します(過走防護区間は含みません)
 ---@private
 ---@param nt Ntracs
 ---@return boolean
-function Signal:isLocked(nt)
+function Signal:isRouteLocked(nt)
     if not nt:get_track(self.startTrack):is_start_locked(self.itemName, nt) then
         return false
     end
@@ -287,12 +319,30 @@ function Signal:isLocked(nt)
     if not nt:get_track(self.destination):is_destination_locked(self.itemName) then
         return false
     end
+    return true
+end
+
+---過走防護区間が完全に鎖錠できているか確認します(開通テコ経由の保護を含みます)
+---@private
+---@param nt Ntracs
+---@return boolean
+function Signal:isOverrunProtected(nt)
     for _, value in ipairs(self.overrunLock) do
         if not nt:get_track(value):is_over_run_lock(self.itemName, nt) then
             return false
         end
     end
     return true
+end
+
+---進路鎖錠と過走防護区間をロックできたか確認します。overrunLockFallbackの有無に関わらず、
+---過走防護区間(overrunLock)が全て予約できている場合にのみtrueになります
+---(フォールバックによる緩和はHyR側でのみ行われ、isLocked/HRはここでは緩めません)。
+---@private
+---@param nt Ntracs
+---@return boolean
+function Signal:isLocked(nt)
+    return self:isRouteLocked(nt) and self:isOverrunProtected(nt)
 end
 
 ---すべての転轍機が鎖錠できたか確認します

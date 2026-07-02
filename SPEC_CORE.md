@@ -255,7 +255,77 @@ HR = ZR AND isLocked AND checkWLR AND NOT(TSSlR) AND NOT(ASR) AND isNoShort
 
 `controls` グラフの循環（A→B→A など）はビルド時（`generate_signal.js`）に DFS で検出されてエラーになります。このためランタイムでは循環による無限ループは発生しません。
 
-### 4.7 AutoSignal
+### 4.7 過走防護フォールバック（`overrunLockFallback` / `HyR`）
+
+過走防護区間（`overrunLock`）が仮予約できない場合、通常はてこ全体の仮予約が失敗し、信号は停止現示のまま固まります。`overrunLockFallback`（TOML: `overrun_lock_fallback = true`）を有効にした信号てこに限り、過走防護区間の仮予約が失敗しても発点・進路鎖錠・着点の本予約は進行させます。現示番号（何を出すか）はコア側では決めず、`update_callback` 側で `lever.HR`・`lever.HyR` を参照して決定します（コアは `nextAspect` を数値としてクランプすることはせず、`HR`・`HyR` がともに false のときのみ強制的に 0 にします）。
+
+#### `bookTemporary` の変更点
+
+過走防護区間だけを別枠でチェックするようにし、オール・オア・ナッシングの対象から外します。
+
+```
+発点 is_ready_for_book_start? → routeLock(各) is_ready_for_book_temporary?
+→ 着点 is_ready_for_book_temporary?              ← ここまでは従来通りアトミック
+→ overrunLock(各) is_ready_for_book_temporary?    ← 結果を overrunReady に記録するのみ
+→ overrunReady が false かつ overrunLockFallback が false → 全体スキップ（従来通り）
+→ それ以外は発点・routeLock・着点を書き込み
+→ overrunReady が true のときだけ overrunLock も書き込む（フォールバック時は過走防護区間を空けておく）
+```
+
+`overrunLockFallback` が有効でも `overrunReady` が false の場合、過走防護区間の `book_temporary()` 呼び出しは一切行いません。これにより、他進路や開通てこ（6.7節参照）がその区間を引き続き利用できます。
+
+#### `isBookedTemporary` の変更点
+
+`overrunLockFallback` が true の信号は、`isBookedTemporary` で過走防護区間の成否チェックをスキップし、常に成立したものとして扱います（発点・routeLock・着点の判定は従来通り必須）。これにより、過走防護区間の仮予約が成立していなくても本予約への格上げ（発点・進路鎖錠・着点）が進みます。
+
+一方、`isLocked`（`HR` の判定に使われる）は `overrunLockFallback` の有無に関わらず一切変更していません。`isLocked` は内部で `isRouteLocked`（発点・進路鎖錠・着点のみ）と `isOverrunProtected`（過走防護区間のみ）の論理積として再構成しましたが、意味的には元の実装と完全に同一です。
+
+#### 本予約確定時の安全ガード
+
+`Signal:process()` の本予約格上げブロックでは、過走防護区間への `book_over_run()` 呼び出しに以下のガードを追加しています。
+
+```lua
+for _, track in ipairs(self.overrunLock) do
+    local t = nt:get_track(track)
+    if t:is_booked_temporary(self.itemName, nt) and not t:is_over_run_lock(self.itemName, nt) then
+        t:book_over_run(self.itemName, nt)
+    end
+end
+```
+
+- `is_booked_temporary`：自分が確かにその区間を仮予約できている場合のみ本予約に格上げする（フォールバックで見送った区間は対象外）。
+- `not is_over_run_lock`：既に（開通てこ経由などで）保護が成立している区間は、所有権を奪って `book_over_run()` を呼び直さない（6.7節参照）。
+
+#### HR / HyR（信号扛上リレー / 警戒信号現示リレー）
+
+`HR` は元の定義から一切緩めていません。`signal.toml` に記載された `overrunLock` の全区間が予約できている場合にのみ true になります（`overrunLockFallback` の有無に関わらず同一の判定です）。
+
+`HyR`（警戒信号現示リレー）は次のように定義される、`HR` とは独立した新設のリレーです。
+
+```
+baseOk = ZR AND checkWLR AND (NOT TSSlR) AND (NOT ASR) AND isNoShort   -- 過走防護の成否を含まない共通条件
+HR     = baseOk AND isLocked(nt)                                       -- isLocked = isRouteLocked AND isOverrunProtected(元の定義のまま)
+HyR    = HR OR (baseOk AND overrunLockFallback AND isRouteLocked(nt))
+```
+
+`HR` が成立していれば `HyR` は論理和の左辺により必ず true になります（`HR=true` かつ `HyR=false` という組み合わせは構造的に存在しません）。加えて、`overrunLockFallback` が有効な信号てこに限り、過走防護区間が予約できていなくても、進路鎖錠（発点・進路鎖錠・着点、`isRouteLocked`）さえ成立していれば `HyR` が true になります。
+
+コア側の処理は `HyR` を上記の通り計算すること以上は行いません（`nextAspect` を数値としてクランプすることはしません）。ただし最終的な強制停止条件は `HR` 単独ではなく `HR OR HyR` に変更されています。
+
+```lua
+self.nextAspect = self:updateCallback(nt, deltaTick)
+if not (self.HR or self.HyR) then
+    self.nextAspect = 0
+end
+```
+
+`update_callback` は `lever.HR`・`lever.HyR` の両方を参照して現示番号を自分で決定します。典型的な書き方は次の通りです。
+
+```lua
+update_callback = 'function(lever, nt, dt) if lever.HR then return 4 elseif lever.HyR then return 1 else return 0 end end'
+```
+
+### 4.8 AutoSignal
 
 `Signal` の簡略版で、てこ入力・進路鎖錠機能を持たず、**在線なし（signalTrack全て空）→ HR=true** の単純なルールで現示を計算します。`HR` は `new()` では初期化されず、初回 `process()` で設定されます。
 
@@ -400,6 +470,68 @@ extra_controls = ["NHB1L"]                          # 方向てこを総括制�
 | 列車通過後・前要素解除済み | NoBook（サブ・メイン共） | 転換可 |
 
 逆方向進路（対向）は `DestinationActive` の間は発点仮予約が `is_ready_for_book_start` でブロックされます。タイマー満了（`DestinationExpired`）後は逆方向の発点でも上書き可能になります。
+
+### 6.7 開通てこ（OpeningLever）
+
+`OpeningLever` は信号を現示しない新しいてこ種別です。TOML固定方向で、指定した過走防護区間（`overrun_lock` と同じ意味の抽象軌道回路群）を「デフォルトで開通させておく」ことを宣言します。
+
+- `Signal.new()` が `SignalBase.new()` をベースにミックスインするのと同様、`OpeningLever.new()` も `NtracsObject.create_instance(SignalBase.new(), OpeningLever)` を使い、`SignalBase` の機能（`process`/`before_process` の抽象定義など）をベースにします。
+- `process()` は毎ティック、対象の各 `overrun_lock` トラックについて `Track:is_claimable_for_opening(itemName)`（空き、または既に自分自身が保持している）を確認し、成立していれば `Track:book_opening(itemName, nt)` で `bookDest` を `RouteOver` に書き込みます。`book` フィールド（メイン）には一切触れません。
+- `under_route_lock_b()` は常に `false` を返します。これにより、開通てこが保持している区間は在線解除だけでは自動的に解放されません（実信号機の本予約で明示的に上書きされるまで保持し続けます）。
+- `is_opening_lever()` は `true` を返します。これは他のオブジェクトから「このてこが開通てこかどうか」を判別するための目印メソッドです。
+
+#### 所有権の非対称性（上書きされる場合・されない場合）
+
+開通てこが `RouteOver` で保持している区間は、**その区間を実際の進路（`route_lock`/`destination`）として使う内方の信号機**には自然に上書きされますが、**その区間を過走防護区間（`overrun_lock`）として使うだけの外方の信号機**には所有権を奪われません。
+
+- **上書きされる（内方信号機が `destination` として使う場合）**：`Signal:process()` の本予約確定ブロックは `nt:get_track(self.destination):book_destination(...)` を無条件に呼び出します。`book_destination()` は `bookDest` を無条件で `DestinationActive` に書き換えるため、開通てこの `RouteOver` 予約は自然に明け渡されます。
+- **上書きされない（外方信号機が `overrun_lock` として使うだけの場合）**：4.7節で述べた安全ガード（`is_booked_temporary and not is_over_run_lock` のときのみ `book_over_run()` を呼ぶ）により、既に `is_over_run_lock` が成立している区間には `book_over_run()` を呼びません。開通てこが保持する区間に対して `is_over_run_lock` が成立するよう、`Track:is_over_run_lock()` を以下のように拡張しています。
+
+```lua
+function Track:is_over_run_lock(lever, nt)
+    local dir = nt:get_signal(lever).direction
+    if self.bookDest == BookType.RouteOver and self.destRelatedLever == lever then
+        return true
+    end
+    if self.book == BookType.RouteLock and self.direction == dir then
+        return true
+    end
+    -- 開通てこが方向一致で保持している場合も鎖錠成立とみなす
+    if self.bookDest == BookType.RouteOver and self.destDirection == dir then
+        local owner = nt:get_signal_may_nil(self.destRelatedLever)
+        if owner and type(owner.is_opening_lever) == "function" and owner:is_opening_lever() then
+            return true
+        end
+    end
+    return false
+end
+```
+
+`type(owner.is_opening_lever) == "function"` のガードは、`destRelatedLever` が偶然 `is_opening_lever` を持たないオブジェクトを指していてもエラーにしないための防御です（`Signal:setInput()` の `type(signal.setInput) == "function"` と同じパターン）。`AutoSignal` は `NtracsObject.create_instance({}, AutoSignal)` と素の `{}` をベースにしており `SignalBase` の関数を継承しないため、`is_opening_lever` を持ちません。
+
+#### `Track:book_opening()` が専用関数である理由
+
+既存の `book_over_run()` をそのまま流用すると、`destBeforeRouteLockItem` に `nt:get_signal(lever).destination` を設定しようとして `nil` になります（開通てこには `destination` フィールドが存在しないため）。`destBeforeRouteLockItem` が `nil` だと `CheckUnlockRouteLock` が `true` を返し、非在線時に毎ティック自動解放されてしまいます。そこで開通てこ専用の `book_opening()` を新設し、`destBeforeRouteLockItem` に開通てこ自身（`lever`）を設定します。`OpeningLever:under_route_lock_b()` が常に `false` を返すため、`CheckUnlockRouteLock` は常に `false` となり、実信号機に明示的に上書きされるまで保持され続けます。
+
+```lua
+function Track:book_opening(lever, nt)
+    self.bookDest = BookType.RouteOver
+    self.destRelatedLever = lever
+    self.destBeforeRouteLockItem = lever
+    self.destDirection = nt:get_signal(lever).direction
+end
+```
+
+#### TOML設定例
+
+```toml
+[XXXX_OPL]
+opening_lever = true
+direction = "right"
+overrun_lock = ["XXX1T", "XXX2T"]
+```
+
+ビルド時（`build/generate_signal.js`）に `data.opening_lever === true` のエントリは `SoyaBridge:create_opening_lever()` を呼ぶ専用コードに変換されます。`index.js` の `detectOpeningLeverConflicts()` は、複数の開通てこが同一トラックを対象区間として重複宣言していないかをビルド時に検証します。
 
 ---
 
