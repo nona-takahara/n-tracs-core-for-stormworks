@@ -210,7 +210,7 @@ HR = ZR AND isLocked AND checkWLR AND NOT(TSSlR) AND NOT(ASR) AND isNoShort
 3. **仮予約**（`ZR` が true かつ `bookTemporary` 成功）：発点・routeLock・着点・overrunLock をすべて `Temporary`（または発点サブ互換確認）に。全区間のチェックがアトミックで行われ、1つでも不成立なら全体をスキップ。
 4. **本予約確定**（`NOT(ASR)` かつ `isBookedTemporary` 成立）：発点→`Start`（メイン）、routeLock→`RouteLock`（メイン）、着点→`DestinationActive`（サブ）、overrunLock→`RouteOver`（サブ）に格上げ
 5. **HR扛上**（鎖錠完成・全条件成立）→ 信号進行現示
-6. **列車進入**（`isEnterRoute` が true）→ `TSSlR` が上がり、次ティックで `input = false`（自動復位）
+6. **列車進入**（`isEnterRoute` が true）→ `TSSlR` が上がり、次ティックで `setInput(false, nt)` が呼ばれ `input = false`（自動復位）。`setInput()` を経由するため、`controls`/`extra_controls` で総括制御しているてこ（方向てこ等）にも復位が伝播する。
 7. **進路解除**（列車通過後、`CheckUnlockRouteLock` 連鎖で順次 `NoBook` に）
    - 発点：Signal.ASR 扛上で即時解除（在線有無問わず）
    - routeLock：在線なし かつ 前要素解除済み

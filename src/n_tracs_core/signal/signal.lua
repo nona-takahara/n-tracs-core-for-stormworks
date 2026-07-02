@@ -80,8 +80,11 @@ end
 ---@param nt Ntracs
 function Signal:process(deltaTick, nt)
     -- 自動復位モードであり、かつ復位条件を満たす場合
+    -- setInput() を経由することで、総括制御(controls/extra_controls)先のてこ
+    -- （方向てこ等）にも復位が正しく伝播する。self.input を直接書き換えると
+    -- 伝播がスキップされ、総括制御先のてこが反位のまま固着してしまう。
     if self.auto_reset and self.TSSlR then
-        self.input = false
+        self:setInput(false, nt)
     end
 
     -- てこリレー（閉路鎖錠条件と、総括制御条件を加える必要あり）
