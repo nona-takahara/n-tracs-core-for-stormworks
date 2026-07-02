@@ -23,7 +23,7 @@ local SwitchRoute = require("src.n_tracs_core.signal.switch_route")
 ---@field lockTime number [CONSTANT]接近・保留鎖錠の時間(Tick)
 ---@field overrunTime number [CONSTANT]過走防護鎖錠の時間(Tick)
 ---@field private overrunLockFallback boolean 過走防護区間の仮予約に失敗しても本予約を進めるフラグ(TOML opt-in)
----@field HyR boolean 警戒信号現示リレー。HRがtrueかつ過走防護が完全には成立していない(フォールバックで通した)場合にtrue
+---@field HyR boolean 警戒信号現示リレー。HRより下位の階梯にあたり、HRがtrueの間は常にtrue(HR=falseならfalse)
 ---@field aspect number
 local Signal = {}
 
@@ -153,7 +153,10 @@ function Signal:process(deltaTick, nt)
         (not self.ASR) and
         self:isNoShort(nt)
 
-    self.HyR = self.HR and (not self:isOverrunProtected(nt))
+    -- HyR(警戒信号現示リレー)はHRが成立する限り必ずtrueとなる(HRはHyRより上位の階梯であるため)。
+    -- 過走防護が完全に成立しているか否かで現示を出し分けたいupdate_callbackは、
+    -- lever:isOverrunProtected(nt)を直接参照すること。
+    self.HyR = self.HR
 
     self.nextAspect = self:updateCallback(nt, deltaTick)
     if not self.HR then
@@ -292,8 +295,10 @@ function Signal:isEnterRoute(nt)
     end
 end
 
----過走防護区間が完全に鎖錠できているか確認します(開通テコ経由の保護を含みます)
----@private
+---過走防護区間が完全に鎖錠できているか確認します(開通テコ経由の保護を含みます)。
+---overrun_lock_fallbackを使う信号のupdate_callbackから、HyRだけでは区別できない
+---「過走防護が完全に成立しているか(=フォールバックで通していないか)」を判定したい場合に、
+---lever:isOverrunProtected(nt)として直接呼び出してよい公開メソッドです。
 ---@param nt Ntracs
 ---@return boolean
 function Signal:isOverrunProtected(nt)

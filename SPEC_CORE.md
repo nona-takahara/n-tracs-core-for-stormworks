@@ -257,7 +257,7 @@ HR = ZR AND isLocked AND checkWLR AND NOT(TSSlR) AND NOT(ASR) AND isNoShort
 
 ### 4.7 過走防護フォールバック（`overrunLockFallback` / `HyR`）
 
-過走防護区間（`overrunLock`）が仮予約できない場合、通常はてこ全体の仮予約が失敗し、信号は停止現示のまま固まります。`overrunLockFallback`（TOML: `overrun_lock_fallback = true`）を有効にした信号てこに限り、過走防護区間の仮予約が失敗しても発点・進路鎖錠・着点の本予約は進行させ、代わりに警戒信号現示リレー `HyR` を true にします。現示番号（何を出すか）はコア側では決めず、`update_callback` 側で `lever.HyR` を参照して決定します（コアは `nextAspect` をクランプしません）。
+過走防護区間（`overrunLock`）が仮予約できない場合、通常はてこ全体の仮予約が失敗し、信号は停止現示のまま固まります。`overrunLockFallback`（TOML: `overrun_lock_fallback = true`）を有効にした信号てこに限り、過走防護区間の仮予約が失敗しても発点・進路鎖錠・着点の本予約は進行させます。現示番号（何を出すか）はコア側では決めず、`update_callback` 側で `lever.HyR`（警戒信号現示リレー）や `lever:isOverrunProtected(nt)` を参照して決定します（コアは `nextAspect` をクランプしません）。
 
 #### `bookTemporary` の変更点
 
@@ -297,10 +297,12 @@ end
 #### HyR（警戒信号現示リレー）
 
 ```
-HyR = HR AND NOT(isOverrunProtected)
+HyR = HR
 ```
 
-`isOverrunProtected(nt)` は `isLocked` から切り出した過走防護専用の判定で、`overrunLockFallback` を考慮せず「overrunLock 全区間が `is_over_run_lock` を満たすか」だけを返します。`HR` が成立していても過走防護が完全でない（フォールバックで通した）場合に `HyR` が true になります。
+`HyR` は実際の継電連動装置における「警戒信号現示リレー」に相当し、`HR`（より上位の階梯、いわば注意信号現示リレー相当）が成立する限り必ず true になります（HR は HyR の成立を前提として初めて成立する、というのが実物の階梯構造であり、`HR=true` かつ `HyR=false` という組み合わせは存在しません）。コア側の処理は `HyR` を true にすること以上は行いません。
+
+過走防護が完全に成立しているか（＝フォールバックで通していないか）で現示を出し分けたい `update_callback` は、`HyR` ではなく公開メソッド `lever:isOverrunProtected(nt)`（`isLocked` から切り出した過走防護専用の判定。`overrunLockFallback` を考慮せず「overrunLock 全区間が `is_over_run_lock` を満たすか」だけを返す）を直接呼び出して判定します。
 
 ### 4.8 AutoSignal
 

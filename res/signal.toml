@@ -930,13 +930,15 @@ update_callback = 'u.StandardAspectCallback_2nd(1)'
 #
 # 要件A: 過走防護フォールバック
 # 既存の信号てこテーブルに overrun_lock_fallback = true を追加すると、overrun_lock 区間の
-# 仮予約が失敗しても発点・進路鎖錠・着点の本予約は進み、HyR(警戒信号現示リレー)が true になります。
-# 現示番号は update_callback 側で lever.HyR を見て自分で決めます。
+# 仮予約が失敗しても発点・進路鎖錠・着点の本予約は進みます。HyR(警戒信号現示リレー)はHRが
+# 成立する限り常にtrueになる(HR=trueかつHyR=falseという組み合わせは存在しない)ため、
+# 「過走防護が完全に成立しているか」で現示を出し分けたい場合はHyRではなく
+# lever:isOverrunProtected(nt) を直接呼び出します。
 #
 # [SNH13R]
 # ...(既存フィールドは省略)...
 # overrun_lock_fallback = true
-# update_callback = 'function(lever, nt, dt) if lever.HyR then return 1 else return u.StandardAspectCallback_2nd(4) end end'
+# update_callback = 'function(lever, nt, dt) if lever:isOverrunProtected(nt) then return u.StandardAspectCallback_2nd(4) else return 1 end end'
 #
 # 要件B: 開通てこ
 # 信号を現示しない新しい種別のてこです。TOML固定方向で過走防護区間をデフォルト開通させておきます。
