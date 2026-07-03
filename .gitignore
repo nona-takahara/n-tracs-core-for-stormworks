@@ -8,3 +8,4 @@ res/signal.lua
 *.map
 *.min.*
 .env
+/dist/
