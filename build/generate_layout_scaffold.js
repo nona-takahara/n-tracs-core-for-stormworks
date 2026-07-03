@@ -326,9 +326,15 @@ function renderStationGrid(sub, col, row, switchByTrack, primaryOf, notes) {
         tileTracks[`${r},${c}`] = n;
     });
 
-    function fillLR(r, cFrom, cTo) {
+    // trackId is optional: when given, every tile filled in by this call
+    // (and any tile that doesn't already have one) is tagged with it in
+    // tileTracks, so the new "every non-'.' tile needs tile_tracks" layout
+    // rule (see build/generate_diagram.js validateLayout) is satisfied even
+    // though these filler tiles don't correspond 1:1 to a graph node.
+    function fillLR(r, cFrom, cTo, trackId) {
         for (let c = cFrom; c <= cTo; c++) {
             if (grid[r][c] === ".") grid[r][c] = "LR";
+            if (trackId && !tileTracks[`${r},${c}`]) tileTracks[`${r},${c}`] = trackId;
         }
     }
 
@@ -358,8 +364,8 @@ function renderStationGrid(sub, col, row, switchByTrack, primaryOf, notes) {
             const otherRow = row.get(otherPred);
             const id = nextSwitchId(v, k);
 
-            fillLR(trunkRow, prevTrunkCol + 1, switchCol - 1);
-            fillLR(otherRow, col.get(otherPred) + 1, switchCol - 1);
+            fillLR(trunkRow, prevTrunkCol + 1, switchCol - 1, primary);
+            fillLR(otherRow, col.get(otherPred) + 1, switchCol - 1, otherPred);
 
             const otherBelow = otherRow > trunkRow;
             const diagType = otherBelow ? "LU" : "LD";
@@ -367,11 +373,13 @@ function renderStationGrid(sub, col, row, switchByTrack, primaryOf, notes) {
 
             grid[trunkRow][switchCol] = "SW";
             switches[`${trunkRow},${switchCol}`] = { id, normal: "LR", reverse: reverseType };
+            tileTracks[`${trunkRow},${switchCol}`] = v;
             grid[otherRow][switchCol] = diagType;
+            tileTracks[`${otherRow},${switchCol}`] = otherPred;
             prevTrunkCol = switchCol;
         });
         // final stretch from the last cascade switch column up to v itself
-        fillLR(trunkRow, prevTrunkCol + 1, col.get(v) - 1);
+        fillLR(trunkRow, prevTrunkCol + 1, col.get(v) - 1, v);
     });
 
     // diverges (outdegree > 1), cascaded pairwise
@@ -389,7 +397,7 @@ function renderStationGrid(sub, col, row, switchByTrack, primaryOf, notes) {
             const otherRow = row.get(otherSucc);
             const id = nextSwitchId(u, k);
 
-            fillLR(trunkRow, prevTrunkCol + 1, switchCol - 1);
+            fillLR(trunkRow, prevTrunkCol + 1, switchCol - 1, u);
 
             const otherBelow = otherRow > trunkRow;
             const diagType = otherBelow ? "UR" : "DR";
@@ -397,12 +405,14 @@ function renderStationGrid(sub, col, row, switchByTrack, primaryOf, notes) {
 
             grid[trunkRow][switchCol] = "SW";
             switches[`${trunkRow},${switchCol}`] = { id, normal: "LR", reverse: reverseType };
+            tileTracks[`${trunkRow},${switchCol}`] = u;
             grid[otherRow][switchCol] = diagType;
+            tileTracks[`${otherRow},${switchCol}`] = otherSucc;
 
-            fillLR(otherRow, switchCol + 1, col.get(otherSucc) - 1);
+            fillLR(otherRow, switchCol + 1, col.get(otherSucc) - 1, otherSucc);
             prevTrunkCol = switchCol;
         });
-        fillLR(trunkRow, prevTrunkCol + 1, col.get(primary) - 1);
+        fillLR(trunkRow, prevTrunkCol + 1, col.get(primary) - 1, primary);
     });
 
     return { grid, switches, tileTracks, numRows, numCols };
