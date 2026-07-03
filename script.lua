@@ -1,6 +1,6 @@
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
-ADDON_VERSION = "v2.0.0-beta5"
+ADDON_VERSION = "v2.0.0-beta6"
 CTC_VERSION = "SoyaWS-3"
 
 error = error or function(message)

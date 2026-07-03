@@ -3,7 +3,7 @@ local Axle         = require("src.n_tracs_soyabridge.axle")
 local SetRoute     = require("src.n_tracs_core.switch.set_route")
 ---@class VehicleInfo:NtracsObject
 ---@field vehicle_id number
----@field axles Axle[] | nil
+---@field axles Axle[]
 ---@field signals string[]
 ---@field tracks string[]
 ---@field points PointSetter[]
@@ -14,7 +14,7 @@ local VehicleInfo  = {}
 ---@param vehicle_id number
 ---@param vdata SWLoadedVehicleData
 ---@param forceRegister boolean
----@return Axle[] | nil
+---@return Axle[]
 local function load_axles(vehicle_id, vdata, forceRegister)
     ---@type Axle[]
     local axles = {}
@@ -133,6 +133,10 @@ function VehicleInfo:send(sign, sw)
         if sw.nt:get_switch(point.switchName).W ~= SetRoute.Indefinite then
             server.setVehicleKeypad(self.vehicle_id, point.switchName .. "W", sw.nt:get_switch(point.switchName).W)
         end
+    end
+
+    for _, axle in ipairs(self.axles) do
+        axle:send(sign)
     end
 end
 

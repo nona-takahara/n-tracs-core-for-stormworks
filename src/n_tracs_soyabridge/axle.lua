@@ -41,6 +41,7 @@ function Axle.new(vehicle_id, name, voxelPos)
     obj.arc = 0
     obj.disable_short = false
     obj.velocity = 0
+    obj.sending = {}
     return obj
 end
 

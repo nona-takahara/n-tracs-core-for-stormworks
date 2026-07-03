@@ -1,4 +1,6 @@
-local Utils = {}
+local BookType = require("src.n_tracs_core.track.book_type")
+local json     = require("temp.json")
+local Utils    = {}
 
 ---@param aspect number
 ---@return function
@@ -63,7 +65,7 @@ end
 ---@param area Area
 ---@param data number[]
 function Utils.SendRightAxle(area, data)
-    local p = Utils.GetLeftAxle(area)
+    local p = Utils.GetRightAxle(area)
     if p then
         for i, _ in ipairs(data) do
             p.sending[i] = data[i]
@@ -112,5 +114,56 @@ function Utils.ATS_YGh() return { 80, 11 } end
 function Utils.ATS_G() return { 100, 12 } end
 
 function Utils.ATS_Gh() return { 112, 13 } end
+
+function Utils.someRouteLock(nt, track_name)
+    return nt:get_track(track_name).book == BookType.RouteLock
+end
+
+function Utils.someDestination(nt, track_name)
+    return (
+        nt:get_track(track_name).bookDest == BookType.DestinationActive or
+        nt:get_track(track_name).bookDest == BookType.DestinationExpired
+    )
+end
+
+---自分より左のtrack areaにaxleがなければtrue
+---@param s SoyaBridge
+---@param area Area
+---@param track_name string
+function Utils.isTrackLeftAxle(s, area, track_name)
+    local p = s.track_bridge[track_name]
+    if p then
+        for _, a in ipairs(p.area_ids) do
+            if a == area.itemName then
+                return true
+            end
+            if #(s.areas[a].axles) > 0 then
+                return false
+            end
+        end
+    end
+    return false
+end
+
+---自分より右のtrack areaにaxleがなければtrue
+---@param s SoyaBridge
+---@param area Area
+---@param track_name string
+function Utils.isTrackRightAxle(s, area, track_name)
+    local p = s.track_bridge[track_name]
+    if p then
+        local l = #(p.area_ids)
+        for i = l, 1, -1 do
+            local a = p.area_ids[i]
+            if a == area.itemName then
+                return true
+            end
+            if #(s.areas[a].axles) > 0 then
+                return false
+            end
+        end
+    end
+    return false
+end
 
 return Utils
