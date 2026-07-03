@@ -130,9 +130,11 @@ function mainSignalGlyph(ax, ay, dx, dy, lever) {
     return mastLine + head + label;
 }
 
+// 入換信号機: 1/4円弧を主体にした記号。直角の頂点をマスト側に置き、
+// 弧が進行方向斜め上(縦向きなら斜め横)へ張り出す扇形。
 function shuntSignalGlyph(ax, ay, dx, dy, lever) {
     const MAST_LEN = 8;
-    const HEAD_HALF = 3;
+    const R = 6;
     const isH = dx !== 0;
 
     const mx = ax + dx * 5;
@@ -141,11 +143,19 @@ function shuntSignalGlyph(ax, ay, dx, dy, lever) {
         ? `<line x1="${mx}" y1="${my - MAST_LEN / 2}" x2="${mx}" y2="${my + MAST_LEN / 2}" stroke="black" stroke-width="1.5"/>`
         : `<line x1="${mx - MAST_LEN / 2}" y1="${my}" x2="${mx + MAST_LEN / 2}" y2="${my}" stroke="black" stroke-width="1.5"/>`;
 
-    const hx = mx + dx * (HEAD_HALF + 2);
-    const hy = my + dy * (HEAD_HALF + 2);
-    const head = `<rect x="${hx - HEAD_HALF}" y="${hy - HEAD_HALF}" width="${HEAD_HALF * 2}" height="${HEAD_HALF * 2}" fill="white" stroke="black" stroke-width="1.5"/>`;
+    const cx = mx + dx * 2;
+    const cy = my + dy * 2;
+    let path;
+    if (isH) {
+        const sweep = dx > 0 ? 1 : 0;
+        path = `M ${cx} ${cy} L ${cx} ${cy - R} A ${R} ${R} 0 0 ${sweep} ${cx + dx * R} ${cy} Z`;
+    } else {
+        const sweep = dy > 0 ? 0 : 1;
+        path = `M ${cx} ${cy} L ${cx - R} ${cy} A ${R} ${R} 0 0 ${sweep} ${cx} ${cy + dy * R} Z`;
+    }
+    const head = `<path d="${path}" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/>`;
 
-    const label = signalLabel(hx, hy, dx, dy, HEAD_HALF, lever);
+    const label = signalLabel(cx, cy - (isH ? R / 2 : 0), dx, dy, R, lever);
 
     return mastLine + head + label;
 }
