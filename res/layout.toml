@@ -109,6 +109,31 @@ at = { row = 2, col = 12, side = "left" }
 type = "main"
 shift = { x = -0.15, y = 0.3 }
 
+# 13RT(9番線)左端からの引き上げ入換(4基を縦に並記)
+[[NHB.signals]]
+lever = "NHB11L"
+at = { row = 2, col = 10, side = "left" }
+type = "shunt"
+shift = { x = 0, y = 0.35 }
+
+[[NHB.signals]]
+lever = "NHB12L"
+at = { row = 2, col = 10, side = "left" }
+type = "shunt"
+shift = { x = 0, y = 0.6 }
+
+[[NHB.signals]]
+lever = "NHB13L"
+at = { row = 2, col = 10, side = "left" }
+type = "shunt"
+shift = { x = 0, y = 0.85 }
+
+[[NHB.signals]]
+lever = "NHB14L"
+at = { row = 2, col = 10, side = "left" }
+type = "shunt"
+shift = { x = 0, y = 1.1 }
+
 [[NHB.platforms]]
 name = "3番線"
-at = { row = 1.6, col = 2, width = 4, height = 0.3 }
+at = { row = 1.1, col = 2, width = 3, height = 0.3 }
