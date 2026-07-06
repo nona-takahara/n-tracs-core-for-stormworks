@@ -141,12 +141,12 @@ start = "TKM_NHB1T"
 destination = "NHB4LT"
 direction = "left"
 switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "reverse" }]
-route_lock = ["NHB13RT", "NHB23T", "NHB21T"]
+route_lock = ["NHB13RT", "NHB23T", "NHB22AT", "NHB21T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB13RT", "NHB23T", "NHB21T", "NHB4LT"]
+signal_track = ["NHB13RT", "NHB23T", "NHB22AT", "NHB21T", "NHB4LT"]
 
 approach_track = ["TKM_NHB1T"]
 approach_lock_time = 40
@@ -158,12 +158,12 @@ start = "TKM_NHB1T"
 destination = "NHB5LT"
 direction = "left"
 switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "normal" }]
-route_lock = ["NHB13RT", "NHB23T", "NHB21T"]
+route_lock = ["NHB13RT", "NHB23T", "NHB22AT", "NHB21T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB13RT", "NHB23T", "NHB21T", "NHB5LT"]
+signal_track = ["NHB13RT", "NHB23T", "NHB22AT", "NHB21T", "NHB5LT"]
 
 approach_track = ["TKM_NHB1T"]
 approach_lock_time = 40
@@ -175,12 +175,12 @@ start = "NHB13RT"
 destination = "NHB4LT"
 direction = "left"
 switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "reverse" }]
-route_lock = ["NHB23T", "NHB21T"]
+route_lock = ["NHB23T", "NHB22AT", "NHB21T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB23T", "NHB21T", "NHB4LT"]
+signal_track = ["NHB23T", "NHB22AT", "NHB21T", "NHB4LT"]
 
 approach_track = []
 approach_lock_time = 0
@@ -192,12 +192,12 @@ start = "NHB13RT"
 destination = "NHB5LT"
 direction = "left"
 switches = [{ sw = "NHB22", t = "reverse" }, { sw = "NHB21", t = "normal" }]
-route_lock = ["NHB23T", "NHB21T"]
+route_lock = ["NHB23T", "NHB22AT", "NHB21T"]
 
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB23T", "NHB21T", "NHB5LT"]
+signal_track = ["NHB23T", "NHB22AT", "NHB21T", "NHB5LT"]
 
 approach_track = []
 approach_lock_time = 0
