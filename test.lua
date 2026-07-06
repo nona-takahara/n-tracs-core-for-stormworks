@@ -7,7 +7,7 @@ require("res.switch")(sw)
 require("res.signal_alias")(sw)
 local crossing = require("res.crossing")(sw)
 
-local json = require("temp.json")
+local json = require("src.utils.json")
 
 function before_process()
     for k, v in pairs(sw.nt.track) do

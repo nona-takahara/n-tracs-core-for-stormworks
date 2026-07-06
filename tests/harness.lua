@@ -9,16 +9,6 @@
 --
 -- 実行方法（リポジトリルートから）: lua tests/repro_xxx.lua
 
--- 本番(Stormworks/LifeBoatAPI)環境ではtemp.jsonが提供されますが、ローカル実行では
--- 存在しないため、res/utils.lua 等が読み込めるようスタブを積みます。
--- (テストでは json.stringify の出力内容自体は使わないため、ダミーで十分です)
-package.preload["temp.json"] = function()
-    return {
-        stringify = function(_) return "" end,
-        parse = function(_) return {} end,
-    }
-end
-
 local SoyaBridge = require("src.n_tracs_soyabridge.soya_bridge")
 
 local M = {}
