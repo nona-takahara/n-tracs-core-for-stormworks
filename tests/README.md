@@ -20,11 +20,35 @@ node tests/gen_res.js
 
 ## 実行
 
+1ファイルだけ実行する場合:
+
 ```sh
 lua tests/repro_template.lua
 ```
 
 失敗すると `os.exit(1)` するので、そのままCIの合否判定にも使えます。
+
+`tests/repro_*.lua` を全部まとめて実行してサマリを見たい場合:
+
+```sh
+npm test
+```
+
+`pretest` で `tests/gen_res.js` が自動実行されてから、`tests/run_all.js` が
+`tests/repro_*.lua` を1本ずつ別プロセスとして実行し、最後に
+
+```
+[PASS] tests/repro_template.lua
+[FAIL] tests/repro_xxxx.lua
+    [NG] cycle3: ... (expected=true, actual=false)
+    1 / 5 件のアサーションが失敗しました
+============================================================
+4 / 5 件のテストファイルが成功しました
+```
+
+のような一覧を表示します。失敗したファイルの `[NG]` 行だけを抜き出して表示
+するので、まとめて実行してもどこが壊れているかすぐわかります。1件でも失敗
+すれば非0終了するので、CIにもそのまま組み込めます。
 
 ## 書き方のコツ
 
@@ -63,6 +87,7 @@ lua tests/repro_template.lua
 - `tests/gen_res.js` — 本番データから `res/area_track.lua` / `res/signal.lua` を生成
 - `tests/harness.lua` — `new_production_sw()` / `tick()` / `new_checker()` を提供
 - `tests/repro_template.lua` — 上記を使った最小のひな形（コピーして使ってください）
+- `tests/run_all.js` — `tests/repro_*.lua` を一括実行してサマリを表示する（`npm test`）
 
 ## 既知の注意点
 

@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "build": "node index.js",
-    "test:gen-res": "node tests/gen_res.js"
+    "test:gen-res": "node tests/gen_res.js",
+    "pretest": "npm run test:gen-res",
+    "test": "node tests/run_all.js"
   },
   "repository": {
     "type": "git",
