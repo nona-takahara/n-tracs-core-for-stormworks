@@ -33,30 +33,8 @@ N-TRACS Soya Express Wayside Signals は、Stormworks Lua with LifeBoatAPI 用�
 
 本ソフトウェアの開発・ビルド環境は以下の通りです。過不足があれば修正されます。
 
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Stormworks Lua with LifeBoatAPI](https://marketplace.visualstudio.com/items?itemName=NameousChangey.lifeboatapi) Extension
-- Python 3.11 以降
-<!-- tomllibを使用するため -->
-
-ワークスペースを作成し、設定の`Lua.workspace.library`に以下のディレクトリに対する**絶対パス**を設定してください
-
-- この`README.md`があるディレクトリ
-- このリポジトリの`/_build/libs/`
-- LifeBoat API の`/assets/lua/Common/`
-- LifeBoat API の`/assets/lua/Addon/`
-
-GitHub Desktop を使用している場合の具体的な`.code-workspace`の設定は以下のようになります。
-
-```json
-"settings": {
-    "Lua.workspace.library": [
-        "c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/",
-        "c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Common/",
-        "c:/Users/<USERNAME>/.vscode/extensions/nameouschangey.lifeboatapi-0.0.33/assets/lua/Addon/",
-        "c:/Users/<USERNAME>/Documents/GitHub/n-tracs-soya-express/_build/libs/"
-    ]
-}
-```
+- Node.js
+- Lua 5.3 実行環境。`lua`で呼び出せる必要がある。
 
 ## How to Contribute
 
