@@ -61,7 +61,7 @@ route_lock = []
 overrun_lock = []
 overrun_lock_time = 0
 
-signal_track = ["NHB5RT"]
+signal_track = ["NHB5LT"]
 
 approach_track = ["HLT_NHB1T"]
 approach_lock_time = 20
