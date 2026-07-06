@@ -4,6 +4,7 @@ const path = require("path");
 const toml = require("toml");
 const generateAreaTrack = require("./build/generate_area_track");
 const { generateSignal, buildControlsMap, detectControlsCycle } = require("./build/generate_signal");
+const { checkRouteTrackContinuity } = require("./build/check_route_continuity");
 require('dotenv').config();
 
 process.chdir(__dirname);
@@ -79,7 +80,9 @@ async function main() {
         fs.promises.readFile("res/area_track.json", "utf8"),
     ]);
     const signalObj = toml.parse(signalSrc);
-    checkCrossReferences(signalObj, JSON.parse(areaTrackSrc));
+    const areaTrackObj = JSON.parse(areaTrackSrc);
+    checkCrossReferences(signalObj, areaTrackObj);
+    checkRouteTrackContinuity(signalObj, areaTrackObj);
     detectOpeningLeverConflicts(signalObj);
 
     if (isStale("res/signal.lua", "res/signal.toml")) {
