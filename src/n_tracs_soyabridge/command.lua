@@ -4,7 +4,7 @@
 ---@field description string
 ---@field command function
 
-local json = require("temp.json")
+local json = require("src.utils.json")
 
 ---@param sw SoyaBridge
 ---@return {COMMANDS: table<string, Command>, DELAY_ANNOUNE: function[], Announce: fun(message: string, peer_id: integer)}
