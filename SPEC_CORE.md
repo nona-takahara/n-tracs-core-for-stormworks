@@ -152,6 +152,22 @@ AND
 
 ---
 
+### 3.7 共通タイマー（`timer`）
+
+Area callback や踏切の連動から使うための、軌道回路ごとの経過ティック計です。予約状態（3.5 の過走防護タイマー）とは独立です。
+
+- `track:advance_timer(deltaTick)`：`timer` を進めて値を返します。同じティックに何か所から呼んでも、進むのは最初の1回分だけです。ティックの区切りは、毎ティック全軌道回路に呼ばれる `Track:process` が検出します
+- `track:reset_timer()`：`timer` を 0 に戻します
+- `track.timer`：現在値（tick）。読むだけなら進みません
+
+```lua
+-- Area callback の例：在線が続く間だけ進め、離れたら戻す
+if track:is_short() then track:advance_timer(deltaTicks) else track:reset_timer() end
+local expired = track.timer >= 45 * 60
+```
+
+同じティックに `reset_timer()` の後で `advance_timer()` を呼んでも進みません（そのティックの「進める権利」は先に使われています）。呼び出し順に依存させたくない場合は、進める条件と戻す条件を1か所のコールバックにまとめてください。
+
 ## 4. Signal（進路てこ）
 
 Signal は継電連動装置の**進路てこ＋信号機リレー群**に相当します。
