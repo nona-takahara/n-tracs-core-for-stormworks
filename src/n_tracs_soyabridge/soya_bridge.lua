@@ -159,20 +159,19 @@ function SoyaBridge:process(deltaTicks)
     self.nt:process(deltaTicks)
 end
 
----軌道回路上にいる車軸のARC指令値と速さを返します。ARC指令値の受信はAxleが行っており、ここは引くだけです
+---軌道回路上にいる車軸のARC指令値を返します。ARC指令値の受信はAxleが行っており、ここは引くだけです
 ---@param track_id string
 ---@return number arc 0は指令値なし
----@return number speed m/s
 function SoyaBridge:track_arc(track_id)
     for _, area_id in ipairs(self.track_bridge[track_id].area_ids) do
         local area = self.areas[area_id]
         for _, axle in ipairs(area and area.axles or {}) do
             if axle.arc ~= 0 then
-                return axle.arc, axle.velocity
+                return axle.arc
             end
         end
     end
-    return 0, 0
+    return 0
 end
 
 ---ARCを設定します。信号・軌道回路の定義後に呼んでください

@@ -3,8 +3,8 @@
 ---@param sw SoyaBridge
 return function(sw)
     sw:create_arc({
-        -- 速さがこの値(m/s)以下なら停車とみなす
-        stop_speed = 0.5,
+        -- 省略すると運行番号(pp)が1以上の指令値だけを、運行番号で見分けて扱う。
+        -- 変えるときは、列車を見分ける値を返す(nilを返した指令値は扱わない): train_id = function(arc) ... end
         -- 複数の駅が共有する予約資源。release: 持ち主がat上に現れ、b(指令値の上下線)が一致したら放す
         reservations = {},
         stations = {},

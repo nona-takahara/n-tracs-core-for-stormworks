@@ -124,7 +124,7 @@ return function(sw)
     COMMANDS["arc"] = {
         admin = true,
         auth = false,
-        description = "ARC: arc <station> start|stop|list | arc <station> promote|restore|remove <pp> | arc release <reservation>",
+        description = "ARC: arc <station> start|stop|list | arc <station> promote|restore|remove <train> | arc release <reservation>",
         command = (function(args, is_admin, is_auth, peer_id)
             local arc = sw.arc
             if not arc then
@@ -145,15 +145,15 @@ return function(sw)
                 Announce("ERROR! ARC station \"" .. tostring(args[2]) .. "\" is not found", peer_id)
                 return
             end
-            local op, pp = args[3], tonumber(args[4])
+            local op, key = args[3], tonumber(args[4]) or args[4]
             if op == "start" or op == "stop" then
                 arc:set_running(args[2], op == "start")
                 Announce("ARC " .. args[2] .. " " .. (op == "start" and "running" or "stopped"), peer_id)
             elseif op == "list" then
                 table.insert(DELAY_ANNOUNE, function()
                     local lines = {}
-                    for rpp, req in pairs(st.requests) do
-                        table.insert(lines, rpp .. ":" .. req.seq.id .. "#" .. req.idx ..
+                    for rkey, req in pairs(st.requests) do
+                        table.insert(lines, rkey .. ":" .. req.seq.id .. "#" .. req.idx ..
                             (req.adopted and ("/" .. req.adopted) or "") .. (req.excluded and "/excluded" or ""))
                     end
                     table.sort(lines)
@@ -162,9 +162,9 @@ return function(sw)
                         Announce("WARNING! deadlock " .. args[2] .. ": " .. a, peer_id)
                     end
                 end)
-            elseif (op == "promote" or op == "restore" or op == "remove") and pp then
-                local ok = arc[op](arc, args[2], pp)
-                Announce("ARC " .. args[2] .. " " .. op .. " " .. pp .. (ok and ": done" or ": request not found"), peer_id)
+            elseif (op == "promote" or op == "restore" or op == "remove") and key then
+                local ok = arc[op](arc, args[2], key)
+                Announce("ARC " .. args[2] .. " " .. op .. " " .. key .. (ok and ": done" or ": request not found"), peer_id)
             else
                 Announce("ERROR! usage: " .. COMMANDS["arc"].description, peer_id)
             end

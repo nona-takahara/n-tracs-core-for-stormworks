@@ -15,17 +15,17 @@ local BookType = require("src.n_tracs_core.track.book_type")
 ---@class ArcMove 「動き」
 ---@field class number ソートのクラス(小さいほど優先)
 ---@field start_point string|nil 制御開始点(軌道回路ID)。列車がここを過ぎるまで採用しない
----@field from string|nil 出発元のホーム(資源名)。制御開始点がなければ、ここに停車していることが準備の条件になる
+---@field from string|nil 出発元のホーム(資源名)。制御開始点がなければ、列車がここの軌道回路に入っていることが準備の条件になる
 ---@field enter string[] 信号の内方(軌道回路ID)。列車がここに現れたら「動き」は済んだ
 ---@field options ArcOption[]
 
 ---@class ArcSequence 「一連の動き」
 ---@field id string
----@field match {at: string[], b: number|nil, dest: "terminal"|"through"|"unspecified"|nil, pullin: boolean|nil, category: number[]|nil, class: number[]|nil}
+---@field match {at: string[], accept: fun(arc: ArcValue, station_code: number): boolean} at: 登録点(第1の「動き」の制御開始点も登録点として扱う)。accept: この「一連の動き」で扱う指令値か
 ---@field moves ArcMove[]
 
 ---@class ArcRequest
----@field pp number
+---@field key number|string 列車の識別子(train_idの戻り値)
 ---@field seq ArcSequence
 ---@field idx number 今の「動き」
 ---@field reg number 登録番号
@@ -41,15 +41,15 @@ local BookType = require("src.n_tracs_core.track.book_type")
 ---@field running boolean
 ---@field resources table<string, string[]>
 ---@field sequences ArcSequence[]
----@field requests table<number, ArcRequest> key: 運行番号
+---@field requests table<number|string, ArcRequest> key: 列車の識別子
 ---@field next_reg number
 ---@field blocked_dest table<string, boolean> 前回の判定で、着線が空かず待った候補の着線
 ---@field alerts string[] 動けなくなる組み合わせの警報(毎tick作り直す)
 
 ---@class Arc
 ---@field nt Ntracs
----@field probe fun(track_id: string): number, number 軌道回路上のARC指令値と速さ(m/s)
----@field stop_speed number
+---@field probe fun(track_id: string): number 軌道回路上のARC指令値(0は指令値なし)
+---@field train_id fun(arc: ArcValue): number|string|nil 列車の識別子。nilの指令値は扱わない
 ---@field stations table<string, ArcStation>
 ---@field reservations table<string, {release: {at: string[], b: number|nil}[], owner: number|nil}>
 ---@field watch string[] 観測する軌道回路
@@ -71,13 +71,13 @@ end
 
 ---@param config table res/arc.lua の内容
 ---@param nt Ntracs
----@param probe fun(track_id: string): number, number
+---@param probe fun(track_id: string): number
 ---@return Arc
 function Arc.new(config, nt, probe)
     local self = setmetatable({}, Arc)
     self.nt = nt
     self.probe = probe
-    self.stop_speed = config.stop_speed or 0.5
+    self.train_id = config.train_id or function(arc) return arc.pp > 0 and arc.pp or nil end
     self.stations = {}
     self.reservations = {}
     for name, r in pairs(config.reservations or {}) do
@@ -145,6 +145,7 @@ function Arc:validate(name, st)
     for _, seq in ipairs(st.sequences) do
         local at = "sequence " .. seq.id
         if #seq.moves == 0 then fail(at .. " has no moves") end
+        if type(seq.match.accept) ~= "function" then fail(at .. ": match.accept must be a function") end
         for _, t in ipairs(seq.match.at) do check_track(t, at .. " match.at") end
         for i, move in ipairs(seq.moves) do
             local mv = at .. " move " .. i
@@ -170,21 +171,21 @@ end
 
 -- 観測 ---------------------------------------------------------------------
 
----観測した列車。key: 運行番号
+---観測した列車。key: 列車の識別子
 ---@param self Arc
----@return table<number, {arc: ArcValue, tracks: table<string, number>}> tracks: 在線している軌道回路 → 速さ
+---@return table<number|string, {arc: ArcValue, tracks: table<string, boolean>}> tracks: 指令値が現れた軌道回路
 local function observe(self)
     local obs = {}
     for _, id in ipairs(self.watch) do
-        local raw, speed = self.probe(id)
-        local v = ArcValue.parse(raw)
-        if v and v.pp > 0 then
-            local o = obs[v.pp]
+        local v = ArcValue.parse(self.probe(id))
+        local key = v and self.train_id(v)
+        if key ~= nil then
+            local o = obs[key]
             if not o then
                 o = { arc = v, tracks = {} }
-                obs[v.pp] = o
+                obs[key] = o
             end
-            o.tracks[id] = speed or 0
+            o.tracks[id] = true
         end
     end
     return obs
@@ -209,29 +210,21 @@ end
 
 -- 受付 ---------------------------------------------------------------------
 
+---列車の「一連の動き」を探す。登録点にいるか、今の「一連の動き」(current)であることが条件
 ---@param station ArcStation
 ---@param arc ArcValue
----@param tracks table<string, number>
+---@param tracks table<string, boolean>
+---@param current ArcSequence|nil
 ---@return ArcSequence|nil
-local function find_sequence(station, arc, tracks)
-    local kind = "unspecified"
-    if arc.station == station.code then
-        kind = "terminal"
-    elseif arc.station ~= 0 then
-        kind = "through"
-    end
+local function find_sequence(station, arc, tracks, current)
     for _, seq in ipairs(station.sequences) do
-        local m = seq.match
-        local ok = (m.b == nil or m.b == arc.b)
-            and (m.dest == nil or m.dest == kind)
-            and (m.pullin == nil or m.pullin == (arc.platform == 9))
-            and (m.category == nil or contains(m.category, arc.category))
-            and (m.class == nil or contains(m.class, arc.class))
-        if ok then
-            for _, t in ipairs(m.at) do
-                if tracks[t] then return seq end
+        local here = seq == current or tracks[seq.moves[1].start_point or ""]
+        if not here then
+            for _, t in ipairs(seq.match.at) do
+                if tracks[t] then here = true end
             end
         end
+        if here and seq.match.accept(arc, station.code) then return seq end
     end
     return nil
 end
@@ -239,13 +232,13 @@ end
 ---@param station ArcStation
 ---@param obs table
 local function accept(station, obs)
-    for pp, o in pairs(obs) do
-        local seq = find_sequence(station, o.arc, o.tracks)
-        local req = station.requests[pp]
+    for key, o in pairs(obs) do
+        local req = station.requests[key]
+        local seq = find_sequence(station, o.arc, o.tracks, req and req.seq)
         if req == nil then
             if seq then
-                station.requests[pp] = {
-                    pp = pp, seq = seq, idx = 1, reg = station.next_reg, arc = o.arc,
+                station.requests[key] = {
+                    key = key, seq = seq, idx = 1, reg = station.next_reg, arc = o.arc,
                     promote = false, excluded = false, adopted = nil, opt = nil, passed = false,
                 }
                 station.next_reg = station.next_reg + 1
@@ -255,7 +248,7 @@ local function accept(station, obs)
             -- 最初の「動き」にいるうちは「一連の動き」を書き換えてよい。途中からは書き換えない
             if req.idx == 1 then
                 if seq == nil then
-                    station.requests[pp] = nil
+                    station.requests[key] = nil
                 elseif seq ~= req.seq then
                     req.seq = seq
                     req.passed = false
@@ -264,9 +257,9 @@ local function accept(station, obs)
         end
     end
     -- ARC指令値が消えた、または列車がいなくなった要求
-    for pp, req in pairs(station.requests) do
-        if obs[pp] == nil and (req.adopted == nil or req.excluded) then
-            station.requests[pp] = nil
+    for key, req in pairs(station.requests) do
+        if obs[key] == nil and (req.adopted == nil or req.excluded) then
+            station.requests[key] = nil
         end
     end
 end
@@ -277,18 +270,18 @@ end
 ---@param station ArcStation
 ---@param obs table
 local function update_moves(self, station, obs)
-    for pp, req in pairs(station.requests) do
+    for key, req in pairs(station.requests) do
         local move = req.seq.moves[req.idx]
 
-        if req.adopted == nil and obs[pp] and not req.passed then
+        if req.adopted == nil and obs[key] and not req.passed then
             -- 制御開始点を過ぎたかは、現れた記憶で持つ(短い軌道回路を飛ばしても取りこぼさない)
-            req.passed = move.start_point == nil or obs[pp].tracks[move.start_point] ~= nil
+            req.passed = move.start_point == nil or obs[key].tracks[move.start_point] ~= nil
         end
 
         if req.adopted then
             local entered = false
             for _, t in ipairs(move.enter) do
-                if obs[pp] and obs[pp].tracks[t] then entered = true end
+                if obs[key] and obs[key].tracks[t] then entered = true end
             end
             ---@diagnostic disable-next-line: invisible
             local locked = self.nt:get_signal(req.opt.signal):isRouteLocked(self.nt)
@@ -309,7 +302,7 @@ local function update_moves(self, station, obs)
                         req.opt = nil
                         req.passed = false
                     else
-                        station.requests[pp] = nil
+                        station.requests[key] = nil
                     end
                 elseif not locked then
                     req.excluded = true
@@ -360,10 +353,10 @@ local function option_ready(self, station, req, opt, claimed)
     if opt.reserve then
         local owner = self.reservations[opt.reserve.name].owner
         if opt.reserve.mode == "hold" then
-            if owner ~= req.pp then return false end
+            if owner ~= req.key then return false end
         elseif opt.reserve.mode == "free" then
             if owner ~= nil then return false end
-        elseif owner ~= nil and owner ~= req.pp then
+        elseif owner ~= nil and owner ~= req.key then
             return false
         end
     end
@@ -380,13 +373,13 @@ local function judge(self, station, obs)
         if req.adopted == nil and not req.excluded and req.passed then
             local move = req.seq.moves[req.idx]
             local ok = true
-            -- 制御開始点のない出発の「動き」は、ホームに停車していることが条件
+            -- 制御開始点のない出発の「動き」は、列車がホームの軌道回路に入っていることが条件
             if move.from and not move.start_point then
                 ok = false
-                local o = obs[req.pp]
+                local o = obs[req.key]
                 if o then
                     for _, t in ipairs(station.resources[move.from]) do
-                        if o.tracks[t] and o.tracks[t] <= self.stop_speed then ok = true end
+                        if o.tracks[t] then ok = true end
                     end
                 end
             end
@@ -395,14 +388,14 @@ local function judge(self, station, obs)
     end
 
     -- ソート: 繰り上げ、クラス、着線を空ける補正、登録番号
-    local function key(req)
+    local function sort_key(req)
         local move = req.seq.moves[req.idx]
         local correction = (move.from and station.blocked_dest[move.from]) and 0 or 1
         return req.promote and 0 or 1, move.class, correction, req.reg
     end
     table.sort(cands, function(a, b)
-        local a1, a2, a3, a4 = key(a)
-        local b1, b2, b3, b4 = key(b)
+        local a1, a2, a3, a4 = sort_key(a)
+        local b1, b2, b3, b4 = sort_key(b)
         if a1 ~= b1 then return a1 < b1 end
         if a2 ~= b2 then return a2 < b2 end
         if a3 ~= b3 then return a3 < b3 end
@@ -454,7 +447,7 @@ local function judge(self, station, obs)
             else
                 self.nt:get_signal(chosen.signal):setInput(true, self.nt)
                 if chosen.reserve and chosen.reserve.mode == "take" then
-                    self.reservations[chosen.reserve.name].owner = req.pp
+                    self.reservations[chosen.reserve.name].owner = req.key
                 end
                 for _, r in ipairs(chosen.uses or {}) do busy_now[r] = true end
                 if chosen.dest then claimed[chosen.dest] = true end
@@ -476,15 +469,15 @@ end
 local function detect_deadlock(self, station, obs)
     station.alerts = {}
     local waits_for = {}
-    for pp, req in pairs(station.requests) do
+    for key, req in pairs(station.requests) do
         if req.adopted == nil and not req.excluded then
             local move = req.seq.moves[req.idx]
             for _, opt in ipairs(move.options) do
                 if opt.dest then
                     for other, o in pairs(obs) do
-                        if other ~= pp then
+                        if other ~= key then
                             for _, t in ipairs(station.resources[opt.dest]) do
-                                if o.tracks[t] then waits_for[pp] = other end
+                                if o.tracks[t] then waits_for[key] = other end
                             end
                         end
                     end
@@ -506,7 +499,7 @@ local function detect_deadlock(self, station, obs)
                 table.insert(ring, n)
                 n = waits_for[n]
             end
-            table.sort(ring)
+            table.sort(ring, function(a, b) return tostring(a) < tostring(b) end)
             local text = table.concat(ring, "<->")
             if not reported[text] then
                 reported[text] = true
@@ -549,31 +542,31 @@ end
 
 ---要求を一回限り先頭に繰り上げる
 ---@param name string
----@param pp number
+---@param key number|string
 ---@return boolean
-function Arc:promote(name, pp)
-    local req = self.stations[name].requests[pp]
+function Arc:promote(name, key)
+    local req = self.stations[name].requests[key]
     if req then req.promote = true end
     return req ~= nil
 end
 
 ---除外した要求を戻す
 ---@param name string
----@param pp number
+---@param key number|string
 ---@return boolean
-function Arc:restore(name, pp)
-    local req = self.stations[name].requests[pp]
+function Arc:restore(name, key)
+    local req = self.stations[name].requests[key]
     if req then req.excluded = false end
     return req ~= nil
 end
 
 ---要求を削除する
 ---@param name string
----@param pp number
+---@param key number|string
 ---@return boolean
-function Arc:remove(name, pp)
-    local req = self.stations[name].requests[pp]
-    self.stations[name].requests[pp] = nil
+function Arc:remove(name, key)
+    local req = self.stations[name].requests[key]
+    self.stations[name].requests[key] = nil
     return req ~= nil
 end
 
