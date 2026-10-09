@@ -17,6 +17,7 @@ local apply_area_track = require("res.area_track")
 local apply_signal = require("res.signal")
 local apply_switch = require("res.switch")
 local apply_signal_alias = require("res.signal_alias")
+local apply_arc = require("res.arc")
 local crossing_factory = require("res.crossing")
 local apply_command = require("src.n_tracs_soyabridge.command")
 
@@ -24,6 +25,7 @@ apply_area_track(sw)
 apply_signal(sw)
 apply_switch(sw)
 apply_signal_alias(sw)
+apply_arc(sw)
 
 local crossing = crossing_factory(sw)
 local command_module = apply_command(sw)
@@ -98,6 +100,8 @@ function onTick()
 		crossing(6, sw)
 	elseif Phase == 4 then
 		sw:before_broadcast(6)
+		-- ARCはN-TRACSの演算が確定したあと、次の演算の前に動く
+		sw:arc_process()
 	elseif Phase == 5 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
