@@ -163,7 +163,9 @@ end
 ---@param track_id string
 ---@return number arc 0は指令値なし
 function SoyaBridge:track_arc(track_id)
-    for _, area_id in ipairs(self.track_bridge[track_id].area_ids) do
+    local bridge = self.track_bridge[track_id]
+    if not bridge then return 0 end
+    for _, area_id in ipairs(bridge.area_ids) do
         local area = self.areas[area_id]
         for _, axle in ipairs(area and area.axles or {}) do
             if axle.arc ~= 0 then

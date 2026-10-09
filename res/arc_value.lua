@@ -1,4 +1,5 @@
--- ARC指令値(7桁: pp b tt dd)の分解
+-- 宗弥急行プロジェクト線のARC指令値(7桁: pp b tt dd)の分解
+-- 路線ごとに指令の形式が異なるときは、別のparse/train_idを res/arc.lua に渡す
 -- 値の意味は https://nonasaba.net/sw-train-docs/support/Soya-Express-ARC.html
 
 ---@class ArcValue
@@ -10,11 +11,11 @@
 ---@field station number 行先の駅コード(十の位, 0は無指定)
 ---@field platform number 行先の番線(一の位, 0は自動選択, 9は同一方向の引き上げ線)
 
-local ArcValue = {}
+local M = {}
 
 ---@param raw number|nil
 ---@return ArcValue|nil 0・nil・負の値のときはnil
-function ArcValue.parse(raw)
+function M.parse(raw)
     if type(raw) ~= "number" or raw <= 0 then return nil end
     local v = math.floor(raw)
     local tt = (v // 100) % 100
@@ -30,4 +31,11 @@ function ArcValue.parse(raw)
     }
 end
 
-return ArcValue
+---運行番号(pp)が1以上の指令値を、運行番号で見分ける
+---@param arc ArcValue
+---@return number|nil
+function M.train_id(arc)
+    return arc.pp > 0 and arc.pp or nil
+end
+
+return M

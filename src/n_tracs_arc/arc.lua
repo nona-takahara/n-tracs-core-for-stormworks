@@ -2,12 +2,11 @@
 -- 駅ごとの設定(res/arc.lua)に従い、列車のARC指令値から進路要求を自動で出す。
 -- 設計は docs/arc.md を参照。
 
-local ArcValue = require("src.n_tracs_arc.arc_value")
 local BookType = require("src.n_tracs_core.track.book_type")
 
 ---@class ArcOption 「動き」の進路の選び方。先に書いたものから、準備できたものを使う
 ---@field signal string 進路を要求するてこ
----@field platform number|nil この選択肢が行き先とする番線。ARC指令値で番線が指定されたときの絞り込みに使う
+---@field accept (fun(arc: any): boolean)|nil この選択肢を使ってよい指令値か。省略すると常に使ってよい
 ---@field uses string[]|nil 使う資源名
 ---@field dest string|nil 着線(資源名)
 ---@field reserve {name: string, mode: "hold"|"take"|"free"}|nil 予約資源。hold: 持っていること、take: 採用時に取る、free: 空いているときだけ使う(取らない)
@@ -21,7 +20,7 @@ local BookType = require("src.n_tracs_core.track.book_type")
 
 ---@class ArcSequence 「一連の動き」
 ---@field id string
----@field match {at: string[], accept: fun(arc: ArcValue, station_code: number): boolean} at: 登録点(第1の「動き」の制御開始点も登録点として扱う)。accept: この「一連の動き」で扱う指令値か
+---@field match {at: string[], accept: fun(arc: any, station_code: number): boolean} at: 登録点(第1の「動き」の制御開始点も登録点として扱う)。accept: この「一連の動き」で扱う指令値か
 ---@field moves ArcMove[]
 
 ---@class ArcRequest
@@ -29,7 +28,7 @@ local BookType = require("src.n_tracs_core.track.book_type")
 ---@field seq ArcSequence
 ---@field idx number 今の「動き」
 ---@field reg number 登録番号
----@field arc ArcValue 登録時(採用前は毎tick)のARC指令値
+---@field arc any 登録時(採用前は毎tick)のARC指令値
 ---@field promote boolean 繰り上げの印
 ---@field excluded boolean 除外の印
 ---@field adopted "requested"|"locked"|nil 採用の印
@@ -49,25 +48,13 @@ local BookType = require("src.n_tracs_core.track.book_type")
 ---@class Arc
 ---@field nt Ntracs
 ---@field probe fun(track_id: string): number 軌道回路上のARC指令値(0は指令値なし)
----@field train_id fun(arc: ArcValue): number|string|nil 列車の識別子。nilの指令値は扱わない
+---@field parse fun(raw: any): any|nil 軌道回路上の指令値(Axleの値)を分解する。nilを返した指令値は扱わない。分解した値の形は設定が決める
+---@field train_id fun(arc: any): number|string|nil 列車の識別子。nilを返した指令値は扱わない
 ---@field stations table<string, ArcStation>
 ---@field reservations table<string, {release: {at: string[], b: number|nil}[], owner: number|nil}>
----@field watch string[] 観測する軌道回路
+---@field watch string[] 観測する軌道回路(すべて)
 local Arc = {}
 Arc.__index = Arc
-
-local function set_of(list)
-    local s = {}
-    for _, v in ipairs(list or {}) do s[v] = true end
-    return s
-end
-
-local function contains(list, v)
-    for _, x in ipairs(list) do
-        if x == v then return true end
-    end
-    return false
-end
 
 ---@param config table res/arc.lua の内容
 ---@param nt Ntracs
@@ -77,16 +64,14 @@ function Arc.new(config, nt, probe)
     local self = setmetatable({}, Arc)
     self.nt = nt
     self.probe = probe
-    self.train_id = config.train_id or function(arc) return arc.pp > 0 and arc.pp or nil end
+    self.parse = config.parse
+    self.train_id = config.train_id
+    assert(type(self.parse) == "function", "[ARC] config.parse is required")
+    assert(type(self.train_id) == "function", "[ARC] config.train_id is required")
     self.stations = {}
     self.reservations = {}
     for name, r in pairs(config.reservations or {}) do
         self.reservations[name] = { release = r.release or {}, owner = nil }
-    end
-
-    local watch = {}
-    local function add_watch(id)
-        if id then watch[id] = true end
     end
 
     for name, st in pairs(config.stations or {}) do
@@ -102,25 +87,13 @@ function Arc.new(config, nt, probe)
         }
         self.stations[name] = station
         self:validate(name, station)
-        for _, seq in ipairs(station.sequences) do
-            for _, t in ipairs(seq.match.at) do add_watch(t) end
-            for _, move in ipairs(seq.moves) do
-                add_watch(move.start_point)
-                for _, t in ipairs(move.enter) do add_watch(t) end
-                if move.from then
-                    for _, t in ipairs(station.resources[move.from]) do add_watch(t) end
-                end
-            end
-        end
-    end
-    for _, r in pairs(self.reservations) do
-        for _, rel in ipairs(r.release) do
-            for _, t in ipairs(rel.at) do add_watch(t) end
-        end
     end
 
+    -- 列車がどこにいても追えるよう、すべての軌道回路を観測する。
+    -- 設定に出てくる軌道回路だけを見ると、駅の中で観測外の軌道回路を通る間に「列車がいなくなった」と判断してしまう
     self.watch = {}
-    for id in pairs(watch) do table.insert(self.watch, id) end
+    ---@diagnostic disable-next-line: invisible
+    for id in pairs(nt.track) do table.insert(self.watch, id) end
     table.sort(self.watch)
     return self
 end
@@ -173,11 +146,11 @@ end
 
 ---観測した列車。key: 列車の識別子
 ---@param self Arc
----@return table<number|string, {arc: ArcValue, tracks: table<string, boolean>}> tracks: 指令値が現れた軌道回路
+---@return table<number|string, {arc: any, tracks: table<string, boolean>}> tracks: 指令値が現れた軌道回路
 local function observe(self)
     local obs = {}
     for _, id in ipairs(self.watch) do
-        local v = ArcValue.parse(self.probe(id))
+        local v = self.parse(self.probe(id))
         local key = v and self.train_id(v)
         if key ~= nil then
             local o = obs[key]
@@ -212,7 +185,7 @@ end
 
 ---列車の「一連の動き」を探す。登録点にいるか、今の「一連の動き」(current)であることが条件
 ---@param station ArcStation
----@param arc ArcValue
+---@param arc any
 ---@param tracks table<string, boolean>
 ---@param current ArcSequence|nil
 ---@return ArcSequence|nil
@@ -344,7 +317,7 @@ end
 ---@return boolean ready
 ---@return string|nil blocked_dest 着線がふさがっているときだけ、その着線
 local function option_ready(self, station, req, opt, claimed)
-    if opt.platform and req.arc.platform ~= 0 and req.arc.platform ~= 9 and opt.platform ~= req.arc.platform then
+    if opt.accept and not opt.accept(req.arc) then
         return false
     end
     if opt.dest and (claimed[opt.dest] or resource_busy(self, station, opt.dest, opt.signal)) then
