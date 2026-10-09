@@ -323,7 +323,7 @@ update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("TKM1R")'
 
 [TKM_NHB4]
 auto = true
-direction = "right"
+direction = "left"
 signal_track = ["TKM_NHB4T"]
 update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("TKM_NHB3")'
 
