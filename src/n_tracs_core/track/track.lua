@@ -18,6 +18,8 @@ local Switch         = require("src.n_tracs_core.switch.switch")
 ---@field private destBeforeRouteLockItem string
 ---@field private destTimer number
 ---@field private destTimerStarted boolean
+---@field private timers table<string, number> キー別の共通タイマー(tick)
+---@field private timerOps table<string, {reset: boolean?, delta: number?}> 次のprocessで反映するタイマー操作
 local Track          = {}
 
 ---抽象軌道回路データを作成します
@@ -37,7 +39,36 @@ function Track.new(itemName)
     obj.destBeforeRouteLockItem = nil
     obj.destTimer = 0
     obj.destTimerStarted = false
+    obj.timers = {}
+    obj.timerOps = {}
     return obj
+end
+
+---軌道回路共通のタイマー(キー別)を、次のprocessで進める予約をします。
+---Area callbackなど複数の箇所から同じティックに何度呼んでも、進むのは1回分だけです。
+---反映は次のprocessなので、同じティックの間はget_timer()の値が変わりません。
+---@param key string
+---@param deltaTick number
+function Track:advance_timer(key, deltaTick)
+    local op = self.timerOps[key] or {}
+    self.timerOps[key] = op
+    op.delta = op.delta or deltaTick
+end
+
+---軌道回路共通のタイマー(キー別)を、次のprocessで0に戻す予約をします。
+---同じティックにadvance_timer()もあれば、0に戻してから1回分進みます(呼び出し順は問いません)。
+---@param key string
+function Track:reset_timer(key)
+    local op = self.timerOps[key] or {}
+    self.timerOps[key] = op
+    op.reset = true
+end
+
+---軌道回路共通のタイマー(キー別)の値(tick)を返します。一度も進めていなければ0です。
+---@param key string
+---@return number
+function Track:get_timer(key)
+    return self.timers[key] or 0
 end
 
 ---@param lever string
@@ -268,6 +299,11 @@ end
 ---@param deltaTick number
 ---@param nt Ntracs
 function Track:process(deltaTick, nt)
+    for key, op in pairs(self.timerOps) do
+        self.timers[key] = (op.reset and 0 or (self.timers[key] or 0)) + (op.delta or 0)
+    end
+    self.timerOps = {}
+
     if self.book == BookType.RouteLock then
         if (not self.short) and CheckUnlockRouteLock(self.beforeRouteLockItem, nt) then
             self.book = BookType.NoBook
