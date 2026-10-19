@@ -10,6 +10,7 @@ local Switch         = require("src.n_tracs_core.switch.switch")
 local SetRoute       = require("src.n_tracs_core.switch.set_route")
 local VehicleInfo    = require("src.n_tracs_soyabridge.vehicle_info")
 local AutoSignal     = require("src.n_tracs_core.signal.auto_signal")
+local Arc            = require("src.n_tracs_arc.arc")
 ---@class SoyaBridge:NtracsObject
 ---@field nt Ntracs
 ---@field areas table<number, Area>
@@ -19,6 +20,7 @@ local AutoSignal     = require("src.n_tracs_core.signal.auto_signal")
 ---@field points table<string, PointSetter>
 ---@field vehicle_table table<number, VehicleInfo>
 ---@field default_area number
+---@field arc Arc|nil
 local SoyaBridge     = {}
 
 ---@return SoyaBridge
@@ -155,6 +157,34 @@ end
 ---@param deltaTicks number
 function SoyaBridge:process(deltaTicks)
     self.nt:process(deltaTicks)
+end
+
+---軌道回路上にいる車軸のARC指令値を返します。ARC指令値の受信はAxleが行っており、ここは引くだけです
+---@param track_id string
+---@return number arc 0は指令値なし
+function SoyaBridge:track_arc(track_id)
+    local bridge = self.track_bridge[track_id]
+    if not bridge then return 0 end
+    for _, area_id in ipairs(bridge.area_ids) do
+        local area = self.areas[area_id]
+        for _, axle in ipairs(area and area.axles or {}) do
+            if axle.arc ~= 0 then
+                return axle.arc
+            end
+        end
+    end
+    return 0
+end
+
+---ARCを設定します。信号・軌道回路の定義後に呼んでください
+---@param config table res/arc.lua の設定
+function SoyaBridge:create_arc(config)
+    self.arc = Arc.new(config, self.nt, function(track_id) return self:track_arc(track_id) end)
+end
+
+---N-TRACSの演算結果が確定したあと、次の演算の前に呼びます
+function SoyaBridge:arc_process()
+    if self.arc then self.arc:process() end
 end
 
 ---@param deltaTicks number
