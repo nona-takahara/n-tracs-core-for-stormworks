@@ -1,6 +1,6 @@
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
-ADDON_VERSION = "v2.0.0-beta6"
+ADDON_VERSION = "v2.0.0-beta7"
 CTC_VERSION = "SoyaWS-3"
 
 error = error or function(message)
@@ -17,6 +17,7 @@ local apply_area_track = require("res.area_track")
 local apply_signal = require("res.signal")
 local apply_switch = require("res.switch")
 local apply_signal_alias = require("res.signal_alias")
+local apply_arc = require("res.arc")
 local crossing_factory = require("res.crossing")
 local apply_command = require("src.n_tracs_soyabridge.command")
 
@@ -24,6 +25,7 @@ apply_area_track(sw)
 apply_signal(sw)
 apply_switch(sw)
 apply_signal_alias(sw)
+apply_arc(sw)
 
 local crossing = crossing_factory(sw)
 local command_module = apply_command(sw)
@@ -32,11 +34,13 @@ dofile("res.maplabel")
 
 sw.default_area = 2
 
+--@storm export
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
 	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
 }
 
+--@storm export
 function onCreate(is_world_create)
 	if is_world_create and g_savedata.recommendedSettings then
 		server.setGameSetting("vehicle_damage", false)
@@ -53,6 +57,7 @@ function onCreate(is_world_create)
 	end
 end
 
+--@storm export
 function onDestroy()
 	local playerlist = server.getPlayers()
 	local ui_id = g_savedata.ui_id
@@ -64,10 +69,12 @@ function onDestroy()
 	g_savedata = nil
 end
 
+--@storm export
 function onPlayerJoin(steam_id, name, peer_id, is_admin, is_auth)
 	AddMapLabels(peer_id)
 end
 
+--@storm export
 function onPlayerLeave(steam_id, name, peer_id, is_admin, is_auth)
 	if g_savedata.ui_id then
 		server.removeMapID(peer_id, g_savedata.ui_id)
@@ -76,6 +83,7 @@ end
 
 ---[Stormworks] onTick function.
 -- 1 Tickごとに呼び出されます.
+--@storm export
 function onTick()
 	TickCounter = (TickCounter or 0) + 1
 
@@ -92,6 +100,8 @@ function onTick()
 		crossing(6, sw)
 	elseif Phase == 4 then
 		sw:before_broadcast(6)
+		-- ARCはN-TRACSの演算が確定したあと、次の演算の前に動く
+		sw:arc_process()
 	elseif Phase == 5 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1
@@ -107,6 +117,7 @@ function onTick()
 end
 
 ---@diagnostic disable-next-line: lowercase-global
+--@storm export
 function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
 	if command == "?ntracs" or command == "?nt" then
 		local args = { ... }
@@ -126,14 +137,17 @@ function onCustomCommand(full_message, peer_id, is_admin, is_auth, command, ...)
 	end
 end
 
+--@storm export
 function onVehicleLoad(vehicle_id)
 	sw:load_vehicle(vehicle_id)
 end
 
+--@storm export
 function onVehicleDespawn(vehicle_id)
 	sw:despawn_vehicle(vehicle_id)
 end
 
+--@storm export
 function onButtonPress(vehicle_id, peer_id, button_name)
 	if button_name == "N-TRACS RESET" then
 		sw:load_vehicle(vehicle_id)
