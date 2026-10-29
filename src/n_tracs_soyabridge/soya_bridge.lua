@@ -38,12 +38,18 @@ function SoyaBridge.new()
 end
 
 ---@param id number
----@param vertexs Vector2d[]
+---@param packed_vertexs number[] @{x1, z1, x2-x1, z2-z1, ...} 原点からの差分を、座標の10倍の整数で並べる
 ---@param left_vertex_id number
 ---@param left_area_ids number[]
 ---@param right_area_ids number[]
 ---@param update_callback fun(self: Area, deltaTick?: number): any
-function SoyaBridge:create_area(id, vertexs, left_vertex_id, left_area_ids, right_area_ids, update_callback)
+function SoyaBridge:create_area(id, packed_vertexs, left_vertex_id, left_area_ids, right_area_ids, update_callback)
+    local vertexs, x, z = {}, 0, 0
+    for i = 1, #packed_vertexs, 2 do
+        x = x + packed_vertexs[i]
+        z = z + packed_vertexs[i + 1]
+        vertexs[#vertexs + 1] = { x = x / 10, z = z / 10 }
+    end
     self.areas[id] = Area.new(id, vertexs, left_vertex_id, left_area_ids, right_area_ids, update_callback)
 end
 

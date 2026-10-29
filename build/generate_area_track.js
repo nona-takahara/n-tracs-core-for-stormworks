@@ -6,10 +6,23 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
 `;
     const luaEnd = "\nend\n";
 
+    // 座標は 0.1 単位に切り捨てた整数で持つ(Lua 側で /10 して復元する)
     const vx = new Map();
     obj.vertexes.forEach((p) => {
-        vx.set(p.name, { x: Math.floor(p.x * 10) / 10, z: Math.floor(p.z * 10) / 10 });
+        vx.set(p.name, { x: Math.floor(p.x * 10), z: Math.floor(p.z * 10) });
     });
+
+    // 原点からの差分を頂点順に並べる。先頭の頂点は原点との差分(=絶対値)になる
+    const packVertexes = (names) => {
+        let px = 0, pz = 0;
+        return names.map((k) => {
+            const v = vx.get(k);
+            const d = `${v.x - px},${v.z - pz}`;
+            px = v.x;
+            pz = v.z;
+            return d;
+        }).join(",");
+    };
 
     const ar = new Map();
     obj.areas.forEach((p) => {
@@ -33,10 +46,7 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
     const createArea = Array();
     ar.forEach((a) => {
         createArea.push(`ca(s,${a.name},` +
-            `{${a.vertexes.map((k) => {
-                const v = vx.get(k);
-                return `{x=${v.x},z=${v.z}}`;
-            }).join(",")}},${a.left_vertex_inner_id + 1},` +
+            `{${packVertexes(a.vertexes)}},${a.left_vertex_inner_id + 1},` +
             `{${a.uparea.join(",")}},` +
             `{${a.downarea.join(",")}},` +
             `${a.callback || "function()end"})`);
