@@ -130,7 +130,8 @@ async function main() {
         console.warn("Lua 5.3 not found — Lua syntax check skipped");
     }
 
-    console.log(execSync("npx storm-lua-minify -m script.lua").toString());
+    // 一時対処: unused-export-removal が、require 先モジュールの使われている export を誤って消すため切る
+    console.log(execSync("npx storm-lua-minify -m --no-unused-export-removal script.lua").toString());
     await fs.promises.mkdir("dist", { recursive: true });
 
     const copyTasks = [
