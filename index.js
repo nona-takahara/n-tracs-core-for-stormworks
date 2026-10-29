@@ -35,7 +35,7 @@ function findLua() {
     return null;
 }
 
-// ARC設定の誤りはここで検出する(実行時には検査せず、Stormworksでは落とさない)
+// ARC設定の誤りはビルド時にここで検出する(Stormworksの実行時には検査しない)
 function checkArcConfig() {
     const lua = findLua();
     if (!lua) {

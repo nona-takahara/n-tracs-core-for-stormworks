@@ -1,5 +1,6 @@
--- ARC設定(res/arc.lua)の検査。ビルド時に build/check_arc.lua から呼ぶ。アドオンには同梱しない(script.luaからrequireしない)。
--- Stormworksでは error が使えないので、誤りは文字列の一覧で返す。
+-- ARC設定(res/arc.lua)の検査。ビルド時(npm run build)に、デスクトップのLuaで build/check_arc.lua から呼ぶ。
+-- アドオンには同梱せず、Stormworksの実行時には動かない(script.luaからrequireしない)。
+-- 誤りは、呼び出し側(build/check_arc.lua)がコンソールに出すための文字列の一覧で返す。
 
 local M = {}
 

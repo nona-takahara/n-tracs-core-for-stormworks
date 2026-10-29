@@ -3,8 +3,8 @@
 -- 設計は docs/arc.md を参照。
 
 -- Stormworksのアドオン環境では setmetatable / assert / error / pcall / select / require(実行時) が使えない。
--- 使える標準関数は docs/addon-lua-env-list.txt を参照。
--- 設定の誤りはビルド時に src/n_tracs_arc/arc_check.lua で検出する。ここでは実行時に設定を検査しない。
+-- 使える標準関数は docs/stormworks-lua.md を参照。
+-- 設定の誤りは、ビルド時(npm run build)に src/n_tracs_arc/arc_check.lua で検出する。実行時には設定を検査せず、何も表示しない。
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local BookType = require("src.n_tracs_core.track.book_type")
 
