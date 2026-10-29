@@ -5,6 +5,7 @@ const toml = require("toml");
 const generateAreaTrack = require("./build/generate_area_track");
 const { generateSignal, buildControlsMap, detectControlsCycle } = require("./build/generate_signal");
 const { checkRouteTrackContinuity } = require("./build/check_route_continuity");
+const { checkInlineTableDuplicateKeys, checkSwitchReferences } = require("./build/check_switch_config");
 require('dotenv').config();
 
 process.chdir(__dirname);
@@ -104,6 +105,15 @@ async function main() {
     ]);
     const signalObj = toml.parse(signalSrc);
     const areaTrackObj = JSON.parse(areaTrackSrc);
+    const switchSrc = await fs.promises.readFile("res/switch.lua", "utf8");
+    const switchErrors = [
+        ...checkInlineTableDuplicateKeys(signalSrc),
+        ...checkSwitchReferences(signalObj, switchSrc, areaTrackObj),
+    ];
+    if (switchErrors.length > 0) {
+        throw new Error("Switch config check failed:\n" + switchErrors.join("\n"));
+    }
+    console.log("Switch config check: OK");
     checkCrossReferences(signalObj, areaTrackObj);
     checkRouteTrackContinuity(signalObj, areaTrackObj);
     detectOpeningLeverConflicts(signalObj);
