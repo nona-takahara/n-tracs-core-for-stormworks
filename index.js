@@ -10,23 +10,6 @@ require('dotenv').config();
 
 process.chdir(__dirname);
 
-function isLua53Available() {
-    try {
-        execSync("lua53 -v", { stdio: "pipe" });
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-function checkLuaSyntax(filePath) {
-    try {
-        execSync(`lua53 -e "assert(loadfile('${filePath}'))"`, { stdio: "pipe" });
-    } catch (e) {
-        throw new Error(`Lua syntax error in ${filePath}:\n${e.stderr.toString()}`);
-    }
-}
-
 function findLua() {
     for (const cmd of ["lua53", "lua5.3", "lua"]) {
         try {
@@ -34,6 +17,14 @@ function findLua() {
         } catch { /* 次の候補へ */ }
     }
     return null;
+}
+
+function checkLuaSyntax(filePath, lua) {
+    try {
+        execSync(`${lua} -e "assert(loadfile('${filePath}'))"`, { stdio: "pipe" });
+    } catch (e) {
+        throw new Error(`Lua syntax error in ${filePath}:\n${e.stderr.toString()}`);
+    }
 }
 
 // ARC設定の誤りはビルド時にここで検出する(Stormworksの実行時には検査しない)
@@ -130,12 +121,13 @@ async function main() {
 
     checkArcConfig();
 
-    if (isLua53Available()) {
-        checkLuaSyntax("res/area_track.lua");
-        checkLuaSyntax("res/signal.lua");
+    const lua = findLua();
+    if (lua) {
+        checkLuaSyntax("res/area_track.lua", lua);
+        checkLuaSyntax("res/signal.lua", lua);
         console.log("Lua syntax check: OK");
     } else {
-        console.warn("lua53 not found — Lua syntax check skipped");
+        console.warn("Lua 5.3 not found — Lua syntax check skipped");
     }
 
     console.log(execSync("npx storm-lua-minify -m script.lua").toString());
