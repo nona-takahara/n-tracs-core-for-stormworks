@@ -1,4 +1,4 @@
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const toml = require("toml");
@@ -24,6 +24,29 @@ function checkLuaSyntax(filePath) {
     } catch (e) {
         throw new Error(`Lua syntax error in ${filePath}:\n${e.stderr.toString()}`);
     }
+}
+
+function findLua() {
+    for (const cmd of ["lua53", "lua5.3", "lua"]) {
+        try {
+            if (/Lua 5\.3/.test(execSync(`${cmd} -v`, { stdio: "pipe" }).toString())) return cmd;
+        } catch { /* 次の候補へ */ }
+    }
+    return null;
+}
+
+// ARC設定の誤りはビルド時にここで検出する(Stormworksの実行時には検査しない)
+function checkArcConfig() {
+    const lua = findLua();
+    if (!lua) {
+        console.warn("Lua 5.3 not found — ARC config check skipped");
+        return;
+    }
+    const proc = spawnSync(lua, ["build/check_arc.lua"], { encoding: "utf8" });
+    if (proc.status !== 0) {
+        throw new Error("ARC config check failed:\n" + proc.stderr);
+    }
+    console.log("ARC config check: OK");
 }
 
 function checkCrossReferences(signalObj, areaTrackObj) {
@@ -94,6 +117,8 @@ async function main() {
         generateIfStale("res/area_track.lua", "res/area_track.json", "utf8", (val) => generateAreaTrack(JSON.parse(val))),
         generateIfStale("res/signal.lua", "res/signal.toml", "utf8", (val) => generateSignal(toml.parse(val)))
     ]);
+
+    checkArcConfig();
 
     if (isLua53Available()) {
         checkLuaSyntax("res/area_track.lua");

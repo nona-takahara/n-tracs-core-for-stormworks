@@ -2,6 +2,10 @@
 -- 駅ごとの設定(res/arc.lua)に従い、列車のARC指令値から進路要求を自動で出す。
 -- 設計は docs/arc.md を参照。
 
+-- Stormworksのアドオン環境では setmetatable / assert / error / pcall / select / require(実行時) が使えない。
+-- 使える標準関数は docs/stormworks-lua.md を参照。
+-- 設定の誤りは、ビルド時(npm run build)に src/n_tracs_arc/arc_check.lua で検出する。実行時には設定を検査せず、何も表示しない。
+local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local BookType = require("src.n_tracs_core.track.book_type")
 
 ---@class ArcOption 「動き」の進路の選び方。先に書いたものから、準備できたものを使う
@@ -54,20 +58,17 @@ local BookType = require("src.n_tracs_core.track.book_type")
 ---@field reservations table<string, {release: {at: string[], b: number|nil}[], owner: number|nil}>
 ---@field watch string[] 観測する軌道回路(すべて)
 local Arc = {}
-Arc.__index = Arc
 
 ---@param config table res/arc.lua の内容
 ---@param nt Ntracs
 ---@param probe fun(track_id: string): number
 ---@return Arc
 function Arc.new(config, nt, probe)
-    local self = setmetatable({}, Arc)
+    local self = NtracsObject.create_instance({}, Arc)
     self.nt = nt
     self.probe = probe
     self.parse = config.parse
     self.train_id = config.train_id
-    assert(type(self.parse) == "function", "[ARC] config.parse is required")
-    assert(type(self.train_id) == "function", "[ARC] config.train_id is required")
     self.stations = {}
     self.reservations = {}
     for name, r in pairs(config.reservations or {}) do
@@ -86,7 +87,6 @@ function Arc.new(config, nt, probe)
             alerts = {},
         }
         self.stations[name] = station
-        self:validate(name, station)
     end
 
     -- 列車がどこにいても追えるよう、すべての軌道回路を観測する。
@@ -96,50 +96,6 @@ function Arc.new(config, nt, probe)
     for id in pairs(nt.track) do table.insert(self.watch, id) end
     table.sort(self.watch)
     return self
-end
-
----設定が参照するものが存在することを確認する。誤りがあればerrorで止まる
----@private
----@param name string
----@param st ArcStation
-function Arc:validate(name, st)
-    local function fail(msg) error("[ARC:" .. name .. "] " .. msg) end
-    for res, tracks in pairs(st.resources) do
-        for _, t in ipairs(tracks) do
-            if not self.nt:get_track_may_nil(t) then fail("resource " .. res .. ": track " .. t .. " is not found") end
-        end
-    end
-    local function check_track(t, what)
-        if not self.nt:get_track_may_nil(t) then fail(what .. ": track " .. tostring(t) .. " is not found") end
-    end
-    local function check_res(r, what)
-        if not st.resources[r] then fail(what .. ": resource " .. tostring(r) .. " is not defined") end
-    end
-    for _, seq in ipairs(st.sequences) do
-        local at = "sequence " .. seq.id
-        if #seq.moves == 0 then fail(at .. " has no moves") end
-        if type(seq.match.accept) ~= "function" then fail(at .. ": match.accept must be a function") end
-        for _, t in ipairs(seq.match.at) do check_track(t, at .. " match.at") end
-        for i, move in ipairs(seq.moves) do
-            local mv = at .. " move " .. i
-            if type(move.class) ~= "number" then fail(mv .. ": class is required") end
-            if #move.options == 0 then fail(mv .. " has no options") end
-            if move.start_point then check_track(move.start_point, mv .. " start_point") end
-            if move.from then check_res(move.from, mv .. " from") end
-            for _, t in ipairs(move.enter) do check_track(t, mv .. " enter") end
-            for _, opt in ipairs(move.options) do
-                local sig = self.nt:get_signal_may_nil(opt.signal)
-                if not sig then fail(mv .. ": signal " .. tostring(opt.signal) .. " is not found") end
-                if type(sig.isRouteLocked) ~= "function" then fail(mv .. ": signal " .. opt.signal .. " is not a route lever") end
-                for _, r in ipairs(opt.uses or {}) do check_res(r, mv .. " uses") end
-                if opt.dest then check_res(opt.dest, mv .. " dest") end
-                if opt.reserve then
-                    if not self.reservations[opt.reserve.name] then fail(mv .. ": reservation " .. tostring(opt.reserve.name) .. " is not defined") end
-                    if opt.reserve.mode ~= "hold" and opt.reserve.mode ~= "take" and opt.reserve.mode ~= "free" then fail(mv .. ": reserve.mode must be hold, take or free") end
-                end
-            end
-        end
-    end
 end
 
 -- 観測 ---------------------------------------------------------------------
