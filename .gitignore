@@ -1,6 +1,8 @@
 *.code-workspace
 res/area_track.lua
+res/area_track_plain.lua
 res/signal.lua
+res/build_info.lua
 
 /node_modules/
 /temp/
@@ -8,3 +10,8 @@ res/signal.lua
 *.map
 *.min.*
 .env
+
+*.precise-cache.json
+
+# ゲームデータの写しなので念のため非公開
+*.segments.json
