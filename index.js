@@ -58,6 +58,18 @@ function generateBuildInfo() {
     }
 }
 
+// Stormworks のスクリプト上限(文字数)。超えても止めず、警告だけ出す
+const SCRIPT_CHAR_LIMIT = 131071;
+
+function warnIfScriptTooLong(filePath) {
+    const length = [...fs.readFileSync(filePath, "utf8")].length;
+    if (length > SCRIPT_CHAR_LIMIT) {
+        console.warn(`WARNING: ${filePath} は ${length} 字で、上限 ${SCRIPT_CHAR_LIMIT} 字を ${length - SCRIPT_CHAR_LIMIT} 字超えています`);
+    } else {
+        console.log(`Script length: ${length} / ${SCRIPT_CHAR_LIMIT} 字`);
+    }
+}
+
 function checkCrossReferences(signalObj, areaTrackObj) {
     const registeredTracks = new Set(areaTrackObj.tracks.map(t => t.name));
     const errors = [];
