@@ -47,7 +47,14 @@ function M.check(config, nt)
                         for _, t in ipairs(move.enter) do check_track(t, mv .. " enter") end
                     end
                     if move.start_point then check_track(move.start_point, mv .. " start_point") end
+                    if move.early then
+                        check_track(move.early.start_point, mv .. " early.start_point")
+                        if type(move.early.accept) ~= "function" then fail(mv .. ": early.accept (function) is required") end
+                    end
                     if move.from then check_res(move.from, mv .. " from") end
+                    if move.wait ~= nil and (type(move.wait) ~= "number" or move.wait <= 0) then
+                        fail(mv .. ": wait must be a positive number (seconds)")
+                    end
                     if type(move.options) ~= "table" or #move.options == 0 then
                         fail(mv .. " has no options")
                     else
@@ -60,6 +67,8 @@ function M.check(config, nt)
                             end
                             for _, r in ipairs(opt.uses or {}) do check_res(r, mv .. " uses") end
                             if opt.dest then check_res(opt.dest, mv .. " dest") end
+                            if opt.settle and not opt.dest then fail(mv .. ": settle requires dest") end
+                            if opt.settle and i < #seq.moves then fail(mv .. ": settle is only for the last move") end
                             if opt.reserve then
                                 if not reservations[opt.reserve.name] then
                                     fail(mv .. ": reservation " .. tostring(opt.reserve.name) .. " is not defined")
