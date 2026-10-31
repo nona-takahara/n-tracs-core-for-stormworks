@@ -100,6 +100,24 @@ pnpm test
 
 時間のかかるテストは、たいてい疑い深すぎるので、`tests/heavy/` に分けて、本当に必要なときだけ実行する。外部ツールの検証を自動で実行するのは、フルテストのときだけである。`tests/heavy/sim_ats.lua` と `tests/heavy/measure_start_points.lua` は合否を出さない道具で、フルテストにも含めない。
 
+## minify 結果の比較
+
+名前を変える最適化(storm-lua-minify の `--assume-closed-field-names`)が動作を変えていないかを、2つの minify 結果を同じ場面で動かして確かめる。
+
+```sh
+# 基準(field名を変えない)と候補(名前単位でfield名を短縮)を、同じフラグで作る
+FLAGS="-m --no-unused-export-removal --no-function-specialization --no-progress"
+npx storm-lua-minify $FLAGS --no-field-renaming script.lua && cp script.min.lua /tmp/ref.min.lua
+npx storm-lua-minify $FLAGS --assume-closed-field-names script.lua && cp script.min.lua /tmp/cand.min.lua
+node tests/heavy/diff_minified.js /tmp/ref.min.lua /tmp/cand.min.lua
+```
+
+- 場面は `tests/heavy/trace_minified.lua` にある。車両1台(軸2本)を全エリアの重心に沿って走らせ、信号を1つずつ設定・解除し、ARC を動かして、Stormworks API(`server.*`)へ出した呼び出しの記録を取る。記録が同じなら「一致しました」と出る。
+- `pairs` の並びは Lua 5.3 が実行ごとに変える。そのまま比べると、競合する進路の勝敗などで基準同士でも記録が変わるので、場面では `pairs` をキー順の走査に差し替えている。tick ごとに呼び出しを並べ替えて比べる。
+- `?nt help` と `?nt debug` は場面に入れない。どちらも `pairs` の並びや、オブジェクトのキーそのものを文字列にして出すため、短縮すると出力が変わる。
+- この場面が通る経路は一部である。`Left`/`Right`、経路の状態の定数など、場面で使われない名前は、壊しても検出できない。
+- `--assume-closed-field-names` は storm-lua-minify 0.9.1 にはない。このリポジトリが依存する版を上げてから使う。`pnpm build` と `pnpm test:full` には組み込んでいない。
+
 ## ARC のシミュレーション
 
 ARC の規則は `docs/arc.md`、前提と確定した事項は Docs「宗弥急行 ARC 制御仕様」の末尾にある。
