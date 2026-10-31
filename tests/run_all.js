@@ -1,6 +1,6 @@
 // tests/repro_*.lua をすべて実行し、まとめて結果を表示します。
 //
-// 実行方法: npm test
+// 実行方法: pnpm test
 // (pretest で node tests/gen_res.js が自動実行され、本番データから
 //  res/area_track.lua / res/signal.lua を作り直してから走ります)
 //

@@ -1,7 +1,7 @@
 // テスト実行前に res/area_track.lua と res/signal.lua を、実際の運用データ
 // (res/area_track.json, res/signal.toml) から生成します。
 //
-// npm run build (index.js) と同じジェネレータ (build/generate_area_track.js,
+// pnpm build (index.js) と同じジェネレータ (build/generate_area_track.js,
 // build/generate_signal.js) を使うため、生成される内容は本番ビルドと同一です。
 // storm-lua-minify によるスクリプト圧縮や dist/ への配置、NTRACS_SW_DIR への
 // コピーは行いません。テストの実行だけが目的のためです。
@@ -27,6 +27,8 @@ async function main() {
 
     await Promise.all([
         fs.promises.writeFile("res/area_track.lua", generateAreaTrack(JSON.parse(areaTrackSrc))),
+        // tests/repro_send_rule.lua が比較に使う、callback を元の Lua のまま書き出したもの
+        fs.promises.writeFile("res/area_track_plain.lua", generateAreaTrack(JSON.parse(areaTrackSrc), { plain: true })),
         fs.promises.writeFile("res/signal.lua", generateSignal(signalObj)),
     ]);
 
