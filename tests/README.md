@@ -108,14 +108,17 @@ pnpm test
 # 基準(field名を変えない)と候補(名前単位でfield名を短縮)を、同じフラグで作る
 FLAGS="-m --no-unused-export-removal --no-function-specialization --no-progress"
 npx storm-lua-minify $FLAGS --no-field-renaming script.lua && cp script.min.lua /tmp/ref.min.lua
-npx storm-lua-minify $FLAGS --assume-closed-field-names script.lua && cp script.min.lua /tmp/cand.min.lua
+# セーブデータのキーは、g_savedata を経由する読み書きなら自動で守られるが、念のため明示する
+npx storm-lua-minify $FLAGS --assume-closed-field-names \
+  --never-rename-field ui_id --never-rename-field cheatBattery --never-rename-field recommendedSettings \
+  script.lua && cp script.min.lua /tmp/cand.min.lua
 node tests/heavy/diff_minified.js /tmp/ref.min.lua /tmp/cand.min.lua
 ```
 
 - 場面は `tests/heavy/trace_minified.lua` にある。車両1台(軸2本)を全エリアの重心に沿って走らせ、信号を1つずつ設定・解除し、ARC を動かして、Stormworks API(`server.*`)へ出した呼び出しの記録を取る。記録が同じなら「一致しました」と出る。
 - `pairs` の並びは Lua 5.3 が実行ごとに変える。そのまま比べると、競合する進路の勝敗などで基準同士でも記録が変わるので、場面では `pairs` をキー順の走査に差し替えている。tick ごとに呼び出しを並べ替えて比べる。
 - `?nt help` と `?nt debug` は場面に入れない。どちらも `pairs` の並びや、オブジェクトのキーそのものを文字列にして出すため、短縮すると出力が変わる。
-- この場面が通る経路は一部である。`Left`/`Right`、経路の状態の定数など、場面で使われない名前は、壊しても検出できない。
+- この場面が通る経路は一部である。場面が通らない経路の名前は、壊しても検出できない(短縮後の出力で名前を1つずつ壊して試すと、一部は検出できなかった)。
 - `--assume-closed-field-names` は storm-lua-minify 0.9.1 にはない。このリポジトリが依存する版を上げてから使う。`pnpm build` と `pnpm test:full` には組み込んでいない。
 
 ## ARC のシミュレーション
