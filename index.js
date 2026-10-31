@@ -160,7 +160,11 @@ async function main() {
     }
 
     // 一時対処: unused-export-removal が、require 先モジュールの使われている export を誤って消すため切る
-    console.log(execSync("npx storm-lua-minify -m --no-unused-export-removal script.lua").toString());
+    // 一時対処: function-specialization が、load_axles の呼び出しで引数 vehicle_id を落とし、
+    // 車軸の作成が Axle.new(nil, ...) になる(車両IDが失われ、車軸の座標が取れなくなる)ため切る
+    generateBuildInfo();
+    console.log(execSync("npx storm-lua-minify -m --no-unused-export-removal --no-function-specialization script.lua").toString());
+    warnIfScriptTooLong("script.min.lua");
     await fs.promises.mkdir("dist", { recursive: true });
 
     const copyTasks = [
