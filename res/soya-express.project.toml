@@ -1,0 +1,3326 @@
+schema = "storm-n-tracs-editor-line/project/v5"
+segment_db = "soya-express.segments.json"
+geometry_half_width = 4
+geometry_covered_half_width = 1.5
+send_definitions = """
+axle signal
+  sends: H0 H2
+  E:   0   0
+  Ea:  0   1
+  R:   1   2
+  T:   18  4
+  YY:  30  6
+  Y:   50  8
+  Yh:  60  9
+  YG:  70  10
+  YGh: 80  11
+  G:   100 12
+  Gh:  112 13
+
+condition always() = true
+condition hr(NAME) = nt:get_signal(NAME).HR
+condition anydest() = utils.someDestination(nt, TRACK)
+condition anyroute() = utils.someRouteLock(nt, TRACK)
+condition locked() = utils.someDestination(nt, TRACK) or utils.someRouteLock(nt, TRACK)
+condition lever(NAME) = nt:get_track(TRACK).relatedLever == NAME
+condition destlever(NAME) = nt:get_track(TRACK).destRelatedLever == NAME
+condition normal(NAME) = nt:get_switch(NAME):getRealRoute() == require("src.n_tracs_core.switch.set_route").Normal
+condition reverse(NAME) = nt:get_switch(NAME):getRealRoute() == require("src.n_tracs_core.switch.set_route").Reverse
+
+aspect
+  R: 0
+  YY: 1
+  Y: 2
+  YG: 3
+  G: 4
+
+condition signal(NAME) = nt:get_signal(NAME).aspect
+"""
+
+[[kinds]]
+id = "signal"
+name = "信号"
+export_tracks = true
+
+[[kinds]]
+id = "area_only"
+name = "Areaのみ"
+export_tracks = false
+
+[[tracks]]
+id = "NHB4LT"
+kind_id = "signal"
+send = """
+set sub-1 (sub-2 sub-3)
+  LE  ~ L: E Ea
+  LEa ~ L: E Ea
+  RY  ~ R: E Y
+  RYY ~ R: E YY
+  RR  ~ R: E R
+  LYY ~ L: E YY
+
+-- 仕様書+0.3m点を照査点・速度に設定
+check SC_0: at=7.3#L toward=L over=1.5m/s hold=3s
+check SC_1: at=9.3#L toward=L over=1.8m/s hold=3s
+check SC_2: at=11.3#L toward=L over=2.2m/s hold=3s
+check SC_3: at=14.3#L toward=L over=2.5m/s hold=3s
+check SC_4: at=17.8#L toward=L over=3.0m/s hold=3s
+check SC_5: at=21.3#L toward=L over=3.5m/s hold=3s
+check SC_6: at=25.3#L toward=L over=4.0m/s hold=3s
+check SC_7: at=30.3#L toward=L over=4.5m/s hold=3s
+
+hr(NHB4R): RY
+hr(NHB11R): RYY
+anydest(): RR /through
+anydest(): LYY
+  tripped(SC_0 SC_1 SC_2 SC_3 SC_4 SC_5 SC_6 SC_7): LEa
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
+start = "-13.863206"
+end = "-19.516134"
+
+[[tracks.sub_tracks]]
+id = "sub-2"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
+start = "51.27739"
+end = "-13.863206"
+
+[[tracks.sub_tracks]]
+id = "sub-3"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
+start = "99.319814"
+end = "51.27739"
+
+[[tracks]]
+id = "NHB5LT"
+kind_id = "signal"
+send = """
+set (sub-7 sub-6 sub-5 sub-4)
+  RGh  ~ R: Gh
+  LYGh ~ L: YGh
+  RYY  ~ R: YY
+  RR   ~ R: R
+  LR   ~ L: R
+
+set sub-7 sub-6 sub-5 sub-4
+  L5   ~ L:   T  Y  Y  Y
+  L12  ~ L:   T  YY YY YY
+  R2   ~ R:   Y  YY T  R
+  AR   ~ ALL: R  R  R  -
+
+hr(NHB5R): RGh
+hr(NHB2L): LYGh
+hr(NHB12R): RYY
+anydest():
+  destlever(NHB5L): RR /through
+  destlever(NHB5L): L5
+  destlever(NHB12L): RR /through
+  destlever(NHB12L): L12
+  destlever(NHB2R): LR /through
+  destlever(NHB2R): R2
+  always(): AR
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-7"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-66.770839"
+end = "-174.025735"
+
+[[tracks.sub_tracks]]
+id = "sub-6"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "23.589397"
+end = "-66.770839"
+
+[[tracks.sub_tracks]]
+id = "sub-5"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "68.454938"
+end = "23.589397"
+
+[[tracks.sub_tracks]]
+id = "sub-4"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "99.405574"
+end = "68.454938"
+
+[[tracks]]
+id = "NHB6LT"
+kind_id = "signal"
+send = """
+set sub-9 sub-8
+  RYY ~ R:   YY YY
+  AX  ~ ALL: YY T
+
+hr(NHB13R): RYY
+always(): AX
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-9"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-97:train_56--tile-98:train_20:fb52d8d3b7"
+start = "-101.056019"
+end = "17.90693"
+
+[[tracks.sub_tracks]]
+id = "sub-8"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-97:train_56--tile-98:train_20:fb52d8d3b7"
+start = "17.90693"
+end = "105.442922"
+
+[[tracks]]
+id = "NHB14LT"
+kind_id = "signal"
+send = """
+set sub-10
+  RYY ~ R:   YY
+  AT  ~ ALL: T
+
+hr(NHB14R): RYY
+always(): AT
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-10"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_20--tile-98:train_38:d25f9be3d9"
+start = "105.326346"
+end = "-50.378178"
+
+[[tracks]]
+id = "NHB23T"
+kind_id = "signal"
+send = """
+set sub-12
+  RYY ~ R: YY
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+
+anyroute():
+  lever(NHB11R NHB12R NHB13R NHB14R): RYY
+  lever(NHB11L NHB12L NHB13L NHB14L): LYY
+  lever(NHB4L): LY
+  lever(NHB5L): LY
+    hr(NHB2L): LYG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-12"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:train_12--tile-98:train_20:687fcc4315"
+start = "269.364465"
+end = "128.512558"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-97:train_56--tile-98:train_20:fb52d8d3b7"
+start = "105.442922"
+end = "128.512558"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_20--tile-98:train_38:d25f9be3d9"
+start = "128.512558"
+end = "105.326346"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:train_12--tile-108:train_6:8205ed15f2"
+start = "263.46846"
+end = "225.194631"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "271.617728"
+end = "269.364465"
+
+[[tracks]]
+id = "NHB21T"
+kind_id = "signal"
+send = """
+set sub-11
+  RYY ~ R: YY
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  RY  ~ R: Y
+  RGh ~ R: Gh
+
+anyroute():
+  lever(NHB11R NHB12R): RYY
+  lever(NHB11L NHB12L): LYY
+  lever(NHB4L): LYY
+  lever(NHB5L): LY
+    hr(NHB2L): LYG
+  lever(NHB4R NHB5R): RY
+    hr(NHB_TKM5): RGh
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-11"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:train_6--tile-98:train_18:cd9ae9729c"
+start = "190.98551"
+end = "122.412043"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
+start = "122.412043"
+end = "99.319814"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "122.412043"
+end = "99.405574"
+
+[[tracks]]
+id = "NHB22AT"
+kind_id = "signal"
+send = """
+set sub-13
+  RYY ~ R: YY
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  RY  ~ R: Y
+  RGh ~ R: Gh
+
+anyroute():
+  lever(NHB11R NHB12R): RYY
+  lever(NHB11L NHB12L): LYY
+  lever(NHB4L): LY
+  lever(NHB5L): LY
+    hr(NHB2L): LYG
+  lever(NHB4R NHB5R): RY
+    hr(NHB_TKM5): RGh
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-13"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:train_6--tile-98:train_18:cd9ae9729c"
+start = "194.841829"
+end = "190.98551"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:train_12--tile-108:train_6:8205ed15f2"
+start = "225.194631"
+end = "194.841829"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-108:train_6:7a1b73872e"
+start = "253.044313"
+end = "194.841829"
+
+[[tracks]]
+id = "NHB5RT"
+kind_id = "signal"
+send = """
+set sub-14
+  RY ~ R: Y
+  RG ~ R: G
+
+destlever(NHB4R NHB5R): RY /through
+  signal(NHB_TKM5) >= Y: RG
+"""
+overridden_by = ["NHB_TKM5T"]
+
+[[tracks.sub_tracks]]
+id = "sub-14"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-108:train_6:7a1b73872e"
+start = "253.044313"
+end = "705.14551"
+
+[[tracks]]
+id = "NHB13RT"
+kind_id = "signal"
+send = """
+set sub-15 sub-16
+  LYY ~ L: YY YY
+  LR  ~ L: R  R
+  RX  ~ R: YY E
+  LY  ~ L: Y  Y
+  LGh ~ L: Gh Gh
+
+hr(NHB11L NHB12L NHB13L NHB14L): LYY
+locked():
+  destlever(NHB11R NHB12R NHB13R NHB14R): LR /through
+  destlever(NHB11R NHB12R NHB13R NHB14R): RX
+  lever(NHB4L): LY
+  lever(NHB5L): LY
+    hr(NHB2L): LGh
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-15"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "348.213483"
+end = "271.617728"
+
+[[tracks.sub_tracks]]
+id = "sub-16"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "379.030544"
+end = "348.213483"
+
+[[tracks]]
+id = "NHB_TKM5T"
+kind_id = "signal"
+send = """
+set sub-27
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(NHB_TKM4) >= Y: RG
+"""
+overridden_by = ["NHB_TKM4T"]
+
+[[tracks.sub_tracks]]
+id = "sub-27"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-108:train_6:7a1b73872e"
+start = "544.735494"
+end = "1063.327424"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
+start = "1063.327424"
+end = "1154.175085"
+
+[[tracks]]
+id = "NHB_TKM4T"
+kind_id = "signal"
+send = """
+set sub-23
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(NHB_TKM3) >= Y: RG
+"""
+overridden_by = ["NHB_TKM3T"]
+
+[[tracks.sub_tracks]]
+id = "sub-23"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-108:train_6:7a1b73872e"
+start = "1063.327424"
+end = "993.897416"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
+start = "1063.327424"
+end = "1671.536817"
+
+[[tracks]]
+id = "NHB_TKM3T"
+kind_id = "signal"
+send = """
+set sub-24
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(NHB_TKM2) >= Y: RG
+"""
+overridden_by = ["NHB_TKM2T"]
+
+[[tracks.sub_tracks]]
+id = "sub-24"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
+start = "1443.241235"
+end = "2064.38276"
+
+[[tracks]]
+id = "NHB_TKM2T"
+kind_id = "signal"
+send = """
+set sub-32
+  RY  ~ R: Y
+  RG  ~ R: G
+  RYG ~ R: YG
+
+always(): RY /through
+  signal(NHB_TKM1) >= YG: RG
+  signal(NHB_TKM1) >= Y: RYG
+"""
+overridden_by = ["NHB_TKM1T"]
+
+[[tracks.sub_tracks]]
+id = "sub-32"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
+start = "1903.522926"
+end = "2505.392414"
+
+[[tracks]]
+id = "NHB_TKM1T"
+kind_id = "signal"
+send = """
+set (sub-36 sub-39 sub-38 sub-37)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(TKM1R) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-36"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
+start = "2343.290268"
+end = "2559.656615"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_241--tile-127:train_243:4030d7c511"
+start = "2559.656615"
+end = "2677.397978"
+
+[[tracks.sub_tracks]]
+id = "sub-39"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_241--tile-127:train_243:4030d7c511"
+start = "2677.397978"
+end = "2777.589616"
+
+[[tracks.sub_tracks]]
+id = "sub-38"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_241--tile-127:train_243:4030d7c511"
+start = "2777.589616"
+end = "2813.095908"
+
+[[tracks.sub_tracks]]
+id = "sub-37"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_241--tile-127:train_243:4030d7c511"
+start = "2813.095908"
+end = "2843.214167"
+
+[[tracks]]
+id = "TKM_NHB1T"
+kind_id = "signal"
+send = """
+set (sub-17 sub-18 sub-19 sub-21)
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(NHB5L NHB4L) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-17"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "409.013516"
+end = "379.030544"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "870.445919"
+end = "711.347319"
+
+[[tracks.sub_tracks]]
+id = "sub-18"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "444.768484"
+end = "409.013516"
+
+[[tracks.sub_tracks]]
+id = "sub-19"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "550.922017"
+end = "444.768484"
+
+[[tracks.sub_tracks]]
+id = "sub-21"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "711.347319"
+end = "550.922017"
+
+[[tracks]]
+id = "TKM_NHB2T"
+kind_id = "signal"
+send = """
+set sub-28
+  LY  ~ L: Y
+  LG  ~ L: G
+  LYG ~ L: YG
+
+always(): LY /through
+  signal(TKM_NHB1) >= YG: LG
+  signal(TKM_NHB1) >= Y: LYG
+"""
+overridden_by = ["TKM_NHB1T"]
+
+[[tracks.sub_tracks]]
+id = "sub-28"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "711.347319"
+end = "1068.751535"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-127:duplicate_2969:5b268d69fe"
+start = "1068.751535"
+end = "1350.404859"
+
+[[tracks]]
+id = "TKM_NHB3T"
+kind_id = "signal"
+send = """
+set sub-30
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(TKM_NHB2) >= Y: LG
+"""
+overridden_by = ["TKM_NHB2T"]
+
+[[tracks.sub_tracks]]
+id = "sub-30"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-127:duplicate_2969:5b268d69fe"
+start = "1189.389221"
+end = "1831.10027"
+
+[[tracks]]
+id = "TKM_NHB4T"
+kind_id = "signal"
+send = """
+set sub-26
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(TKM_NHB3) >= Y: LG
+"""
+overridden_by = ["TKM_NHB3T"]
+
+[[tracks.sub_tracks]]
+id = "sub-26"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-127:duplicate_2969:5b268d69fe"
+start = "1665.627147"
+end = "2337.43126"
+
+[[tracks]]
+id = "TKM2LT"
+kind_id = "signal"
+send = """
+set (sub-34 sub-43)
+  LY ~ L: Y
+  LG ~ L: G
+
+destlever(TKM2L): LY /through
+  signal(TKM_NHB4) >= Y: LG
+"""
+overridden_by = ["TKM_NHB4T"]
+
+[[tracks.sub_tracks]]
+id = "sub-34"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-127:duplicate_2969:5b268d69fe"
+start = "2176.417977"
+end = "2560.85617"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:duplicate_2969--tile-127:train_242:53c3537b3e"
+start = "2560.85617"
+end = "2678.187228"
+
+[[tracks.sub_tracks]]
+id = "sub-43"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:duplicate_2969--tile-127:train_242:53c3537b3e"
+start = "2678.187228"
+end = "2838.288213"
+
+[[tracks]]
+id = "TKM1RT"
+kind_id = "signal"
+send = """
+set sub-41
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LYY ~ L: YY
+
+signal(TKM3R TKM11R) >= YY: RYY /through
+signal(TKM3R TKM11R) >= Y: RY /through
+signal(TKM3R TKM11R) >= YG: RYG /through
+signal(TKM3R TKM11R) >= G: RG /through
+destlever(TKM1R): RY /through
+  signal(TKM3R) >= Y: RG
+destlever(TKM11L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-41"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_241--tile-127:train_243:4030d7c511"
+start = "2843.214167"
+end = "2974.915517"
+
+[[tracks]]
+id = "TKM3RT"
+kind_id = "signal"
+send = """
+set (sub-56 sub-61)
+  RY ~ R: Y
+  RG ~ R: G
+
+destlever(TKM3R): RY /through
+  signal(TKM_SGN3) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-56"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "3094.149933"
+end = "3134.491981"
+
+[[tracks.sub_tracks]]
+id = "sub-61"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "3134.491981"
+end = "3602.476408"
+
+[[tracks]]
+id = "TKM4LT"
+kind_id = "signal"
+send = """
+set sub-55
+  LY ~ L: Y
+  LG ~ L: G
+
+lever(TKM4L): LY /through
+  signal(TKM2L) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-55"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3151.23947"
+end = "3263.795423"
+
+[[tracks]]
+id = "TKM2T"
+kind_id = "signal"
+send = """
+set sub-44
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LY  ~ L: Y
+  LG  ~ L: G
+  LYY ~ L: YY
+
+signal(TKM12R) >= YY: RYY /through
+signal(TKM12R) >= Y: RY /through
+signal(TKM12R) >= YG: RYG /through
+signal(TKM12R) >= G: RG /through
+destlever(TKM4L): LY /through
+  signal(TKM2L) >= Y: LG
+destlever(TKM12L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-44"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:duplicate_2969--tile-127:train_242:53c3537b3e"
+start = "2838.288213"
+end = "2974.855164"
+
+[[tracks]]
+id = "TKM21AT"
+kind_id = "signal"
+send = """
+set sub-45
+  RY  ~ R: Y
+  RG  ~ R: G
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(TKM3R): RY /through
+  signal(TKM_SGN3) >= Y: RG
+lever(TKM11R): RYY /through
+lever(TKM11L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-45"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "2981.690678"
+end = "3094.149933"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-127:train_50:61cb88b9c1"
+start = "2981.690678"
+end = "3054.567122"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_241--tile-127:train_243:4030d7c511"
+start = "2974.915517"
+end = "2981.690678"
+
+[[tracks]]
+id = "TKM21BT"
+kind_id = "signal"
+send = """
+set sub-47
+  LY  ~ L: Y
+  LG  ~ L: G
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(TKM4L): LY /through
+  signal(TKM2L) >= Y: LG
+lever(TKM11R): RYY /through
+lever(TKM11L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-47"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-127:train_50:61cb88b9c1"
+start = "3054.567122"
+end = "3151.418285"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3054.297308"
+end = "3151.23947"
+
+[[tracks]]
+id = "TKM22T"
+kind_id = "signal"
+send = """
+set (sub-46 sub-48)
+  LY  ~ L: Y
+  LG  ~ L: G
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(TKM4L): LY /through
+  signal(TKM2L) >= Y: LG
+lever(TKM12R): RYY /through
+lever(TKM12L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-46"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:duplicate_2969--tile-127:train_242:53c3537b3e"
+start = "2974.855164"
+end = "2981.732637"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_242:dbd3c5cd54"
+start = "3054.303977"
+end = "2981.732637"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "2981.732637"
+end = "3054.297308"
+
+[[tracks.sub_tracks]]
+id = "sub-48"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_242:dbd3c5cd54"
+start = "3093.552387"
+end = "3054.303977"
+
+[[tracks]]
+id = "TKM11RT"
+kind_id = "signal"
+send = """
+set sub-50
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+
+signal(TKM13R TKM14R) >= YY: RYY /through
+signal(TKM13R TKM14R) >= Y: RY /through
+signal(TKM13R TKM14R) >= YG: RYG /through
+signal(TKM13R TKM14R) >= G: RG /through
+signal(TKM11L) >= YY: LYY /through
+signal(TKM11L) >= Y: LY /through
+signal(TKM11L) >= YG: LYG /through
+signal(TKM11L) >= G: LG /through
+destlever(TKM11R): RYY /through
+destlever(TKM13L TKM14L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-50"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-127:train_50:61cb88b9c1"
+start = "3151.418285"
+end = "3260.772892"
+
+[[tracks]]
+id = "TKM12RT"
+kind_id = "signal"
+send = """
+set sub-49
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+
+signal(TKM15R) >= YY: RYY /through
+signal(TKM15R) >= Y: RY /through
+signal(TKM15R) >= YG: RYG /through
+signal(TKM15R) >= G: RG /through
+signal(TKM12L) >= YY: LYY /through
+signal(TKM12L) >= Y: LY /through
+signal(TKM12L) >= YG: LYG /through
+signal(TKM12L) >= G: LG /through
+destlever(TKM12R): RYY /through
+destlever(TKM15L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-49"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_242:dbd3c5cd54"
+start = "3259.814017"
+end = "3093.552387"
+
+[[tracks]]
+id = "TKM23AT"
+kind_id = "signal"
+send = """
+set sub-51
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(TKM13R TKM14R): RYY /through
+lever(TKM13L TKM14L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-51"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_50:599291b388"
+start = "3304.590844"
+end = "3263.222258"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_50--tile-127:train_52:d38ead9b6f"
+start = "3263.222258"
+end = "3340.916499"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-127:train_50:61cb88b9c1"
+start = "3260.772892"
+end = "3263.222258"
+
+[[tracks]]
+id = "TKM23BT"
+kind_id = "signal"
+send = """
+set sub-52
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(TKM14R TKM15R): RYY /through
+lever(TKM14L TKM15L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-52"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_50:599291b388"
+start = "3336.969072"
+end = "3304.590844"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_242:dbd3c5cd54"
+start = "3335.979688"
+end = "3259.814017"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_101:599ae3ed25"
+start = "3335.979688"
+end = "3339.929128"
+
+[[tracks]]
+id = "TKM13RT"
+kind_id = "signal"
+send = """
+set sub-54
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+  RYY ~ R: YY
+
+signal(TKM13L) >= YY: LYY /through
+signal(TKM13L) >= Y: LY /through
+signal(TKM13L) >= YG: LYG /through
+signal(TKM13L) >= G: LG /through
+destlever(TKM13R): RYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-54"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_50--tile-127:train_52:d38ead9b6f"
+start = "3340.916499"
+end = "3462.936864"
+
+[[tracks]]
+id = "TKM15RT"
+kind_id = "signal"
+send = """
+set sub-53
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+  RYY ~ R: YY
+
+signal(TKM14L TKM15L) >= YY: LYY /through
+signal(TKM14L TKM15L) >= Y: LY /through
+signal(TKM14L TKM15L) >= YG: LYG /through
+signal(TKM14L TKM15L) >= G: LG /through
+destlever(TKM14R TKM15R): RYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-53"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_100--tile-127:train_101:599ae3ed25"
+start = "3339.929128"
+end = "3462.08229"
+
+[[tracks]]
+id = "TKM_SGN3T"
+kind_id = "signal"
+send = """
+set (sub-62 sub-63 sub-67)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(TKM_SGN2) >= Y: RG
+"""
+overridden_by = ["TKM_SGN2T"]
+
+[[tracks.sub_tracks]]
+id = "sub-62"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "3602.476408"
+end = "3762.775041"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "4220.541544"
+end = "4380.784162"
+
+[[tracks.sub_tracks]]
+id = "sub-63"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "3762.775041"
+end = "4143.102325"
+
+[[tracks.sub_tracks]]
+id = "sub-67"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "4143.102325"
+end = "4220.541544"
+
+[[tracks]]
+id = "TKM_SGN2T"
+kind_id = "signal"
+send = """
+set sub-69
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(TKM_SGN1) >= Y: RG
+"""
+overridden_by = ["TKM_SGN1T"]
+
+[[tracks.sub_tracks]]
+id = "sub-69"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "4220.541544"
+end = "5089.500819"
+
+[[tracks]]
+id = "TKM_SGN1T"
+kind_id = "signal"
+send = """
+set (sub-73 sub-75 sub-78 sub-79 sub-80 sub-81)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SGN1R) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-73"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "4927.779317"
+end = "5282.943663"
+
+[[tracks.sub_tracks]]
+id = "sub-75"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5282.943663"
+end = "5444.880731"
+
+[[tracks.sub_tracks]]
+id = "sub-78"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5444.880731"
+end = "5542.350219"
+
+[[tracks.sub_tracks]]
+id = "sub-79"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5542.350219"
+end = "5576.570063"
+
+[[tracks.sub_tracks]]
+id = "sub-80"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5576.570063"
+end = "5598.951646"
+
+[[tracks.sub_tracks]]
+id = "sub-81"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5598.951646"
+end = "5631.431134"
+
+[[tracks]]
+id = "SGN_TKM4T"
+kind_id = "signal"
+send = """
+set sub-70
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SGN_TKM3) >= Y: LG
+"""
+overridden_by = ["SGN_TKM3T"]
+
+[[tracks.sub_tracks]]
+id = "sub-70"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "4770.468904"
+end = "5444.800553"
+
+[[tracks]]
+id = "SGN_TKM3T"
+kind_id = "signal"
+send = """
+set (sub-65 sub-68 sub-72)
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SGN_TKM2) >= Y: LG
+"""
+overridden_by = ["SGN_TKM2T"]
+
+[[tracks.sub_tracks]]
+id = "sub-65"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3943.704786"
+end = "4132.741552"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "4770.468904"
+end = "4931.813765"
+
+[[tracks.sub_tracks]]
+id = "sub-68"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "4132.741552"
+end = "4223.293273"
+
+[[tracks.sub_tracks]]
+id = "sub-72"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "4223.293273"
+end = "4770.468904"
+
+[[tracks]]
+id = "SGN_TKM2T"
+kind_id = "signal"
+send = """
+set sub-60
+  LY  ~ L: Y
+  LG  ~ L: G
+  LYG ~ L: YG
+
+always(): LY /through
+  signal(SGN_TKM1) >= YG: LG
+  signal(SGN_TKM1) >= Y: LYG
+"""
+overridden_by = ["SGN_TKM1T"]
+
+[[tracks.sub_tracks]]
+id = "sub-60"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3431.149546"
+end = "4103.082864"
+
+[[tracks]]
+id = "SGN_TKM1T"
+kind_id = "signal"
+send = """
+set (sub-57 sub-58 sub-59)
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(TKM4L) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-57"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3263.795423"
+end = "3294.964587"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3431.149546"
+end = "3604.529321"
+
+[[tracks.sub_tracks]]
+id = "sub-58"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3294.964587"
+end = "3330.98206"
+
+[[tracks.sub_tracks]]
+id = "sub-59"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "3330.98206"
+end = "3431.149546"
+
+[[tracks]]
+id = "SGN1RT"
+kind_id = "signal"
+send = """
+set (sub-82 sub-89)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SGN_SNH4) >= Y: RG
+"""
+overridden_by = ["SGN_SNH4T"]
+
+[[tracks.sub_tracks]]
+id = "sub-82"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5631.431134"
+end = "5657.202762"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "5657.202762"
+end = "5769.201714"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "6411.173205"
+end = "6571.816197"
+
+[[tracks.sub_tracks]]
+id = "sub-89"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "5769.201714"
+end = "6411.173205"
+
+[[tracks]]
+id = "SGN2LT"
+kind_id = "signal"
+send = """
+set (sub-77 sub-84 sub-85 sub-86 sub-88)
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SGN_TKM4) >= Y: LG
+"""
+overridden_by = ["SGN_TKM4T"]
+
+[[tracks.sub_tracks]]
+id = "sub-77"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "5283.985367"
+end = "5566.104478"
+
+[[tracks.sub_tracks]]
+id = "sub-84"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "5566.104478"
+end = "5630.807451"
+
+[[tracks.sub_tracks]]
+id = "sub-85"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "5630.807451"
+end = "5656.335613"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "5725.024195"
+end = "5656.335613"
+
+[[tracks.sub_tracks]]
+id = "sub-86"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "5826.027727"
+end = "5725.024195"
+
+[[tracks.sub_tracks]]
+id = "sub-88"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "5983.29617"
+end = "5826.027727"
+
+[[tracks]]
+id = "SGN_SNH4T"
+kind_id = "signal"
+send = """
+set (sub-94 sub-97)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SGN_SNH3) >= Y: RG
+"""
+overridden_by = ["SGN_SNH3T"]
+
+[[tracks.sub_tracks]]
+id = "sub-94"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "6411.173205"
+end = "6899.152832"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7201.786276"
+end = "7363.802278"
+
+[[tracks.sub_tracks]]
+id = "sub-97"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "6899.152832"
+end = "7201.786276"
+
+[[tracks]]
+id = "SGN_SNH3T"
+kind_id = "signal"
+send = """
+set (sub-130 sub-99 sub-100)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SGN_SNH2) >= Y: RG
+"""
+overridden_by = ["SGN_SNH2T"]
+
+[[tracks.sub_tracks]]
+id = "sub-130"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7201.786276"
+end = "7556.825812"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7859.009728"
+end = "8052.264482"
+
+[[tracks.sub_tracks]]
+id = "sub-99"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7556.825812"
+end = "7846.141138"
+
+[[tracks.sub_tracks]]
+id = "sub-100"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7846.141138"
+end = "7859.009728"
+
+[[tracks]]
+id = "SGN_SNH2T"
+kind_id = "signal"
+send = """
+set (sub-105 sub-107)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SGN_SNH1) >= Y: RG
+"""
+overridden_by = ["SGN_SNH1T"]
+
+[[tracks.sub_tracks]]
+id = "sub-105"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7859.009728"
+end = "8127.325832"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8379.770095"
+end = "8493.409868"
+
+[[tracks.sub_tracks]]
+id = "sub-107"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8127.325832"
+end = "8379.770095"
+
+[[tracks]]
+id = "SGN_SNH1T"
+kind_id = "signal"
+send = """
+set (sub-108 sub-115 sub-114 sub-113)
+  RY  ~ R: Y
+  RG  ~ R: G
+  RYG ~ R: YG
+
+always(): RY /through
+  signal(SNH1R) >= Y: RG
+  hr(SNH1R): RYG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-108"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8379.770095"
+end = "8544.535773"
+
+[[tracks.sub_tracks]]
+id = "sub-115"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8544.535773"
+end = "8761.935137"
+
+[[tracks.sub_tracks]]
+id = "sub-114"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8761.935137"
+end = "8862.604694"
+
+[[tracks.sub_tracks]]
+id = "sub-113"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8862.604694"
+end = "8897.7606"
+
+[[tracks]]
+id = "SNH_SGN3T"
+kind_id = "signal"
+send = """
+set sub-102
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SNH_SGN2) >= Y: LG
+"""
+overridden_by = ["SNH_SGN2T"]
+
+[[tracks.sub_tracks]]
+id = "sub-102"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "7560.261701467094"
+end = "8054.285513467094"
+
+[[tracks]]
+id = "SNH_SGN2T"
+kind_id = "signal"
+send = """
+set (sub-93 sub-101)
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SNH_SGN1) >= Y: LG
+"""
+overridden_by = ["SNH_SGN1T"]
+
+[[tracks.sub_tracks]]
+id = "sub-93"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "6741.223052467094"
+end = "7206.216261467093"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "7560.261701467094"
+end = "7774.665908467094"
+
+[[tracks.sub_tracks]]
+id = "sub-101"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "7206.216261467093"
+end = "7560.261701467094"
+
+[[tracks]]
+id = "SNH_SGN1T"
+kind_id = "signal"
+send = """
+set (sub-90 sub-91 sub-92 sub-95)
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SGN2L) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-90"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "6013.677521"
+end = "5983.29617"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "6741.223052467094"
+end = "6902.465654467093"
+
+[[tracks.sub_tracks]]
+id = "sub-91"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "6048.825745"
+end = "6013.677521"
+
+[[tracks.sub_tracks]]
+id = "sub-92"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "6149.399605"
+end = "6048.825745"
+
+[[tracks.sub_tracks]]
+id = "sub-95"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "6503.742166"
+end = "6149.399605"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "6504.458780467094"
+end = "6741.223052467094"
+
+[[tracks]]
+id = "SNH1RT"
+kind_id = "signal"
+send = """
+set (sub-112 sub-110 sub-111)
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LYY ~ L: YY
+
+signal(SNH3R SNH11R) >= YY: RYY /through
+signal(SNH3R SNH11R) >= Y: RY /through
+signal(SNH3R SNH11R) >= YG: RYG /through
+signal(SNH3R SNH11R) >= G: RG /through
+destlever(SNH1R): RYY /through
+destlever(SNH11L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-112"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8897.7606"
+end = "8928.747863"
+
+[[tracks.sub_tracks]]
+id = "sub-110"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "8928.747863"
+end = "9054.886432"
+
+[[tracks.sub_tracks]]
+id = "sub-111"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "9054.886432"
+end = "9073.715788"
+
+[[tracks]]
+id = "SNH2LT"
+kind_id = "signal"
+send = """
+set (sub-104 sub-117 sub-118)
+  LY ~ L: Y
+  LG ~ L: G
+
+destlever(SNH2L): LY /through
+  signal(SNH_SGN3) >= Y: LG
+"""
+overridden_by = ["SNH_SGN3T"]
+
+[[tracks.sub_tracks]]
+id = "sub-104"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "7841.860698467093"
+end = "8496.140544467095"
+
+[[tracks.sub_tracks]]
+id = "sub-117"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "8496.140544467095"
+end = "8810.201041467093"
+
+[[tracks.sub_tracks]]
+id = "sub-118"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "8810.201041467093"
+end = "8959.652135467093"
+
+[[tracks]]
+id = "SNH22T"
+kind_id = "signal"
+send = """
+set (sub-120 sub-121)
+  LY  ~ L: Y
+  LG  ~ L: G
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(SNH2L): LY /through
+  signal(SNH_SGN3) >= Y: LG
+lever(SNH13R SNH13RZ): RYY /through
+lever(SNH13L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-120"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_133--tile-153:train_83:6d2d949e8f"
+start = "8907.391641096488"
+end = "8959.624970096487"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_133--tile-153:train_187:2d5ee145e1"
+start = "0#R"
+end = "2#R"
+
+[[tracks.sub_tracks]]
+id = "sub-121"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "8959.652135467093"
+end = "8995.769689467093"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_133--tile-153:train_83:6d2d949e8f"
+start = "8959.624970096487"
+end = "8995.769690096487"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_83--tile-153:train_88:facd4c4c56"
+start = "8995.769689671792"
+end = "8997.907162671792"
+
+[[tracks]]
+id = "SNH13LT"
+kind_id = "signal"
+send = """
+set sub-119
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LYY ~ L: YY
+
+signal(SNH13R SNH13RZ) >= YY: RYY /through
+signal(SNH13R SNH13RZ) >= Y: RY /through
+signal(SNH13R SNH13RZ) >= YG: RYG /through
+signal(SNH13R SNH13RZ) >= G: RG /through
+destlever(SNH13L): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-119"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_133--tile-153:train_187:2d5ee145e1"
+start = "2#R"
+end = "127#R"
+
+[[tracks]]
+id = "SNH4LT"
+kind_id = "signal"
+send = """
+set (sub-122 sub-123)
+  RYY ~ R: YY
+  RY  ~ R: Y
+  RYG ~ R: YG
+  RG  ~ R: G
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+
+signal(SNH4R SNH12R) >= YY: RYY /through
+signal(SNH4R SNH12R) >= Y: RY /through
+signal(SNH4R SNH12R) >= YG: RYG /through
+signal(SNH4R SNH12R) >= G: RG /through
+signal(SNH2L SNH13L) >= YY: LYY /through
+signal(SNH2L SNH13L) >= Y: LY /through
+signal(SNH2L SNH13L) >= YG: LYG /through
+signal(SNH2L SNH13L) >= G: LG /through
+destlever(SNH4L): LY /through
+destlever(SNH12L SNH12LZ): LYY /through
+destlever(SNH13R SNH13RZ): RYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-122"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_83--tile-153:train_88:facd4c4c56"
+start = "8997.907162671792"
+end = "9014.507052671792"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_88--tile-153:train_95:499c963575"
+start = "9016.999801"
+end = "9054.583996"
+
+[[tracks.sub_tracks]]
+id = "sub-123"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_88--tile-153:train_95:499c963575"
+start = "9054.583996"
+end = "9073.466559"
+
+[[tracks]]
+id = "SNH21AT"
+kind_id = "signal"
+send = """
+set (sub-124 sub-125)
+  RY  ~ R: Y
+  RG  ~ R: G
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(SNH3R SNH4R): RY /through
+  signal(SNH_NMC3) >= Y: RG
+lever(SNH11R SNH12R): RYY /through
+lever(SNH11L SNH12L SNH12LZ): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-124"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "9073.715788"
+end = "9161.722673"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_95--tile-153:train_98:1528f097a0"
+start = "9117.756942"
+end = "9161.722673"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "5.7#L"
+end = "9161.722673"
+
+[[tracks.sub_tracks]]
+id = "sub-125"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "22#L"
+end = "5.7#L"
+
+[[tracks]]
+id = "SNH21BT"
+kind_id = "signal"
+send = """
+set (sub-126 sub-127)
+  RY  ~ R: Y
+  RG  ~ R: G
+  LY  ~ L: Y
+  RYY ~ R: YY
+  LYY ~ L: YY
+
+lever(SNH4R): RY /through
+  signal(SNH_NMC3) >= Y: RG
+lever(SNH4L): LY /through
+lever(SNH12R): RYY /through
+lever(SNH12L SNH12LZ): LYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-126"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_95--tile-153:train_98:1528f097a0"
+start = "9084.244277"
+end = "9117.756942"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_88--tile-153:train_95:499c963575"
+start = "9073.466559"
+end = "9084.244277"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "83#L"
+end = "9084.244277"
+
+[[tracks.sub_tracks]]
+id = "sub-127"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "99.5#L"
+end = "83#L"
+
+[[tracks]]
+id = "SNH3RT"
+kind_id = "signal"
+send = """
+set sub-128
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+  RY  ~ R: Y
+  RG  ~ R: G
+  RYY ~ R: YY
+
+signal(SNH11L SNH12L SNH12LZ) >= YY: LYY /through
+signal(SNH11L SNH12L SNH12LZ) >= Y: LY /through
+signal(SNH11L SNH12L SNH12LZ) >= YG: LYG /through
+signal(SNH11L SNH12L SNH12LZ) >= G: LG /through
+lever(SNH3R SNH4R): RY /through
+  signal(SNH_NMC3) >= Y: RG
+destlever(SNH11R SNH12R): RYY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-128"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "130.0#L"
+end = "22#L"
+
+[[tracks]]
+id = "HLT_NHB1T"
+kind_id = "signal"
+send = """
+set sub-138 sub-137 sub-136 sub-135 sub-134 sub-133 sub-132
+  RN  ~ R: YGh YGh YGh YGh Y   T   R
+  RNc ~ R: YGh YGh YGh YGh YGh Gh  Gh
+  LV  ~ L: R   Y   YGh YGh YGh YGh YGh
+
+set (sub-138 sub-137 sub-136 sub-135 sub-134 sub-133 sub-132)
+  LVc ~ L: YGh
+
+normal(HLT_NHB_FR): RN
+  hr(NHB2R): RNc
+reverse(NHB_HLT_FR): LV
+  hr(HLT1L): LVc
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-138"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-1421.265861"
+end = "-1494.74455"
+
+[[tracks.sub_tracks]]
+id = "sub-137"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-1216.209811"
+end = "-1421.265861"
+
+[[tracks.sub_tracks]]
+id = "sub-136"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-855.510991"
+end = "-1216.209811"
+
+[[tracks.sub_tracks]]
+id = "sub-135"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-436.609107"
+end = "-855.510991"
+
+[[tracks.sub_tracks]]
+id = "sub-134"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-296.332424"
+end = "-436.609107"
+
+[[tracks.sub_tracks]]
+id = "sub-133"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-216.034529"
+end = "-296.332424"
+
+[[tracks.sub_tracks]]
+id = "sub-132"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-174.025735"
+end = "-216.034529"
+
+[[tracks]]
+id = "HLT1LT"
+kind_id = "signal"
+send = """
+set sub-140 sub-139
+  RY  ~ R: - Y
+  RR  ~ R: - R
+  LYY ~ L: - YY
+
+hr(HLT1R): RY
+anydest(): RR /through
+anydest(): LYY
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-140"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-1887.6098"
+end = "-1898.482845"
+
+[[tracks.sub_tracks]]
+id = "sub-139"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-1494.74455"
+end = "-1887.6098"
+
+[[tracks]]
+id = "AREA_129"
+kind_id = "area_only"
+
+[[tracks.sub_tracks]]
+id = "all"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_142--tile-153:train_187:ed11f68589"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_133--tile-153:train_187:2d5ee145e1"
+start = "0#L"
+end = "127#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_187--tile-153:train_196:e3eb960b0c"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_196--tile-153:train_204:0afebd9a58"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_196--tile-153:train_205:291d4c1e11"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_205--tile-153:train_213:8df1cf2fba"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_205--tile-153:train_207:a4e6b1460b"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_207--tile-153:train_214:494d2ceac8"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_207--tile-153:train_222:cb5c79489e"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_214--tile-153:train_237:f384dd21af"
+start = "0#L"
+end = "0#R"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-153:train_214--tile-153:train_230:0a89a66ef1"
+start = "0#L"
+end = "0#R"
+
+[[tracks]]
+id = "NMC11T"
+kind_id = "signal"
+send = """
+set sub-1
+  RY ~ R: Y
+  LY ~ L: Y
+  LG ~ L: G
+
+lever(NMC1R NMC2R): RY /through
+lever(NMC1L NMC2L): LY /through
+  signal(NMC_SNH3) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "0#L"
+segment_id = "segment:tile-124:train_355--tile-134:train_73:6818e4c48f"
+start = "0#R"
+
+[[tracks.sub_tracks.sections]]
+end = "0#L"
+segment_id = "segment:tile-124:train_355--tile-124:train_358:fe5e90ac7f"
+start = "110#L"
+
+[[tracks.sub_tracks.sections]]
+end = "0#L"
+segment_id = "segment:tile-124:train_355--tile-124:train_357:975bc73bbd"
+start = "110#L"
+
+[[tracks.sub_tracks.sections]]
+end = "11905.293779767404"
+segment_id = "segment:tile-134:train_17--tile-134:train_73:09c38771b2"
+start = "11983.02699805059"
+
+[[tracks.sub_tracks.sections]]
+end = "0#R"
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "113#R"
+
+[[tracks.sub_tracks.sections]]
+end = "70#R"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "0#R"
+
+[[tracks]]
+id = "SNH_NMC1T"
+kind_id = "signal"
+send = """
+set (sub-1 sub-2)
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(NMC1R NMC2R) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "594#R"
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "826#R"
+
+[[tracks.sub_tracks]]
+id = "sub-2"
+
+[[tracks.sub_tracks.sections]]
+end = "113#R"
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "594#R"
+
+[[tracks]]
+id = "SNH_NMC2T"
+kind_id = "signal"
+send = """
+set sub-1
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SNH_NMC1) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "1600#R"
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "826#R"
+
+[[tracks]]
+id = "SNH_NMC3T"
+kind_id = "signal"
+send = """
+set sub-1
+  RY ~ R: Y
+  RG ~ R: G
+
+always(): RY /through
+  signal(SNH_NMC2) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "1600#R"
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "2356#R"
+
+[[tracks]]
+id = "SNH_NMC4T"
+kind_id = "signal"
+send = """
+set sub-1
+  RY ~ R: Y
+  RG ~ R: G
+
+destlever(SNH3R SNH4R): RY /through
+  signal(SNH_NMC3) >= Y: RG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "2356#R"
+segment_id = "segment:tile-134:train_17--tile-153:train_98:41820eea5b"
+start = "130#L"
+
+[[tracks]]
+id = "NMC_SNH1T"
+kind_id = "signal"
+send = """
+set sub-1
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(SNH4L) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "461#L"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "99.5#L"
+
+[[tracks]]
+id = "NMC_SNH2T"
+kind_id = "signal"
+send = """
+set sub-1
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(NMC_SNH1) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "1212#L"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "461#L"
+
+[[tracks]]
+id = "NMC_SNH3T"
+kind_id = "signal"
+send = """
+set sub-1
+  LY ~ L: Y
+  LG ~ L: G
+
+always(): LY /through
+  signal(NMC_SNH2) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "1986#L"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "1212#L"
+
+[[tracks]]
+id = "NMC_SNH4T"
+kind_id = "signal"
+send = """
+set (sub-1 sub-2)
+  LY ~ L: Y
+  LG ~ L: G
+
+destlever(NMC1L NMC2L): LY /through
+  signal(NMC_SNH3) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "2220#L"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "1986#L"
+
+[[tracks.sub_tracks]]
+id = "sub-2"
+
+[[tracks.sub_tracks.sections]]
+end = "190#R"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "2220#L"
+
+[[tracks]]
+id = "NMC1LT"
+kind_id = "signal"
+send = """
+set sub-1
+  LY ~ L: Y
+  LG ~ L: G
+
+lever(NMC1L NMC2L): LY /through
+  signal(NMC_SNH3) >= Y: LG
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "70#R"
+segment_id = "segment:tile-134:train_73--tile-153:train_95:d68050154e"
+start = "190#R"
+
+[[tracks]]
+id = "NMC1RT"
+kind_id = "signal"
+send = """
+set sub-1
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+  RY  ~ R: Y
+
+signal(NMC1L) >= YY: LYY /through
+signal(NMC1L) >= Y: LY /through
+signal(NMC1L) >= YG: LYG /through
+signal(NMC1L) >= G: LG /through
+destlever(NMC1R): RY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "230.0#L"
+segment_id = "segment:tile-124:train_355--tile-124:train_358:fe5e90ac7f"
+start = "110#L"
+
+[[tracks]]
+id = "NMC2RT"
+kind_id = "signal"
+send = """
+set sub-1
+  LYY ~ L: YY
+  LY  ~ L: Y
+  LYG ~ L: YG
+  LG  ~ L: G
+  RY  ~ R: Y
+
+signal(NMC2L) >= YY: LYY /through
+signal(NMC2L) >= Y: LY /through
+signal(NMC2L) >= YG: LYG /through
+signal(NMC2L) >= G: LG /through
+destlever(NMC2R): RY /through
+"""
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+end = "230#L"
+segment_id = "segment:tile-124:train_355--tile-124:train_357:975bc73bbd"
+start = "110#L"
+
+[addon_overlay]
+playlists = ["C:/Users/taka/AppData/Roaming/Stormworks/data/missions/N_TRACS_Soya_Express_DEV/playlist.xml", "C:/Users/taka/AppData/Roaming/Stormworks/data/missions/station_06_ShionagihamaStation_230807/playlist.xml", "C:/Users/taka/AppData/Roaming/Stormworks/data/missions/station_kari/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/neonamie/playlist.xml"]
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_0.xml"
+x = -8000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_1.xml"
+x = -8000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_2.xml"
+x = -8000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_3.xml"
+x = -8000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_4.xml"
+x = -8000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_5.xml"
+x = -8000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_6.xml"
+x = -8000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_7.xml"
+x = -8000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_8.xml"
+x = -8000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_0_9.xml"
+x = -8000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_0.xml"
+x = -7000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_1.xml"
+x = -7000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_2.xml"
+x = -7000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_3.xml"
+x = -7000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_4.xml"
+x = -7000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_5.xml"
+x = -7000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_6.xml"
+x = -7000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_7.xml"
+x = -7000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_8.xml"
+x = -7000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_1_9.xml"
+x = -7000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_0.xml"
+x = -6000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_1.xml"
+x = -6000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_2.xml"
+x = -6000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_3.xml"
+x = -6000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_4.xml"
+x = -6000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_5.xml"
+x = -6000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_6.xml"
+x = -6000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_7.xml"
+x = -6000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_8.xml"
+x = -6000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_2_9.xml"
+x = -6000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_0.xml"
+x = -5000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_1.xml"
+x = -5000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_2.xml"
+x = -5000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_3.xml"
+x = -5000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_4.xml"
+x = -5000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_5.xml"
+x = -5000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_6.xml"
+x = -5000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_7.xml"
+x = -5000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_8.xml"
+x = -5000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_3_9.xml"
+x = -5000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_0.xml"
+x = -4000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_1.xml"
+x = -4000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_2.xml"
+x = -4000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_3.xml"
+x = -4000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_4.xml"
+x = -4000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_5.xml"
+x = -4000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_6.xml"
+x = -4000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_7.xml"
+x = -4000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_8.xml"
+x = -4000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_4_9.xml"
+x = -4000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_0.xml"
+x = -3000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_1.xml"
+x = -3000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_2.xml"
+x = -3000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_3.xml"
+x = -3000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_4.xml"
+x = -3000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_5.xml"
+x = -3000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_6.xml"
+x = -3000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_7.xml"
+x = -3000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_8.xml"
+x = -3000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_5_9.xml"
+x = -3000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_0.xml"
+x = -2000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_1.xml"
+x = -2000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_2.xml"
+x = -2000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_3.xml"
+x = -2000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_4.xml"
+x = -2000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_5.xml"
+x = -2000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_6.xml"
+x = -2000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_7.xml"
+x = -2000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_8.xml"
+x = -2000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_6_9.xml"
+x = -2000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_0.xml"
+x = -1000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_1.xml"
+x = -1000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_2.xml"
+x = -1000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_3.xml"
+x = -1000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_4.xml"
+x = -1000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_5.xml"
+x = -1000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_6.xml"
+x = -1000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_7.xml"
+x = -1000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_8.xml"
+x = -1000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_7_9.xml"
+x = -1000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_0.xml"
+x = 0
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_1.xml"
+x = 0
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_2.xml"
+x = 0
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_3.xml"
+x = 0
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_4.xml"
+x = 0
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_5.xml"
+x = 0
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_6.xml"
+x = 0
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_7.xml"
+x = 0
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_8.xml"
+x = 0
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_8_9.xml"
+x = 0
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_0.xml"
+x = 1000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_1.xml"
+x = 1000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_2.xml"
+x = 1000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_3.xml"
+x = 1000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_4.xml"
+x = 1000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_5.xml"
+x = 1000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_6.xml"
+x = 1000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_7.xml"
+x = 1000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_8.xml"
+x = 1000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_9_9.xml"
+x = 1000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_0.xml"
+x = 2000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_1.xml"
+x = 2000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_2.xml"
+x = 2000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_3.xml"
+x = 2000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_4.xml"
+x = 2000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_5.xml"
+x = 2000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_6.xml"
+x = 2000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_7.xml"
+x = 2000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_8.xml"
+x = 2000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_10_9.xml"
+x = 2000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_0.xml"
+x = 3000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_1.xml"
+x = 3000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_2.xml"
+x = 3000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_3.xml"
+x = 3000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_4.xml"
+x = 3000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_5.xml"
+x = 3000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_6.xml"
+x = 3000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_7.xml"
+x = 3000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_8.xml"
+x = 3000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_11_9.xml"
+x = 3000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_0.xml"
+x = 4000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_1.xml"
+x = 4000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_2.xml"
+x = 4000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_3.xml"
+x = 4000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_4.xml"
+x = 4000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_5.xml"
+x = 4000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_6.xml"
+x = 4000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_7.xml"
+x = 4000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_8.xml"
+x = 4000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_12_9.xml"
+x = 4000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_0.xml"
+x = 5000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_1.xml"
+x = 5000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_2.xml"
+x = 5000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_3.xml"
+x = 5000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_4.xml"
+x = 5000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_5.xml"
+x = 5000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_6.xml"
+x = 5000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_7.xml"
+x = 5000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_8.xml"
+x = 5000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_13_9.xml"
+x = 5000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_0.xml"
+x = 6000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_1.xml"
+x = 6000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_2.xml"
+x = 6000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_3.xml"
+x = 6000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_4.xml"
+x = 6000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_5.xml"
+x = 6000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_6.xml"
+x = 6000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_7.xml"
+x = 6000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_8.xml"
+x = 6000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_14_9.xml"
+x = 6000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_0.xml"
+x = 7000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_1.xml"
+x = 7000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_2.xml"
+x = 7000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_3.xml"
+x = 7000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_4.xml"
+x = 7000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_5.xml"
+x = 7000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_6.xml"
+x = 7000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_7.xml"
+x = 7000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_8.xml"
+x = 7000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_15_9.xml"
+x = 7000
+z = -3000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_0.xml"
+x = 8000
+z = -12000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_1.xml"
+x = 8000
+z = -11000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_2.xml"
+x = 8000
+z = -10000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_3.xml"
+x = 8000
+z = -9000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_4.xml"
+x = 8000
+z = -8000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_5.xml"
+x = 8000
+z = -7000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_6.xml"
+x = 8000
+z = -6000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_7.xml"
+x = 8000
+z = -5000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_8.xml"
+x = 8000
+z = -4000
+
+[[addon_overlay.tile_placements]]
+tile = "mega_island_16_9.xml"
+x = 8000
+z = -3000

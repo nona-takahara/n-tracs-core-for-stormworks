@@ -1,5 +1,34 @@
-function generateAreaTrack(obj) {
-    const luaBegin = `-- Generated at ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
+const SendCompiler = require("./compile_send");
+
+/**
+ * @param {object} obj area_track.json の中身
+ * @param {{ plain?: boolean }} [options] plain のときは callback を元の Lua のまま書き出す(比較テスト用)
+ */
+function generateAreaTrack(obj, options = {}) {
+    const plain = !!options.plain;
+    // 同じ callback は1つの関数を共有する。ローカル変数の数の上限(200)に当たらないよう、テーブルに置く
+    const rows = new Map();
+    const shared = new Map();
+    const sharedDefs = [];
+    // コンパイルできない記述の Area は、エディタが書き出した callback の Lua をそのまま使う
+    const compiler = obj.send_definitions ? new SendCompiler(obj.send_definitions, rows, obj.geometry_half_width) : null;
+    const compiled = (area) => {
+        const parts = area.send_parts;
+        return compiler && parts && parts.length === 1 ? compiler.compile(parts[0]) : null;
+    };
+    const callbackOf = (area) => {
+        const text = area.callback;
+        if (!text) return "function()end";
+        if (plain) return text;
+        const body = compiled(area) || text;
+        if (!shared.has(body)) {
+            shared.set(body, `F[${shared.size + 1}]`);
+            sharedDefs.push(`${shared.get(body)}=${body}`);
+        }
+        return shared.get(body);
+    };
+
+    const luaHeader = `-- Generated at ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
 ---@param s SoyaBridge
 return function(s)
 local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
@@ -49,7 +78,7 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
             `{${packVertexes(a.vertexes)}},${a.left_vertex_inner_id + 1},` +
             `{${a.uparea.join(",")}},` +
             `{${a.downarea.join(",")}},` +
-            `${a.callback || "function()end"})`);
+            `${callbackOf(a)})`);
     });
 
     const createTrack = Array();
@@ -57,7 +86,15 @@ local ca,ct,utils=s.create_area,s.create_track,require("res.utils")
         createTrack.push(`ct(s,"${k}",{${t.areas.map((a) => a.name).join(",")}})`);
     });
 
-    return luaBegin + createArea.join("\n") + "\n" + createTrack.join("\n") + luaEnd;
+    const rowDefs = [...rows].map(([key, name]) => `local ${name}=${key}`);
+    const luaRules = plain ? "" : [
+        `local B,P,C,R,L,Z,A,U,K,W,D=require("src.n_tracs_soyabridge.send_rule")(s)`,
+        "local nt,F=s.nt,{}",
+        ...rowDefs,
+        ...(compiler ? compiler.wordDefinitions() : []),
+        ...sharedDefs,
+    ].join("\n") + "\n";
+    return luaHeader + luaRules + createArea.join("\n") + "\n" + createTrack.join("\n") + luaEnd;
 }
 
 module.exports = generateAreaTrack;
