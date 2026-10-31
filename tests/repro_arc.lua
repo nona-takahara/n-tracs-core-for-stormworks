@@ -448,4 +448,29 @@ do
     c:check("潮凪浜 到着の記録がない列車は、待ちの値を載せない(採用の値だけ)", t.sw.arc:adopted_values()["SNH11R"] ~= nil and adopted(t, "SNH", 282) == nil, false)
 end
 
+-- 18. 掘戸町 上り到着(HLT1L)と、予約資源の引き継ぎ
+do
+    local s = new_sim()
+    local up = raw(11, 1, 2, 0)
+    s.set(11, up, { "NHB5LT" })
+    s.step(8)
+    c:check("北港3番 上り出発: 予約資源を取る", s.owner("HLT"), 11)
+    s.set(11, up, { "NHB5LT", "HLT_NHB1T" })
+    s.step(3)
+    s.set(11, up, { "HLT_NHB1T" })
+    s.step(6)
+    c:check("掘戸町 上り到着: HLT1Lを採用", adopted(s, "HLT", 11), "HLT1L")
+    c:check("掘戸町 上り到着: 着くまでは予約資源を放さない", s.owner("HLT"), 11)
+    s.set(11, up, { "HLT_NHB1T", "HLT1LT" })
+    s.step(3)
+    c:check("掘戸町 上り到着: 軸がホームに入ったら予約資源を放す", s.owner("HLT"), nil)
+    s.set(11, up, { "HLT1LT" })
+    s.step(6)
+    s.trains[11] = nil
+    s.set(12, raw(12, 2, 5, 0), { "HLT1LT" })
+    s.step(10)
+    c:check("掘戸町 運行番号が変わっても下り出発できる: HLT1Rを採用", adopted(s, "HLT", 12), "HLT1R")
+    c:check("掘戸町 運行番号が変わっても下り出発できる: 予約資源は新しい持ち主", s.owner("HLT"), 12)
+end
+
 c:report()
