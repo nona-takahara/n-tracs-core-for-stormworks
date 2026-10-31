@@ -41,6 +41,23 @@ function checkArcConfig() {
     console.log("ARC config check: OK");
 }
 
+// script.lua の ADDON_VERSION と storm-lua-minify のバージョンを、保存されるコメントとして
+// res/build_info.lua に書く。script.lua の先頭の dofile で展開され、minify 後の先頭に残る
+// (行番号対応を崩さないよう、minify 後のコードには直接書き込まない)。
+function generateBuildInfo() {
+    const scriptSrc = fs.readFileSync("script.lua", "utf8");
+    const match = scriptSrc.match(/^ADDON_VERSION\s*=\s*"([^"]+)"/m);
+    if (!match) {
+        throw new Error("script.lua から ADDON_VERSION を読み取れません");
+    }
+    const minifyVersion = require("storm-lua-minify/package.json").version;
+    // 先頭の --# が、minify に削除されないコメントの印
+    const text = `--# N-TRACS ${match[1]} / storm-lua-minify ${minifyVersion}\n`;
+    if (!fs.existsSync("res/build_info.lua") || fs.readFileSync("res/build_info.lua", "utf8") !== text) {
+        fs.writeFileSync("res/build_info.lua", text);
+    }
+}
+
 function checkCrossReferences(signalObj, areaTrackObj) {
     const registeredTracks = new Set(areaTrackObj.tracks.map(t => t.name));
     const errors = [];

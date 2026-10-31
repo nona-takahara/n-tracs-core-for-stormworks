@@ -1,3 +1,4 @@
+dofile("res.build_info") -- ビルドで生成。バージョンのコメントを先頭に展開する
 ADDON_NAME = "N-TRACS Soya Express Wayside Signals"
 ADDON_SHORT_NAME = "SoyaExpress WS"
 ADDON_VERSION = "v2.0.0-beta7"
