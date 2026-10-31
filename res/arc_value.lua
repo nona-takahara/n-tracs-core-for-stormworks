@@ -31,11 +31,12 @@ function M.parse(raw)
     }
 end
 
----運行番号(pp)が1以上の指令値を、運行番号で見分ける
+---列車の識別子は運行番号(pp)。運行番号が0(指定なし)の列車は扱わない(nilを返す)
 ---@param arc ArcValue
 ---@return number|nil
 function M.train_id(arc)
-    return arc.pp > 0 and arc.pp or nil
+    if arc.pp > 0 then return arc.pp end
+    return nil
 end
 
 return M

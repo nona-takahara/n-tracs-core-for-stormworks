@@ -21,6 +21,7 @@ local Arc            = require("src.n_tracs_arc.arc")
 ---@field vehicle_table table<number, VehicleInfo>
 ---@field default_area number
 ---@field arc Arc|nil
+---@field arc_values table<string, number>|nil 採用されている「動き」の信号機ごとのARC指令値(Phase 4で更新)
 local SoyaBridge     = {}
 
 ---@return SoyaBridge
@@ -190,7 +191,10 @@ end
 
 ---N-TRACSの演算結果が確定したあと、次の演算の前に呼びます
 function SoyaBridge:arc_process()
-    if self.arc then self.arc:process() end
+    if self.arc then
+        self.arc:process()
+        self.arc_values = self.arc:adopted_values()
+    end
 end
 
 ---@param deltaTicks number

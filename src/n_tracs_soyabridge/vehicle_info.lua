@@ -8,6 +8,7 @@ local SetRoute     = require("src.n_tracs_core.switch.set_route")
 ---@field tracks string[]
 ---@field points PointSetter[]
 ---@field arc_send boolean
+---@field arc_levers string[] 採用されている「動き」の指令値(列選)を受け取る信号機
 ---@field alias string[]
 local VehicleInfo  = {}
 
@@ -48,6 +49,7 @@ function VehicleInfo.new(vehicle_id, sw)
     obj.tracks = {}
     obj.points = {}
     obj.arc_send = false
+    obj.arc_levers = {}
     obj.alias = {}
 
     for _, button in ipairs(vdata.components.buttons) do
@@ -87,6 +89,12 @@ function VehicleInfo.new(vehicle_id, sw)
         end
         if sw.nt:get_signal_may_nil(sign.name) then
             table.insert(obj.signals, sign.name)
+            for _, dial in ipairs(vdata.components.buttons) do
+                if dial.name == sign.name .. "_ARC" then
+                    table.insert(obj.arc_levers, sign.name)
+                    break
+                end
+            end
         end
     end
     return obj
@@ -98,6 +106,11 @@ function VehicleInfo:send(sign, sw)
     for _, lever in ipairs(self.signals) do
         local sending = sw.nt:get_signal(lever).aspect
         server.setVehicleKeypad(self.vehicle_id, lever .. "_ASPECT", sending * sign)
+    end
+
+    for _, lever in ipairs(self.arc_levers) do
+        local sending = sw.arc_values and sw.arc_values[lever] or 0
+        server.setVehicleKeypad(self.vehicle_id, lever .. "_ARC", sending * sign)
     end
 
     for _, alias in ipairs(self.alias) do
