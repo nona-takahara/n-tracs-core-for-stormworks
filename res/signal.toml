@@ -773,6 +773,56 @@ approach_lock_time = 15
 
 update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_SGN3")'
 
+[SNH3R]
+start = "SNH1RT"
+destination = "SNH_NMC4T"
+direction = "right"
+switches = [{ sw = "SNH21", t = "normal" }]
+route_lock = ["SNH21AT", "SNH3RT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21AT", "SNH3RT", "SNH_NMC4T"]
+
+approach_track = ["SNH1RT"]
+approach_lock_time = 15
+
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_NMC3")'
+
+[SNH4R]
+start = "SNH4LT"
+destination = "SNH_NMC4T"
+direction = "right"
+switches = [{ sw = "SNH21", t = "reverse" }]
+route_lock = ["SNH21BT", "SNH21AT", "SNH3RT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21BT", "SNH21AT", "SNH3RT", "SNH_NMC4T"]
+
+approach_track = ["SNH4LT"]
+approach_lock_time = 15
+
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_NMC3")'
+
+[SNH4L]
+start = "NMC_SNH1T"
+destination = "SNH4LT"
+direction = "left"
+switches = [{ sw = "SNH21", t = "normal" }]
+route_lock = ["SNH21BT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["SNH21BT", "SNH4LT"]
+
+approach_track = ["NMC_SNH1T"]
+approach_lock_time = 30
+
+update_callback = 'u.StandardAspectCallback_2nd(2)'
 
 [SNH11R]
 start = "SNH1RT"
@@ -925,6 +975,116 @@ approach_track = ["SNH4LT"]
 approach_lock_time = 15
 
 update_callback = 'u.StandardAspectCallback_2nd(1)'
+
+### 潮凪浜 - 南江町駅間
+
+[SNH_NMC3]
+auto = true
+direction = "right"
+signal_track = ["SNH_NMC3T"]
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_NMC2")'
+
+[SNH_NMC2]
+auto = true
+direction = "right"
+signal_track = ["SNH_NMC2T"]
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH_NMC1")'
+
+[SNH_NMC1]
+auto = true
+direction = "right"
+signal_track = ["SNH_NMC1T"]
+update_callback = 'u.StandardAspectCallback_3rd_multi({"NMC1R", "NMC2R"})'
+
+[NMC_SNH3]
+auto = true
+direction = "left"
+signal_track = ["NMC_SNH3T"]
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("NMC_SNH2")'
+
+[NMC_SNH2]
+auto = true
+direction = "left"
+signal_track = ["NMC_SNH2T"]
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("NMC_SNH1")'
+
+[NMC_SNH1]
+auto = true
+direction = "left"
+signal_track = ["NMC_SNH1T"]
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("SNH4L")'
+
+### 南江町駅 ###
+
+[NMC1R]
+start = "SNH_NMC1T"
+destination = "NMC1RT"
+direction = "right"
+switches = [{ sw = "NMC11", t = "reverse" }, { sw = "NMC12", t = "reverse" }]
+route_lock = ["NMC11T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NMC11T", "NMC1RT"]
+
+approach_track = ["SNH_NMC1T"]
+approach_lock_time = 30
+
+update_callback = 'u.StandardAspectCallback_2nd(2)'
+
+[NMC2R]
+start = "SNH_NMC1T"
+destination = "NMC2RT"
+direction = "right"
+switches = [{ sw = "NMC11", t = "normal" }, { sw = "NMC12", t = "reverse" }]
+route_lock = ["NMC11T"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NMC11T", "NMC2RT"]
+
+approach_track = ["SNH_NMC1T"]
+approach_lock_time = 30
+
+update_callback = 'u.StandardAspectCallback_2nd(2)'
+
+[NMC1L]
+start = "NMC1RT"
+destination = "NMC_SNH4T"
+direction = "left"
+switches = [{ sw = "NMC11", t = "reverse" }, { sw = "NMC12", t = "normal" }]
+route_lock = ["NMC11T", "NMC1LT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NMC11T", "NMC1LT", "NMC_SNH4T"]
+#signal_track = ["NMC11T", "NMC1LT"]
+
+approach_track = ["NMC1RT"]
+approach_lock_time = 15
+
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("NMC_SNH3")'
+
+[NMC2L]
+start = "NMC2RT"
+destination = "NMC_SNH4T"
+direction = "left"
+switches = [{ sw = "NMC11", t = "normal" }, { sw = "NMC12", t = "normal" }]
+route_lock = ["NMC11T", "NMC1LT"]
+
+overrun_lock = []
+overrun_lock_time = 0
+
+signal_track = ["NMC11T", "NMC1LT", "NMC_SNH4T"]
+#signal_track = ["NMC11T", "NMC1LT"]
+
+approach_track = ["NMC1RT"]
+approach_lock_time = 15
+
+update_callback = 'u.StandardAspectCallback_3rd_G_Y_R("NMC_SNH3")'
 
 ### 使用例(参考。実際にビルドされる設定ではありません) ###
 #

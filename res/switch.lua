@@ -12,6 +12,9 @@ return function(sw)
     sw:create_switch("SNH21", { "SNH21a", "SNH21b" }, { "SNH21AT", "SNH21BT" })
     sw:create_switch("SNH22", { "SNH22" }, { "SNH22T" })
 
+    sw:create_switch("NMC11", { "NMC11" }, { "NMC11T" })
+    sw:create_switch("NMC12", { "NMC12" }, { "NMC11T" })
+
     sw:create_traffic_direction_switch("HLT_NHB_FR", { "HLT_NHB1T" })
     sw:create_traffic_direction_switch("NHB_HLT_FR", { "HLT_NHB1T" })
     sw:create_traffic_direction_lever("HLT2R", SetRoute.Normal, "HLT_NHB_FR", "NHB_HLT_FR")  -- 下りがNormal
