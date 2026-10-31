@@ -187,8 +187,19 @@ return function(sw)
         command = (function(_, is_admin, is_auth, peer_id)
             local object_id, is_success = server.getPlayerCharacterID(peer_id)
             if is_success then
-                sw:load_vehicle(server.getCharacterVehicle(object_id))
+                local vehicle_id = server.getCharacterVehicle(object_id)
+                sw:load_vehicle(vehicle_id)
                 Announce("Your train is registered", peer_id)
+                -- 登録のついでに、車軸(TRAINで始まる名前のペインタブル)の現在の座標を出す。エリアの位置と見比べるため
+                local info = sw.vehicle_table[vehicle_id]
+                if info and #info.axles > 0 then
+                    for _, axle in ipairs(info.axles) do
+                        Announce(string.format("axle %s pos(%.1f, %.1f, %.1f)", tostring(axle.itemName),
+                            axle.real_pos.x, axle.real_pos.y, axle.real_pos.z), peer_id)
+                    end
+                else
+                    Announce("no axle (paintable sign/indicator named TRAIN*) found in this vehicle", peer_id)
+                end
             else
                 Announce("ERROR! Something went wrong and it's not completed", peer_id)
             end
