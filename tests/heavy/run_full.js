@@ -1,4 +1,6 @@
-// フルテスト(pnpm test:full)。軽いテスト、配置なしのビルドと minify 後のスモーク、ARC の総当たりを実行する。
+// フルテスト(pnpm test:full)。軽いテスト、配置なしのビルドと minify 後のスモーク、minify 結果の比較、ARC の総当たりを実行する。
+// 方針: 目的別に test:何々 を作り、test:full はそれらを呼ぶ。今は minify 結果の比較(test:minify-diff)だけがこの形で、
+// 他の工程は、まだここに直接書いてある。
 // 総当たりは駅ごとに数分かかるので、並列に回す。
 const path = require("path");
 const { spawn } = require("child_process");
@@ -32,6 +34,8 @@ async function main() {
         ["軽いテスト", "node", ["tests/run_all.js"]],
         ["配置なしのビルド", "node", ["index.js"], NO_DEPLOY],
         ["minify 後のスモーク", "lua", ["tests/heavy/smoke_minified.lua"]],
+        // pnpm test:minify-diff と同じ。pnpm を経由しないのは、Windows で pnpm の起動に shell が要るため
+        ["minify 結果の比較 (test:minify-diff)", "node", ["tests/heavy/diff_minified.js"]],
     ];
     let ok = true;
     for (const [label, cmd, args, env] of steps) {

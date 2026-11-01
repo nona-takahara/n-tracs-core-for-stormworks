@@ -1,9 +1,15 @@
 // 2つの minify 結果を同じ場面で動かし、Stormworks へ出した呼び出しの記録が同じかを比べる。
 // フィールド名の短縮など、名前を変える最適化が動作を変えていないかを確かめるための道具。
 //
-// 実行(リポジトリルートから): node tests/heavy/diff_minified.js <基準.min.lua> <候補.min.lua>
-// 基準は `--no-field-renaming` で作った出力(field名を変えない)、候補は `--assume-closed-field-names` を
-// 付けて作った出力を渡す。作り方は tests/README.md の「minify 結果の比較」を参照。記録が違えば非0で終了する。
+// 実行(リポジトリルートから):
+//   pnpm test:minify-diff                                         基準と候補を自分でビルドして比べる(要: 先に pnpm build)
+//   node tests/heavy/diff_minified.js <基準.min.lua> <候補.min.lua>   作ってある2つの出力を比べる
+// 基準は `--no-field-renaming`(field名を変えない)、候補は `--assume-closed-field-names` を付けて作る。
+// 記録が違えば非0で終了する。
+//
+// 入っている storm-lua-minify が `--assume-closed-field-names` を持たない版(0.9.1 など)のときは、
+// 引数なしの実行は「SKIP」と表示して成功で終わる。別の版を試すときは、環境変数 STORM_LUA_MINIFY_CLI に
+// その dist/cli.js のパスを指定する。
 //
 // 記録を取る場面は tests/heavy/trace_minified.lua にある。路線の看板名、信号名、エリアの重心は、
 // res/area_track.json と res/signal.toml から作る。
@@ -16,9 +22,63 @@ const toml = require("toml");
 
 process.chdir(path.join(__dirname, "..", ".."));
 
-const [reference, candidate] = process.argv.slice(2);
-if (!reference || !candidate) {
-    console.error("使い方: node tests/heavy/diff_minified.js <基準.min.lua> <候補.min.lua>");
+// index.js が minify に渡すフラグと同じにする(index.js を変えたら、ここも合わせる)
+const MINIFY_FLAGS = ["-m", "--no-unused-export-removal", "--no-function-specialization", "--no-progress"];
+
+function minifyCli() {
+    return process.env.STORM_LUA_MINIFY_CLI
+        || path.join("node_modules", "storm-lua-minify", "dist", "cli.js");
+}
+
+function supportsClosedFieldNames(cli) {
+    const help = spawnSync(process.execPath, [cli, "--help"], { encoding: "utf8" });
+    return help.status === 0 && help.stdout.includes("assume-closed-field-names");
+}
+
+// 基準(field名を変えない)と候補(名前単位で短縮)を作り、それぞれ一時ディレクトリへ移す。
+// 戻り値が undefined のときは、使える minify がなく、比較を飛ばす。
+function buildPair(directory) {
+    const cli = minifyCli();
+    if (!fs.existsSync(cli)) {
+        console.error(`storm-lua-minify の CLI が見つかりません: ${cli}`);
+        process.exit(2);
+    }
+    if (!supportsClosedFieldNames(cli)) {
+        console.log(`[SKIP] ${cli} は --assume-closed-field-names を持たないため、minify 結果の比較を飛ばします`);
+        return undefined;
+    }
+    if (!fs.existsSync("res/build_info.lua")) {
+        console.error("res/build_info.lua がありません。先に pnpm build を実行してください");
+        process.exit(2);
+    }
+    const out = {};
+    for (const [name, extra] of [
+        ["reference", ["--no-field-renaming"]],
+        // セーブデータのキーは g_savedata を経由する読み書きなら自動で守られるが、念のため明示する
+        ["candidate", ["--assume-closed-field-names",
+            "--never-rename-field", "ui_id", "--never-rename-field", "cheatBattery", "--never-rename-field", "recommendedSettings"]],
+    ]) {
+        const run = spawnSync(process.execPath, [cli, ...MINIFY_FLAGS, ...extra, "script.lua"], { encoding: "utf8" });
+        const produced = "script.min.lua";
+        try {
+            if (run.status !== 0 || !fs.existsSync(produced)) {
+                console.error(`minify に失敗しました(${name}):\n${run.stderr}`);
+                process.exit(1);
+            }
+            out[name] = path.join(directory, `${name}.min.lua`);
+            fs.copyFileSync(produced, out[name]);
+        } finally {
+            // minify が置く出力は、リポジトリ直下に残さない
+            fs.rmSync(produced, { force: true });
+            fs.rmSync("script.lua.map", { force: true });
+        }
+    }
+    return out;
+}
+
+const given = process.argv.slice(2);
+if (given.length !== 0 && given.length !== 2) {
+    console.error("使い方: node tests/heavy/diff_minified.js [<基準.min.lua> <候補.min.lua>]");
     process.exit(2);
 }
 
@@ -66,6 +126,19 @@ function buildScenario() {
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ntracs-diff-"));
 const scenarioPath = path.join(dir, "scenario.lua");
+
+let reference;
+let candidate;
+if (given.length === 2) {
+    [reference, candidate] = given;
+} else {
+    const pair = buildPair(dir);
+    if (!pair) {
+        fs.rmSync(dir, { recursive: true, force: true });
+        process.exit(0);
+    }
+    ({ reference, candidate } = pair);
+}
 fs.writeFileSync(scenarioPath, buildScenario());
 
 function trace(script) {
