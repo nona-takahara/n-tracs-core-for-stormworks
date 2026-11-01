@@ -8,6 +8,7 @@
     "build": "node index.js",
     "pretest": "node tests/gen_res.js",
     "test": "node tests/run_all.js",
+    "test:minify-diff": "node tests/heavy/diff_minified.js",
     "test:full": "node tests/heavy/run_full.js"
   },
   "repository": {

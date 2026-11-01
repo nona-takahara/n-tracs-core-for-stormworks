@@ -96,9 +96,30 @@ pnpm test
 |---|---|---|
 | ビルド内チェック | `pnpm build` | 手作業で作って渡すデータの誤り |
 | 軽いテスト | `pnpm test` | ロジックとツールチェーンの誤り |
-| フルテスト | `pnpm test:full` | 軽いテストに加えて、minify 後のスクリプトと ARC の総当たり |
+| minify 結果の比較 | `pnpm test:minify-diff` | 名前を変える最適化が、動作を変えていないか(下の「minify 結果の比較」) |
+| フルテスト | `pnpm test:full` | 軽いテストに加えて、minify 後のスクリプト、minify 結果の比較、ARC の総当たり |
+
+方針: 目的別に `test:何々` を作り、`test:full` はそれらを呼ぶ階層にする。今は `test:minify-diff` だけがこの形で、他の工程(軽いテスト、ビルド、スモーク、ARC の総当たり)は、まだ `tests/heavy/run_full.js` に直接書いてある。
 
 時間のかかるテストは、たいてい疑い深すぎるので、`tests/heavy/` に分けて、本当に必要なときだけ実行する。外部ツールの検証を自動で実行するのは、フルテストのときだけである。`tests/heavy/sim_ats.lua` と `tests/heavy/measure_start_points.lua` は合否を出さない道具で、フルテストにも含めない。
+
+## minify 結果の比較
+
+名前を変える最適化(storm-lua-minify の `--assume-closed-field-names`)が動作を変えていないかを、2つの minify 結果を同じ場面で動かして確かめる。
+
+```sh
+pnpm build            # 先に1回(res/build_info.lua を作る)
+pnpm test:minify-diff
+```
+
+基準(field名を変えない `--no-field-renaming`)と候補(`--assume-closed-field-names`。セーブデータのキー `ui_id`、`cheatBattery`、`recommendedSettings` は、`g_savedata` を経由する読み書きなら自動で守られるが、念のため `--never-rename-field` で明示)を、`index.js` と同じフラグでビルドし、記録を比べる。フラグは `tests/heavy/diff_minified.js` の `MINIFY_FLAGS` にあり、`index.js` を変えたら合わせる。
+
+- 入っている storm-lua-minify が `--assume-closed-field-names` を持たない版(0.9.1 など)のときは、「SKIP」と表示して成功で終わる。別の版を試すときは、環境変数 `STORM_LUA_MINIFY_CLI` に、その `dist/cli.js` のパスを指定する。
+- 作ってある2つの出力を直接比べるときは、`node tests/heavy/diff_minified.js <基準.min.lua> <候補.min.lua>` を使う。
+- 場面は `tests/heavy/trace_minified.lua` にある。車両1台(軸2本)を全エリアの重心に沿って走らせ、信号を1つずつ設定・解除し、ARC を動かして、Stormworks API(`server.*`)へ出した呼び出しの記録を取る。記録が同じなら「一致しました」と出る。
+- `pairs` の並びは Lua 5.3 が実行ごとに変える。そのまま比べると、競合する進路の勝敗などで基準同士でも記録が変わるので、場面では `pairs` をキー順の走査に差し替えている。tick ごとに呼び出しを並べ替えて比べる。
+- `?nt help` と `?nt debug` は場面に入れない。どちらも `pairs` の並びや、オブジェクトのキーそのものを文字列にして出すため、短縮すると出力が変わる。
+- この場面が通る経路は一部である。場面が通らない経路の名前は、壊しても検出できない(短縮後の出力で名前を1つずつ壊して試すと、一部は検出できなかった)。
 
 ## ARC のシミュレーション
 
