@@ -78,12 +78,16 @@ local function up_terminal(arc, code) return up(arc) and terminal(arc, code) end
 ---@param sw SoyaBridge
 return function(sw)
     -- 掘戸町 -------------------------------------------------------------
-    -- 資源: P1=ホーム(HLT1LT)。下り出発で掘戸線予約資源を取る
+    -- 資源: P1=ホーム(HLT1LT)。上り到着(HLT1L)は行先を見ない。下り出発で掘戸線予約資源を取る
     -- 北港の3番に列車がいても出してよい(3番からは下り出発しかできず、掘戸線を使わないため)
     local hlt = {
         code = CODE_HLT,
         resources = dict( "P1", { "HLT1LT" } ),
         sequences = {
+            -- 上りの到着(HLT1L)。掘戸町は終点なので、行先を問わず入れる
+            seq("up_arrive", { "HLT_NHB1T" }, up, {
+                move(2, "HLT1L", { "HLT1LT" }, { dest = "P1" }),
+            }),
             seq("down_depart", { "HLT1LT" }, down_through, {
                 move(3, "HLT1R", { "HLT_NHB1T" }, { from = "P1", reserve = { name = "HLT", mode = "take" } }),
             }),
@@ -344,8 +348,9 @@ return function(sw)
         train_id = value.train_id,
         -- 複数の駅が共有する予約資源。release: 持ち主がat上に現れ、b(指令値の上下線)が一致したら放す
         reservations = dict(
-            -- 掘戸線予約資源: 下りで北港の3番に入り、掘戸線を抜けたとき放す
-            "HLT", { release = { { at = { "NHB5LT" }, b = 2 } } }
+            -- 掘戸線予約資源: 下りで北港の3番に入り、掘戸線を抜けたとき放す。
+            -- 上りで掘戸町のホームに着いたときも放す(折り返しで運行番号が変わっても、次の下り出発を妨げないため)
+            "HLT", { release = { { at = { "NHB5LT" }, b = 2 }, { at = { "HLT1LT" }, b = 1 } } }
         ),
         stations = dict("HLT", hlt, "NHB", nhb, "TKM", tkm, "SNH", snh, "NMC", nmc),
     })
