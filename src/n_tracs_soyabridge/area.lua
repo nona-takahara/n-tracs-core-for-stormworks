@@ -1,5 +1,4 @@
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
-local Complex      = require("src.utils.complex")
 ---@class Area
 local Area         = {}
 
@@ -42,25 +41,39 @@ function Area:initialize_for_process()
     self.axles = {}
 end
 
+--[[#
+## [PNPOLY](https://www.wrfranklin.org/Research/Short_Notes/pnpoly.html)
+
+Copyright (c) 1970-2003, Wm. Randolph Franklin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers.
+    2. Redistributions in binary form must reproduce the above copyright notice in the documentation and/or other materials provided with the distribution.
+    3. The name of W. Randolph Franklin may not be used to endorse or promote products derived from this Software without specific prior written permission. 
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+]]
 --- 渡された座標がエリア内にあるか判定します。
 ---@param pos Vector2d
 ---@return boolean
 function Area:is_in_area(pos)
-    local polygon, x, z = self.vertexs, pos.x, pos.z
-    local n = #polygon
-    local prod = Complex.new(1, 0)
-    for i, v0 in ipairs(polygon) do
-        local v1 = polygon[i % n + 1]
-        prod = Complex.mul(prod,
-            Complex.half_argument(
-                Complex.mul(
-                    Complex.new(v1.x - x, v1.z - z),
-                    Complex.conjugate(Complex.new(v0.x - x, v0.z - z))
-                )
-            )
-        )
+    -- Luaは1始まりのため、Cからの移植にあたり読み替えが必要。注意
+    local vert, testx, testz, c, i = self.vertexs, pos.x, pos.z, false, 1
+    local nvert = #vert
+    local j = nvert
+    while i <= nvert do
+        if (
+            ((vert[i].z>testz) ~= (vert[j].z>testz)) and
+	        (testx < (vert[j].x-vert[i].x) * (testz-vert[i].z) / (vert[j].z-vert[i].z) + vert[i].x)
+        ) then
+            c = not c;
+        end
+        -- j = i++ //後置インクリメント
+        j = i
+        i = i + 1
     end
-    return prod.re < 0
+    return c
 end
 
 ---@param v1 Vector2d | Vector3d
