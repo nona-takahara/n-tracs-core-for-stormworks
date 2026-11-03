@@ -49,6 +49,8 @@ local BookType = require("src.n_tracs_core.track.book_type")
 ---@field running boolean
 ---@field resources table<string, string[]>
 ---@field sequences ArcSequence[]
+---@field registration_index table<string, number[]> 登録点から設定順の sequence 番号への索引
+---@field sequence_order table<ArcSequence, number> sequence の設定順
 ---@field requests table<number|string, ArcRequest> key: 列車の識別子
 ---@field next_reg number
 ---@field arriving table<number|string, {dest: string, at: number|nil}> 到着(settle)して入線中の列車。at: 先頭軸が着線に入った周期(まだ入っていなければ nil)
@@ -93,6 +95,8 @@ function Arc.new(config, nt, probe)
             running = st.running ~= false,
             resources = st.resources or {},
             sequences = st.sequences or {},
+            registration_index = {},
+            sequence_order = {},
             requests = {},
             arriving = {},
             next_reg = 1,
@@ -100,6 +104,21 @@ function Arc.new(config, nt, probe)
             wait_edges = {},
             alerts = {},
         }
+        for i, seq in ipairs(station.sequences) do
+            station.sequence_order[seq] = i
+            local points = { table.unpack(seq.match.at) }
+            local first = seq.moves[1]
+            if first.start_point then table.insert(points, first.start_point) end
+            if first.early then table.insert(points, first.early.start_point) end
+            for _, id in ipairs(points) do
+                local candidates = station.registration_index[id]
+                if not candidates then
+                    candidates = {}
+                    station.registration_index[id] = candidates
+                end
+                if candidates[#candidates] ~= i then table.insert(candidates, i) end
+            end
+        end
         self.stations[name] = station
     end
 
@@ -126,6 +145,7 @@ end
 ---観測した列車。key: 列車の識別子
 ---@param self Arc
 ---@return table<number|string, {arc: any, tracks: table<string, boolean>}> tracks: 指令値が現れた軌道回路
+---@return table<string, {key: number|string, order: number}> 軌道回路の観測列車
 local function observe(self)
     local obs = {}
     for _, id in ipairs(self.watch) do
@@ -140,7 +160,15 @@ local function observe(self)
             o.tracks[id] = true
         end
     end
-    return obs
+    -- 元の pairs(obs) の走査順も記録する。複数の列車が資源を塞ぐ場合の警報の選択を保つ。
+    local by_track = {}
+    local order = 0
+    for key, o in pairs(obs) do
+        order = order + 1
+        local occupant = { key = key, order = order }
+        for id in pairs(o.tracks) do by_track[id] = occupant end
+    end
+    return obs, by_track
 end
 
 ---資源が塞がっているか。在線があるか、lever以外のてこが予約しているとき塞がっている
@@ -169,15 +197,21 @@ end
 ---@param current ArcSequence|nil
 ---@return ArcSequence|nil
 local function find_sequence(station, arc, tracks, current)
-    for _, seq in ipairs(station.sequences) do
-        local first = seq.moves[1]
-        local here = seq == current or tracks[first.start_point or ""] or tracks[first.early and first.early.start_point or ""]
-        if not here then
-            for _, t in ipairs(seq.match.at) do
-                if tracks[t] then here = true end
-            end
+    local candidates, seen = {}, {}
+    local function add(i)
+        if i and not seen[i] then
+            seen[i] = true
+            table.insert(candidates, i)
         end
-        if here and seq.match.accept(arc, station.code) then return seq end
+    end
+    add(station.sequence_order[current])
+    for id in pairs(tracks) do
+        for _, i in ipairs(station.registration_index[id] or {}) do add(i) end
+    end
+    table.sort(candidates)
+    for _, i in ipairs(candidates) do
+        local seq = station.sequences[i]
+        if seq.match.accept(arc, station.code) then return seq end
     end
     return nil
 end
@@ -392,17 +426,16 @@ end
 
 ---資源の軌道回路に在線している、ほかの列車の識別子の集合
 ---@param station ArcStation
----@param obs table
+---@param by_track table
 ---@param uses string[]
 ---@param key number|string 自分(数えない)
 ---@return table<number|string, boolean>
-local function occupants(station, obs, uses, key)
+local function occupants(station, by_track, uses, key)
     local set = {}
     for _, r in ipairs(uses) do
         for _, t in ipairs(station.resources[r]) do
-            for other, o in pairs(obs) do
-                if other ~= key and o.tracks[t] then set[other] = true end
-            end
+            local other = by_track[t]
+            if other and other.key ~= key then set[other.key] = true end
         end
     end
     return set
@@ -411,7 +444,8 @@ end
 ---@param self Arc
 ---@param station ArcStation
 ---@param obs table
-local function judge(self, station, obs)
+---@param by_track table
+local function judge(self, station, obs, by_track)
     -- 候補を集める
     local cands = {}
     for _, req in pairs(station.requests) do
@@ -494,7 +528,7 @@ local function judge(self, station, obs)
             for _, r in ipairs(uses) do
                 if busy_now[r] or resource_busy(self, station, r, chosen.signal) then conflict = true end
             end
-            if conflict then blocked_by[req.key] = occupants(station, obs, uses, req.key) end
+            if conflict then blocked_by[req.key] = occupants(station, by_track, uses, req.key) end
             if chosen.reserve and chosen.reserve.mode == "take" then
                 uses = { table.unpack(uses) }
                 table.insert(uses, "reserve:" .. chosen.reserve.name)
@@ -539,11 +573,21 @@ end
 
 -- 動けなくなる組み合わせの検知 --------------------------------------------------
 
+---資源を塞ぐ他の列車のうち、元の観測走査で最後に現れたもの。
+local function last_occupant(station, by_track, res, key)
+    local last
+    for _, id in ipairs(station.resources[res]) do
+        local other = by_track[id]
+        if other and other.key ~= key and (not last or other.order > last.order) then last = other end
+    end
+    return last and last.key
+end
+
 ---準備できていない要求が、着線にいる列車の要求を待っているとみなし、待ちの輪を探す
 ---@param self Arc
 ---@param station ArcStation
----@param obs table
-local function detect_deadlock(self, station, obs)
+---@param by_track table
+local function detect_deadlock(self, station, by_track)
     station.alerts = {}
     local waits_for = {}
     for key, req in pairs(station.requests) do
@@ -551,23 +595,13 @@ local function detect_deadlock(self, station, obs)
             local move = req.seq.moves[req.idx]
             for _, opt in ipairs(move.options) do
                 if opt.dest then
-                    for other, o in pairs(obs) do
-                        if other ~= key then
-                            for _, t in ipairs(station.resources[opt.dest]) do
-                                if o.tracks[t] then waits_for[key] = other end
-                            end
-                        end
-                    end
+                    local other = last_occupant(station, by_track, opt.dest, key)
+                    if other ~= nil then waits_for[key] = other end
                 end
                 -- 使う資源の軌道回路に他の列車がいるときは、その列車を待っているとみなす
                 for _, res in ipairs(opt.uses or {}) do
-                    for other, o in pairs(obs) do
-                        if other ~= key then
-                            for _, t in ipairs(station.resources[res]) do
-                                if o.tracks[t] then waits_for[key] = other end
-                            end
-                        end
-                    end
+                    local other = last_occupant(station, by_track, res, key)
+                    if other ~= nil then waits_for[key] = other end
                 end
                 -- 予約資源を他の列車が持っているときは、その持ち主を待っているとみなす
                 if opt.reserve and opt.reserve.mode ~= "free" then
@@ -610,16 +644,16 @@ end
 ---N-TRACSの演算結果が確定したあと、次の演算の前に呼ぶ
 function Arc:process()
     self.clock = self.clock + 1
-    local obs = observe(self)
+    local obs, by_track = observe(self)
     release_reservations(self, obs)
     for _, station in pairs(self.stations) do
         update_arriving(station, obs, self.clock)
         accept(station, obs)
         update_moves(self, station, obs)
         if station.running then
-            judge(self, station, obs)
+            judge(self, station, obs, by_track)
         end
-        detect_deadlock(self, station, obs)
+        detect_deadlock(self, station, by_track)
     end
 end
 
