@@ -123,7 +123,7 @@ pnpm test:minify-diff
 
 ## ARC のシミュレーション
 
-ARC の規則は `docs/arc.md`、前提と確定した事項は Docs「宗弥急行 ARC 制御仕様」の末尾にある。
+ARC の規則は `docs/implementation/arc.md`、前提と確定した事項は Docs「宗弥急行 ARC 制御仕様」の末尾にある。
 
 | ファイル | 役割 | 実行 |
 |---|---|---|

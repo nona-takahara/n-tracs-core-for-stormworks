@@ -1,9 +1,9 @@
 -- N-TRACS ARC (Automatic Route Control)
 -- 駅ごとの設定(res/arc.lua)に従い、列車のARC指令値から進路要求を自動で出す。
--- 設計は docs/arc.md を参照。
+-- 設計は docs/implementation/arc.md を参照。
 
 -- Stormworksのアドオン環境では setmetatable / assert / error / pcall / select / require(実行時) が使えない。
--- 使える標準関数は docs/stormworks-lua.md を参照。
+-- 使える標準関数は docs/implementation/stormworks-lua.md を参照。
 -- 設定の誤りは、ビルド時(npm run build)に src/n_tracs_arc/arc_check.lua で検出する。実行時には設定を検査せず、何も表示しない。
 local NtracsObject = require("src.n_tracs_core.n_tracs_object")
 local BookType = require("src.n_tracs_core.track.book_type")

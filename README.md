@@ -36,6 +36,13 @@ N-TRACS Soya Express Wayside Signals は、Stormworks Lua with LifeBoatAPI 用�
 - Node.js
 - Lua 5.3 実行環境。`lua`で呼び出せる必要がある。
 
+## ドキュメント
+
+- [構成と分離方針](docs/implementation/architecture.md)：Core、Soya Bridge、宗弥急行の設定データの責務
+- [ドキュメント一覧](docs/README.md)：設定・ARC・Area の送信ルール・Lua 実行環境
+- [N-TRACS Core 仕様詳解](SPEC_CORE.md)：予約・鎖錠・現示・運転方向制御
+- [テストの実行と書き方](tests/README.md)
+
 ## How to Contribute
 
 コミットメッセージは日本語で OK です。
