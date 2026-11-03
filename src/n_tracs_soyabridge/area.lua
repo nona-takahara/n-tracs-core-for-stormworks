@@ -13,6 +13,10 @@ local Area         = {}
 ---@field relatedTracks string[]
 ---@field updateCallback fun(self: Area, nt: Ntracs, deltaTick?: number): any
 ---@field cbdata any @コールバック関数で使えるデータ
+---@field min_x number
+---@field max_x number
+---@field min_z number
+---@field max_z number
 
 ---@param name number
 ---@param vertexs Vector2d[] @反時計回りにエリアの頂点を定義
@@ -32,6 +36,18 @@ function Area.new(name, vertexs, leftVertexId, leftAreaIds, rightAreaIds, update
     obj.relatedTracks = {}
     obj.axles = {}
     obj.updateCallback = updateCallback
+
+    local x1,x2,z1,z2 = vertexs[1].x,vertexs[1].x,vertexs[1].z,vertexs[1].z
+    for _,v in pairs(vertexs) do
+        x1 = math.min(x1,v.x)
+        x2 = math.max(x2,v.x)
+        z1 = math.min(z1,v.z)
+        z2 = math.max(z2,v.z)
+    end
+    obj.min_x = x1
+    obj.max_x = x2
+    obj.min_z = z1
+    obj.max_z = z2
     return obj
 end
 
@@ -39,6 +55,16 @@ end
 ---@param self Area
 function Area:initialize_for_process()
     self.axles = {}
+end
+
+---探索候補を外接矩形で絞ってから、多角形の内外を判定します。
+---@param pos Vector2d
+---@return boolean
+function Area:is_in_area(pos)
+    if pos.x < self.min_x or pos.x > self.max_x or pos.z < self.min_z or pos.z > self.max_z then
+        return false
+    end
+    return self:pnpoly(pos)
 end
 
 --[[#
@@ -57,7 +83,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 --- 渡された座標がエリア内にあるか判定します。
 ---@param pos Vector2d
 ---@return boolean
-function Area:is_in_area(pos)
+function Area:pnpoly(pos)
     -- Luaは1始まりのため、Cからの移植にあたり読み替えが必要。注意
     local vert, testx, testz, c, i = self.vertexs, pos.x, pos.z, false, 1
     local nvert = #vert

@@ -94,11 +94,18 @@ end
 ---輪軸の現在地を更新します
 ---@param sw SoyaBridge
 function Axle:search(sw)
-    self.area = self.area or sw.default_area
     if self.disable_short then
         self.area = nil
         return
     end
+
+    -- 前回の Area 内なら、AABB 判定と BFS の作業表を省く。
+    local previous = self.area and sw.areas[self.area]
+    if previous and previous:pnpoly(self.real_pos) then
+        previous:insert_axle(self)
+        return
+    end
+    self.area = self.area or sw.default_area
 
     ---@type number[]
     local queue = {}
@@ -115,7 +122,8 @@ function Axle:search(sw)
     while front <= #queue do
         targetArea = sw.areas[queue[front]]
 
-        if targetArea:is_in_area(self.real_pos) then
+        -- previous は上ですでに判定した。隣接候補の追加は従来の順番で行う。
+        if targetArea ~= previous and targetArea:is_in_area(self.real_pos) then
             found = true
             break
         end
