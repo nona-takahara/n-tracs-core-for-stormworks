@@ -13,7 +13,7 @@ local CODE_NMC = 6
 -- 到着の直後の入換が、着線に先頭軸が入ってから待つ秒数
 local WAIT_NHB_DOWN = 60 -- 北港 下り到着(NHB2R)のあと
 local WAIT_SNH_DOWN = 60 -- 潮凪浜 下り到着(SNH1R)のあと
-local WAIT_TKM_DOWN = 30 -- 高見が丘 下り到着(TKM1R)のあと
+local WAIT_TKM_DOWN = 20 -- 高見が丘 下り到着(TKM1R)のあと
 local WAIT_SNH_UP = 30 -- 潮凪浜 上り到着(SNH4L)のあと
 
 ---キー名を文字列として実行時に使う表(駅名・資源名・予約資源名)は、この関数で作る。
@@ -277,10 +277,10 @@ return function(sw)
                 move(2, "SNH4L", { "SNH21BT" }, { start_point = "NMC_SNH2T", uses = { "WB" }, dest = "P2", settle = true }),
             }),
             seq("down_depart_p1", { "SNH1RT" }, down_through, {
-                move(3, "SNH3R", { "SNH21AT" }, { from = "P1", uses = { "WA", "DN" } }),
+                move(3, "SNH3R", { "SNH21AT" }, { from = "P1", uses = { "WA", "DN" }, wait = WAIT_SNH_DOWN }),
             }),
             seq("down_depart_p2", { "SNH4LT" }, down_through, {
-                move(3, "SNH4R", { "SNH21BT" }, { from = "P2", uses = { "WB", "WA", "DN" } }),
+                move(3, "SNH4R", { "SNH21BT" }, { from = "P2", uses = { "WB", "WA", "DN" }, wait = WAIT_SNH_DOWN }),
             }),
             seq("up_depart", { "SNH4LT" }, up_through, {
                 move(3, "SNH2L", { "SNH22T" }, { from = "P2", uses = { "WL" } }),

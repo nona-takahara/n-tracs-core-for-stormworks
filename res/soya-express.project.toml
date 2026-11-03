@@ -51,29 +51,29 @@ export_tracks = false
 id = "NHB4LT"
 kind_id = "signal"
 send = """
-set sub-1 (sub-2 sub-3)
-  LE  ~ L: E Ea
-  LEa ~ L: E Ea
-  RY  ~ R: E Y
-  RYY ~ R: E YY
-  RR  ~ R: E R
-  LYY ~ L: E YY
+set sub-1 sub-2 sub-3 sub-4
+  LE  ~ L: E E  E  E
+  LEa ~ L: E Ea Ea Ea
+  LYY ~ L: E T  YY YY
+  LY  ~ L: E T  YY Yh
+  RY  ~ R: E Yh  Yh  Yh
+  RYY ~ R: E YY YY YY
+  RR  ~ R: E R  R  R
 
 -- 仕様書+0.3m点を照査点・速度に設定
-check SC_0: at=7.3#L toward=L over=1.5m/s hold=3s
-check SC_1: at=9.3#L toward=L over=1.8m/s hold=3s
-check SC_2: at=11.3#L toward=L over=2.2m/s hold=3s
-check SC_3: at=14.3#L toward=L over=2.5m/s hold=3s
-check SC_4: at=17.8#L toward=L over=3.0m/s hold=3s
-check SC_5: at=21.3#L toward=L over=3.5m/s hold=3s
-check SC_6: at=25.3#L toward=L over=4.0m/s hold=3s
-check SC_7: at=30.3#L toward=L over=4.5m/s hold=3s
+check SC_1: at=6.0#L toward=L over=5km/h hold=3s
+check SC_2: at=12.4#L toward=L over=8km/h hold=3s
+check SC_3: at=22.3#L toward=L over=10km/h hold=3s
+check SC_4: at=30.3#L toward=L over=15km/h hold=3s
+check SC_5: at=68.3#L toward=L over=25km/h hold=3s
 
 hr(NHB4R): RY
 hr(NHB11R): RYY
 anydest(): RR /through
-anydest(): LYY
-  tripped(SC_0 SC_1 SC_2 SC_3 SC_4 SC_5 SC_6 SC_7): LEa
+destlever(NHB4L): LY
+  tripped(SC_1 SC_2 SC_3 SC_4 SC_5): LEa
+destlever(NHB11L): LYY
+  tripped(SC_1 SC_2 SC_3 SC_4 SC_5): LEa
 """
 
 [[tracks.sub_tracks]]
@@ -89,7 +89,7 @@ id = "sub-2"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
-start = "51.27739"
+start = "30.7"
 end = "-13.863206"
 
 [[tracks.sub_tracks]]
@@ -97,37 +97,49 @@ id = "sub-3"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
-start = "99.319814"
-end = "51.27739"
+start = "91"
+end = "30.7"
+
+[[tracks.sub_tracks]]
+id = "sub-4"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
+start = "99"
+end = "91"
 
 [[tracks]]
 id = "NHB5LT"
 kind_id = "signal"
 send = """
-set (sub-7 sub-6 sub-5 sub-4)
-  RGh  ~ R: Gh
-  LYGh ~ L: YGh
-  RYY  ~ R: YY
-  RR   ~ R: R
-  LR   ~ L: R
+set (sub-7 sub-3 sub-2 sub-6 sub-1 sub-5 sub-4)
+  RGh ~ R: Gh
+  LGh ~ L: Gh
+  RYY ~ R: YY
+  RR  ~ R: R
+  LR  ~ L: R
 
-set sub-7 sub-6 sub-5 sub-4
-  L5   ~ L:   T  Y  Y  Y
-  L12  ~ L:   T  YY YY YY
-  R2   ~ R:   Y  YY T  R
-  AR   ~ ALL: R  R  R  -
+set sub-7 sub-3 (sub-2 sub-6) (sub-1 sub-5 sub-4)
+  L_5L  ~ L: R T YY Yh
+  L_12L ~ L: R T YY YY
+
+set (sub-7 sub-3 sub-2) (sub-6 sub-1) sub-5 sub-4
+  R_2R ~ R: Yh YY T R
+
+set (sub-7 sub-3 sub-2 sub-6 sub-1 sub-5) sub-4
+  A_R ~ ALL: R -
 
 hr(NHB5R): RGh
-hr(NHB2L): LYGh
+hr(NHB2L): LGh
 hr(NHB12R): RYY
 anydest():
   destlever(NHB5L): RR /through
-  destlever(NHB5L): L5
+  destlever(NHB5L): L_5L
   destlever(NHB12L): RR /through
-  destlever(NHB12L): L12
+  destlever(NHB12L): L_12L
   destlever(NHB2R): LR /through
-  destlever(NHB2R): R2
-  always(): AR
+  destlever(NHB2R): R_2R
+  always(): A_R
 """
 
 [[tracks.sub_tracks]]
@@ -135,32 +147,56 @@ id = "sub-7"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-66.770839"
-end = "-174.025735"
+start = "-150"
+end = "-180"
 
 [[tracks.sub_tracks]]
 id = "sub-6"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "23.589397"
-end = "-66.770839"
+start = "-25"
+end = "-55"
 
 [[tracks.sub_tracks]]
 id = "sub-5"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "68.454938"
-end = "23.589397"
+start = "70"
+end = "35"
 
 [[tracks.sub_tracks]]
 id = "sub-4"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "99.405574"
-end = "68.454938"
+start = "100"
+end = "70"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "35"
+end = "-25"
+
+[[tracks.sub_tracks]]
+id = "sub-2"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-55"
+end = "-115"
+
+[[tracks.sub_tracks]]
+id = "sub-3"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-115"
+end = "-150"
 
 [[tracks]]
 id = "NHB6LT"
@@ -180,14 +216,14 @@ id = "sub-9"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-97:train_56--tile-98:train_20:fb52d8d3b7"
 start = "-101.056019"
-end = "17.90693"
+end = "41"
 
 [[tracks.sub_tracks]]
 id = "sub-8"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-97:train_56--tile-98:train_20:fb52d8d3b7"
-start = "17.90693"
+start = "41"
 end = "105.442922"
 
 [[tracks]]
@@ -217,8 +253,8 @@ send = """
 set sub-12
   RYY ~ R: YY
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
+  LY  ~ L: Yh
+  LYG ~ L: YGh
 
 anyroute():
   lever(NHB11R NHB12R NHB13R NHB14R): RYY
@@ -263,17 +299,21 @@ send = """
 set sub-11
   RYY ~ R: YY
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  RY  ~ R: Y
+  LY  ~ L: Yh
+  LG  ~ L: YGh
+  LEa ~ L: Ea
+  RY  ~ R: Yh
   RGh ~ R: Gh
+
+check SC_1: at=0k136@北港21_22A toward=L over=40km/h hold=3s
 
 anyroute():
   lever(NHB11R NHB12R): RYY
   lever(NHB11L NHB12L): LYY
-  lever(NHB4L): LYY
+  lever(NHB4L): LY
+    tripped(SC_1): LEa
   lever(NHB5L): LY
-    hr(NHB2L): LYG
+    hr(NHB2L): LG
   lever(NHB4R NHB5R): RY
     hr(NHB_TKM5): RGh
 """
@@ -289,12 +329,12 @@ end = "122.412043"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-98:train_43:c45df5974c"
 start = "122.412043"
-end = "99.319814"
+end = "99"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
 start = "122.412043"
-end = "99.405574"
+end = "100"
 
 [[tracks]]
 id = "NHB22AT"
@@ -303,9 +343,9 @@ send = """
 set sub-13
   RYY ~ R: YY
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  RY  ~ R: Y
+  LY  ~ L: Yh
+  LYG ~ L: YGh
+  RY  ~ R: Yh
   RGh ~ R: Gh
 
 anyroute():
@@ -341,8 +381,8 @@ id = "NHB5RT"
 kind_id = "signal"
 send = """
 set sub-14
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 destlever(NHB4R NHB5R): RY /through
   signal(NHB_TKM5) >= Y: RG
@@ -365,7 +405,7 @@ set sub-15 sub-16
   LYY ~ L: YY YY
   LR  ~ L: R  R
   RX  ~ R: YY E
-  LY  ~ L: Y  Y
+  LY  ~ L: Yh Yh
   LGh ~ L: Gh Gh
 
 hr(NHB11L NHB12L NHB13L NHB14L): LYY
@@ -398,8 +438,8 @@ id = "NHB_TKM5T"
 kind_id = "signal"
 send = """
 set sub-27
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(NHB_TKM4) >= Y: RG
@@ -424,8 +464,8 @@ id = "NHB_TKM4T"
 kind_id = "signal"
 send = """
 set sub-23
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(NHB_TKM3) >= Y: RG
@@ -450,8 +490,8 @@ id = "NHB_TKM3T"
 kind_id = "signal"
 send = """
 set sub-24
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(NHB_TKM2) >= Y: RG
@@ -471,9 +511,9 @@ id = "NHB_TKM2T"
 kind_id = "signal"
 send = """
 set sub-32
-  RY  ~ R: Y
-  RG  ~ R: G
-  RYG ~ R: YG
+  RY  ~ R: Yh
+  RG  ~ R: Gh
+  RYG ~ R: YGh
 
 always(): RY /through
   signal(NHB_TKM1) >= YG: RG
@@ -494,8 +534,8 @@ id = "NHB_TKM1T"
 kind_id = "signal"
 send = """
 set (sub-36 sub-39 sub-38 sub-37)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(TKM1R) >= Y: RG
@@ -543,8 +583,8 @@ id = "TKM_NHB1T"
 kind_id = "signal"
 send = """
 set (sub-17 sub-18 sub-19 sub-21)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(NHB5L NHB4L) >= Y: LG
@@ -558,17 +598,12 @@ segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
 start = "409.013516"
 end = "379.030544"
 
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
-start = "870.445919"
-end = "711.347319"
-
 [[tracks.sub_tracks]]
 id = "sub-18"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
-start = "444.768484"
+start = "444"
 end = "409.013516"
 
 [[tracks.sub_tracks]]
@@ -576,8 +611,8 @@ id = "sub-19"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
-start = "550.922017"
-end = "444.768484"
+start = "535"
+end = "444"
 
 [[tracks.sub_tracks]]
 id = "sub-21"
@@ -585,16 +620,21 @@ id = "sub-21"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
 start = "711.347319"
-end = "550.922017"
+end = "535"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
+start = "870.445919"
+end = "711.347319"
 
 [[tracks]]
 id = "TKM_NHB2T"
 kind_id = "signal"
 send = """
 set sub-28
-  LY  ~ L: Y
-  LG  ~ L: G
-  LYG ~ L: YG
+  LY  ~ L: Yh
+  LG  ~ L: Gh
+  LYG ~ L: YGh
 
 always(): LY /through
   signal(TKM_NHB1) >= YG: LG
@@ -620,8 +660,8 @@ id = "TKM_NHB3T"
 kind_id = "signal"
 send = """
 set sub-30
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(TKM_NHB2) >= Y: LG
@@ -641,8 +681,8 @@ id = "TKM_NHB4T"
 kind_id = "signal"
 send = """
 set sub-26
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(TKM_NHB3) >= Y: LG
@@ -662,8 +702,8 @@ id = "TKM2LT"
 kind_id = "signal"
 send = """
 set (sub-34 sub-43)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 destlever(TKM2L): LY /through
   signal(TKM_NHB4) >= Y: LG
@@ -697,9 +737,9 @@ kind_id = "signal"
 send = """
 set sub-41
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
-  RG  ~ R: G
+  RY  ~ R: Yh
+  RYG ~ R: YGh
+  RG  ~ R: Gh
   LYY ~ L: YY
 
 signal(TKM3R TKM11R) >= YY: RYY /through
@@ -724,8 +764,8 @@ id = "TKM3RT"
 kind_id = "signal"
 send = """
 set (sub-56 sub-61)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 destlever(TKM3R): RY /through
   signal(TKM_SGN3) >= Y: RG
@@ -752,8 +792,8 @@ id = "TKM4LT"
 kind_id = "signal"
 send = """
 set sub-55
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 lever(TKM4L): LY /through
   signal(TKM2L) >= Y: LG
@@ -773,11 +813,11 @@ kind_id = "signal"
 send = """
 set sub-44
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
-  RG  ~ R: G
-  LY  ~ L: Y
-  LG  ~ L: G
+  RY  ~ R: Yh
+  RYG ~ R: YGh
+  RG  ~ R: Gh
+  LY  ~ L: Yh
+  LG  ~ L: Gh
   LYY ~ L: YY
 
 signal(TKM12R) >= YY: RYY /through
@@ -787,6 +827,7 @@ signal(TKM12R) >= G: RG /through
 destlever(TKM4L): LY /through
   signal(TKM2L) >= Y: LG
 destlever(TKM12L): LYY /through
+  signal(TKM2L) >= Y: LG
 """
 
 [[tracks.sub_tracks]]
@@ -802,8 +843,8 @@ id = "TKM21AT"
 kind_id = "signal"
 send = """
 set sub-45
-  RY  ~ R: Y
-  RG  ~ R: G
+  RY  ~ R: Yh
+  RG  ~ R: Gh
   RYY ~ R: YY
   LYY ~ L: YY
 
@@ -836,8 +877,8 @@ id = "TKM21BT"
 kind_id = "signal"
 send = """
 set sub-47
-  LY  ~ L: Y
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LG  ~ L: Gh
   RYY ~ R: YY
   LYY ~ L: YY
 
@@ -865,8 +906,8 @@ id = "TKM22T"
 kind_id = "signal"
 send = """
 set (sub-46 sub-48)
-  LY  ~ L: Y
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LG  ~ L: Gh
   RYY ~ R: YY
   LYY ~ L: YY
 
@@ -908,13 +949,13 @@ kind_id = "signal"
 send = """
 set sub-50
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
-  RG  ~ R: G
+  RY  ~ R: Yh
+  RYG ~ R: YGh
+  RG  ~ R: Gh
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LYG ~ L: YGh
+  LG  ~ L: Gh
 
 signal(TKM13R TKM14R) >= YY: RYY /through
 signal(TKM13R TKM14R) >= Y: RY /through
@@ -942,13 +983,13 @@ kind_id = "signal"
 send = """
 set sub-49
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
-  RG  ~ R: G
+  RY  ~ R: Yh
+  RYG ~ R: YGh
+  RG  ~ R: Gh
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LYG ~ L: YGh
+  LG  ~ L: Gh
 
 signal(TKM15R) >= YY: RYY /through
 signal(TKM15R) >= Y: RY /through
@@ -1036,9 +1077,9 @@ kind_id = "signal"
 send = """
 set sub-54
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LYG ~ L: YGh
+  LG  ~ L: Gh
   RYY ~ R: YY
 
 signal(TKM13L) >= YY: LYY /through
@@ -1062,9 +1103,9 @@ kind_id = "signal"
 send = """
 set sub-53
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LYG ~ L: YGh
+  LG  ~ L: Gh
   RYY ~ R: YY
 
 signal(TKM14L TKM15L) >= YY: LYY /through
@@ -1087,8 +1128,8 @@ id = "TKM_SGN3T"
 kind_id = "signal"
 send = """
 set (sub-62 sub-63 sub-67)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(TKM_SGN2) >= Y: RG
@@ -1129,8 +1170,8 @@ id = "TKM_SGN2T"
 kind_id = "signal"
 send = """
 set sub-69
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(TKM_SGN1) >= Y: RG
@@ -1150,8 +1191,8 @@ id = "TKM_SGN1T"
 kind_id = "signal"
 send = """
 set (sub-73 sub-75 sub-78 sub-79 sub-80 sub-81)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(SGN1R) >= Y: RG
@@ -1210,8 +1251,8 @@ id = "SGN_TKM4T"
 kind_id = "signal"
 send = """
 set sub-70
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(SGN_TKM3) >= Y: LG
@@ -1231,8 +1272,8 @@ id = "SGN_TKM3T"
 kind_id = "signal"
 send = """
 set (sub-65 sub-68 sub-72)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(SGN_TKM2) >= Y: LG
@@ -1273,9 +1314,9 @@ id = "SGN_TKM2T"
 kind_id = "signal"
 send = """
 set sub-60
-  LY  ~ L: Y
-  LG  ~ L: G
-  LYG ~ L: YG
+  LY  ~ L: Yh
+  LG  ~ L: Gh
+  LYG ~ L: YGh
 
 always(): LY /through
   signal(SGN_TKM1) >= YG: LG
@@ -1296,8 +1337,8 @@ id = "SGN_TKM1T"
 kind_id = "signal"
 send = """
 set (sub-57 sub-58 sub-59)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(TKM4L) >= Y: LG
@@ -1337,8 +1378,8 @@ id = "SGN1RT"
 kind_id = "signal"
 send = """
 set (sub-82 sub-89)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(SGN_SNH4) >= Y: RG
@@ -1376,8 +1417,8 @@ id = "SGN2LT"
 kind_id = "signal"
 send = """
 set (sub-77 sub-84 sub-85 sub-86 sub-88)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(SGN_TKM4) >= Y: LG
@@ -1434,8 +1475,8 @@ id = "SGN_SNH4T"
 kind_id = "signal"
 send = """
 set (sub-94 sub-97)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(SGN_SNH3) >= Y: RG
@@ -1468,8 +1509,8 @@ id = "SGN_SNH3T"
 kind_id = "signal"
 send = """
 set (sub-130 sub-99 sub-100)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(SGN_SNH2) >= Y: RG
@@ -1510,8 +1551,8 @@ id = "SGN_SNH2T"
 kind_id = "signal"
 send = """
 set (sub-105 sub-107)
-  RY ~ R: Y
-  RG ~ R: G
+  RY ~ R: Yh
+  RG ~ R: Gh
 
 always(): RY /through
   signal(SGN_SNH1) >= Y: RG
@@ -1544,9 +1585,9 @@ id = "SGN_SNH1T"
 kind_id = "signal"
 send = """
 set (sub-108 sub-115 sub-114 sub-113)
-  RY  ~ R: Y
-  RG  ~ R: G
-  RYG ~ R: YG
+  RY  ~ R: Yh
+  RG  ~ R: Gh
+  RYG ~ R: YGh
 
 always(): RY /through
   signal(SNH1R) >= Y: RG
@@ -1590,8 +1631,8 @@ id = "SNH_SGN3T"
 kind_id = "signal"
 send = """
 set sub-102
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(SNH_SGN2) >= Y: LG
@@ -1611,8 +1652,8 @@ id = "SNH_SGN2T"
 kind_id = "signal"
 send = """
 set (sub-93 sub-101)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(SNH_SGN1) >= Y: LG
@@ -1645,8 +1686,8 @@ id = "SNH_SGN1T"
 kind_id = "signal"
 send = """
 set (sub-90 sub-91 sub-92 sub-95)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 always(): LY /through
   signal(SGN2L) >= Y: LG
@@ -1700,8 +1741,8 @@ kind_id = "signal"
 send = """
 set (sub-112 sub-110 sub-111)
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
+  RY  ~ R: Yh
+  RYG ~ R: YGh
   RG  ~ R: G
   LYY ~ L: YY
 
@@ -1742,8 +1783,8 @@ id = "SNH2LT"
 kind_id = "signal"
 send = """
 set (sub-104 sub-117 sub-118)
-  LY ~ L: Y
-  LG ~ L: G
+  LY ~ L: Yh
+  LG ~ L: Gh
 
 destlever(SNH2L): LY /through
   signal(SNH_SGN3) >= Y: LG
@@ -1779,8 +1820,8 @@ id = "SNH22T"
 kind_id = "signal"
 send = """
 set (sub-120 sub-121)
-  LY  ~ L: Y
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LG  ~ L: Gh
   RYY ~ R: YY
   LYY ~ L: YY
 
@@ -1827,9 +1868,9 @@ kind_id = "signal"
 send = """
 set sub-119
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
-  RG  ~ R: G
+  RY  ~ R: Yh
+  RYG ~ R: YGh
+  RG  ~ R: Gh
   LYY ~ L: YY
 
 signal(SNH13R SNH13RZ) >= YY: RYY /through
@@ -1853,13 +1894,13 @@ kind_id = "signal"
 send = """
 set (sub-122 sub-123)
   RYY ~ R: YY
-  RY  ~ R: Y
-  RYG ~ R: YG
-  RG  ~ R: G
+  RY  ~ R: Yh
+  RYG ~ R: YGh
+  RG  ~ R: Gh
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
-  LG  ~ L: G
+  LY  ~ L: Yh
+  LYG ~ L: YGh
+  LG  ~ L: Gh
 
 signal(SNH4R SNH12R) >= YY: RYY /through
 signal(SNH4R SNH12R) >= Y: RY /through
@@ -1900,7 +1941,7 @@ id = "SNH21AT"
 kind_id = "signal"
 send = """
 set (sub-124 sub-125)
-  RY  ~ R: Y
+  RY  ~ R: Yh
   RG  ~ R: G
   RYY ~ R: YY
   LYY ~ L: YY
@@ -1942,9 +1983,9 @@ id = "SNH21BT"
 kind_id = "signal"
 send = """
 set (sub-126 sub-127)
-  RY  ~ R: Y
+  RY  ~ R: Yh
   RG  ~ R: G
-  LY  ~ L: Y
+  LY  ~ L: Yh
   RYY ~ R: YY
   LYY ~ L: YY
 
@@ -1987,10 +2028,10 @@ kind_id = "signal"
 send = """
 set sub-128
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
+  LY  ~ L: Yh
+  LYG ~ L: YGh
   LG  ~ L: G
-  RY  ~ R: Y
+  RY  ~ R: Yh
   RG  ~ R: G
   RYY ~ R: YY
 
@@ -2015,18 +2056,24 @@ end = "22#L"
 id = "HLT_NHB1T"
 kind_id = "signal"
 send = """
-set sub-138 sub-137 sub-136 sub-135 sub-134 sub-133 sub-132
-  RN  ~ R: YGh YGh YGh YGh Y   T   R
-  RNc ~ R: YGh YGh YGh YGh YGh Gh  Gh
-  LV  ~ L: R   Y   YGh YGh YGh YGh YGh
+-- sub-132は踏切
 
-set (sub-138 sub-137 sub-136 sub-135 sub-134 sub-133 sub-132)
-  LVc ~ L: YGh
+set (sub-138 sub-137 sub-136 sub-1 sub-135) sub-134 (sub-2 sub-133) sub-3 sub-132
+  RN  ~ R: YGh Yh YY T   R
+
+set (sub-138 sub-137 sub-136 sub-1 sub-135 sub-134 sub-2) (sub-133 sub-3 sub-132)
+  RN_Y ~ R: YGh YGh
+  RN_G ~ R: YGh Gh
+
+set sub-138 sub-137 sub-136 sub-1 (sub-135 sub-134 sub-2) (sub-133 sub-3 sub-132)
+  LV    ~ L: R   T    YY   Yh  YGh Gh
+  LV_YY ~ L: YGh YGh  YGh  YGh YGh Gh
 
 normal(HLT_NHB_FR): RN
-  hr(NHB2R): RNc
+  hr(NHB2R): RN_Y
+    hr(NHB5R): RN_G
 reverse(NHB_HLT_FR): LV
-  hr(HLT1L): LVc
+  hr(HLT1L): LV_YY
 """
 
 [[tracks.sub_tracks]]
@@ -2034,67 +2081,91 @@ id = "sub-138"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-1421.265861"
-end = "-1494.74455"
-
-[[tracks.sub_tracks]]
-id = "sub-137"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-1216.209811"
-end = "-1421.265861"
+start = "-1465"
+end = "-1495"
 
 [[tracks.sub_tracks]]
 id = "sub-136"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-855.510991"
-end = "-1216.209811"
+start = "-1335"
+end = "-1430"
 
 [[tracks.sub_tracks]]
 id = "sub-135"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-436.609107"
-end = "-855.510991"
+start = "-460"
+end = "-1185"
 
 [[tracks.sub_tracks]]
 id = "sub-134"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-296.332424"
-end = "-436.609107"
+start = "-335"
+end = "-460"
 
 [[tracks.sub_tracks]]
 id = "sub-133"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-216.034529"
-end = "-296.332424"
+start = "-245"
+end = "-296"
 
 [[tracks.sub_tracks]]
 id = "sub-132"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-174.025735"
-end = "-216.034529"
+start = "-180"
+end = "-210"
+
+[[tracks.sub_tracks]]
+id = "sub-137"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-1430"
+end = "-1465"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-1185"
+end = "-1335"
+
+[[tracks.sub_tracks]]
+id = "sub-2"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-296"
+end = "-335"
+
+[[tracks.sub_tracks]]
+id = "sub-3"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
+start = "-210"
+end = "-245"
 
 [[tracks]]
 id = "HLT1LT"
 kind_id = "signal"
 send = """
 set sub-140 sub-139
-  RY  ~ R: - Y
+  RG ~  R: - YGh
   RR  ~ R: - R
   LYY ~ L: - YY
 
-hr(HLT1R): RY
+hr(HLT1R): RG
 anydest(): RR /through
 anydest(): LYY
 """
@@ -2112,7 +2183,7 @@ id = "sub-139"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-98:train_18--tile-97:train_56:4db91460fc"
-start = "-1494.74455"
+start = "-1495"
 end = "-1887.6098"
 
 [[tracks]]
@@ -2182,8 +2253,8 @@ id = "NMC11T"
 kind_id = "signal"
 send = """
 set sub-1
-  RY ~ R: Y
-  LY ~ L: Y
+  RY ~ R: Yh
+  LY ~ L: Yh
   LG ~ L: G
 
 lever(NMC1R NMC2R): RY /through
@@ -2229,7 +2300,7 @@ id = "SNH_NMC1T"
 kind_id = "signal"
 send = """
 set (sub-1 sub-2)
-  RY ~ R: Y
+  RY ~ R: Yh
   RG ~ R: G
 
 always(): RY /through
@@ -2257,7 +2328,7 @@ id = "SNH_NMC2T"
 kind_id = "signal"
 send = """
 set sub-1
-  RY ~ R: Y
+  RY ~ R: Yh
   RG ~ R: G
 
 always(): RY /through
@@ -2277,7 +2348,7 @@ id = "SNH_NMC3T"
 kind_id = "signal"
 send = """
 set sub-1
-  RY ~ R: Y
+  RY ~ R: Yh
   RG ~ R: G
 
 always(): RY /through
@@ -2297,7 +2368,7 @@ id = "SNH_NMC4T"
 kind_id = "signal"
 send = """
 set sub-1
-  RY ~ R: Y
+  RY ~ R: Yh
   RG ~ R: G
 
 destlever(SNH3R SNH4R): RY /through
@@ -2317,7 +2388,7 @@ id = "NMC_SNH1T"
 kind_id = "signal"
 send = """
 set sub-1
-  LY ~ L: Y
+  LY ~ L: Yh
   LG ~ L: G
 
 always(): LY /through
@@ -2337,7 +2408,7 @@ id = "NMC_SNH2T"
 kind_id = "signal"
 send = """
 set sub-1
-  LY ~ L: Y
+  LY ~ L: Yh
   LG ~ L: G
 
 always(): LY /through
@@ -2357,7 +2428,7 @@ id = "NMC_SNH3T"
 kind_id = "signal"
 send = """
 set sub-1
-  LY ~ L: Y
+  LY ~ L: Yh
   LG ~ L: G
 
 always(): LY /through
@@ -2377,7 +2448,7 @@ id = "NMC_SNH4T"
 kind_id = "signal"
 send = """
 set (sub-1 sub-2)
-  LY ~ L: Y
+  LY ~ L: Yh
   LG ~ L: G
 
 destlever(NMC1L NMC2L): LY /through
@@ -2405,7 +2476,7 @@ id = "NMC1LT"
 kind_id = "signal"
 send = """
 set sub-1
-  LY ~ L: Y
+  LY ~ L: Yh
   LG ~ L: G
 
 lever(NMC1L NMC2L): LY /through
@@ -2426,10 +2497,10 @@ kind_id = "signal"
 send = """
 set sub-1
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
+  LY  ~ L: Yh
+  LYG ~ L: YGh
   LG  ~ L: G
-  RY  ~ R: Y
+  RY  ~ R: Yh
 
 signal(NMC1L) >= YY: LYY /through
 signal(NMC1L) >= Y: LY /through
@@ -2452,10 +2523,10 @@ kind_id = "signal"
 send = """
 set sub-1
   LYY ~ L: YY
-  LY  ~ L: Y
-  LYG ~ L: YG
+  LY  ~ L: Yh
+  LYG ~ L: YGh
   LG  ~ L: G
-  RY  ~ R: Y
+  RY  ~ R: Yh
 
 signal(NMC2L) >= YY: LYY /through
 signal(NMC2L) >= Y: LY /through
