@@ -10,6 +10,9 @@ require('dotenv').config();
 
 process.chdir(__dirname);
 
+// 検証用ビルドでは dist への出力だけ行い、ゲームへの自動配置を省く。
+const noDeploy = process.argv.slice(2).includes("--no-deploy");
+
 function findLua() {
     for (const cmd of ["lua53", "lua5.3", "lua"]) {
         try {
@@ -171,7 +174,11 @@ async function main() {
         fs.promises.copyFile("script.lua.map", "dist/script.lua.map"),
         fs.promises.copyFile("script.min.lua", "dist/script.min.lua")
     ];
-    if (process.env.NTRACS_SW_DIR) {
+    if (noDeploy) {
+        console.log("Deployment skipped (--no-deploy)");
+    } else if (!process.env.NTRACS_SW_DIR) {
+        console.log("Deployment skipped (NTRACS_SW_DIR is unset or empty)");
+    } else {
         copyTasks.push(fs.promises.copyFile("script.min.lua", path.join(process.env.NTRACS_SW_DIR, "script.lua")));
     }
     await Promise.all(copyTasks);
