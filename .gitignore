@@ -12,6 +12,7 @@ res/build_info.lua
 .env
 
 *.precise-cache.json
+area_track.json
 
 # ゲームデータの写しなので念のため非公開
 *.segments.json
