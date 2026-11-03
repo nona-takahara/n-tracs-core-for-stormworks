@@ -4,7 +4,7 @@
 // 記述の文法はエディタの docs/axle-send-dsl.md と同じで、set だけは sub track を解決済みの1列になっている。
 //
 // 記述の検査はエディタが書いた時点で行うので、ここでは繰り返さない。
-// タイマー、Lua の区画は扱わない。それらを含む記述は null を返し、呼び出し側は Area の callback をそのまま使う。
+// count/stay などのタイマー、Lua の区画は扱わない。それらを含む記述は null を返し、呼び出し側は Area の callback をそのまま使う。
 
 class Unsupported extends Error {}
 
@@ -178,8 +178,12 @@ class SendCompiler {
     block(block, send, axle, inherited) {
         const name = block.row || inherited;
         const args = [this.condition(block.condition, send), this.row(send, axle, name)];
-        block.children.forEach((c) => args.push(this.block(c, send, axle, name)));
-        return `${block.through ? "P" : "B"}(${args.join(",")})`;
+        const children = block.children.map((c) => this.block(c, send, axle, name));
+        args.push(...children.map((c) => c.body));
+        return {
+            body: `${block.through ? "P" : "B"}(${args.join(",")})`,
+            sends: args[1] !== "nil" || children.some((c) => c.sends),
+        };
     }
 
     // 照査点を軸が横切るのを見て、タイマーを始め直す関数
@@ -203,8 +207,16 @@ class SendCompiler {
             const axle = this.defs.axles.get(part.kind_id);
             const blocks = send.blocks.map((b) => this.block(b, send, axle, null));
             const watchers = send.checks.map((c, i) => this.watcher(part.track, c, i)).filter(Boolean);
-            if (!watchers.length) return `C(${[lua(part.track), ...blocks].join(",")})`;
-            return `D(${[lua(part.track), `{${watchers.join(",")}}`, ...blocks].join(",")})`;
+            // 木全体に送信先がないときだけ条件を除く。途中の nil 行は、
+            // 親の送信や後続のブロックを抑止する意味があるため、個別には除かない。
+            const sends = blocks.some((b) => b.sends);
+            if (!sends) this.words = before.words;
+            const bodies = sends ? blocks.map((b) => b.body) : [];
+            if (!watchers.length) {
+                if (!sends) return "function()end";
+                return `C(${[lua(part.track), ...bodies].join(",")})`;
+            }
+            return `D(${[lua(part.track), `{${watchers.join(",")}}`, ...bodies].join(",")})`;
         } catch (e) {
             if (!(e instanceof Unsupported)) throw e;
             this.rows.clear();

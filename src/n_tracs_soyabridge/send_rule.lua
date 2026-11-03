@@ -4,6 +4,7 @@
 -- 木の読み方: 並んだブロックを順に調べ、条件が成り立ったものを選ぶ。
 -- 選ばれたブロックは、子のどれも選ばれなければ自分の行を送る。
 -- B は選ばれたら同じ並びの残りを調べず、P は調べ続ける(/through)。
+-- 軸がない Area は送信条件の評価を省く。照査点の監視 W は、軸がなくても先に実行する。
 local Utils = require("res.utils")
 
 ---@param s SoyaBridge
@@ -48,7 +49,10 @@ return function(s)
         block_of(false), -- P
         function(track, ...) -- C
             local blocks = { ... }
-            return function(self, _, dt) level(blocks, self, track, dt) end
+            return function(self, _, dt)
+                if #self.axles == 0 then return end
+                level(blocks, self, track, dt)
+            end
         end,
         function(data) -- R
             return function(area, track)
@@ -110,6 +114,7 @@ return function(s)
             local blocks = { ... }
             return function(self, _, dt)
                 for _, watch in ipairs(watchers) do watch(self, dt) end
+                if #self.axles == 0 then return end
                 level(blocks, self, track, dt)
             end
         end
