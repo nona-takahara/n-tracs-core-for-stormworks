@@ -6,7 +6,13 @@ ARC は、列車の ARC 指令値から進路要求を自動で出す。
 - 駅データ: `res/arc.lua`（誤りはビルド時に `build/check_arc.lua` が検出する）
 - 指令値の分解: `res/arc_value.lua`
 - エンジン: `src/n_tracs_arc/arc.lua`
-- 検証: `tests/repro_arc.lua`（`pnpm test` に含まれる）と、列車を動かす総当たり `tests/heavy/explore_arc.lua`
+- 検証: `tests/repro_arc_index.lua`（候補検索と複数在線の警報）、`tests/repro_arc.lua`（`pnpm test` に含まれる）と、列車を動かす総当たり `tests/heavy/explore_arc.lua`
+
+## 観測と候補検索
+
+全軌道回路を毎周期観測し、駅間の列車も追跡する。初期化時に、登録点・最初の動きの制御開始点・early の開始点から、一連の動きの候補を引く索引を作る。観測位置で候補を絞り、現在の要求も加え、重複を除いて設定順に適合を判定する。駅の sequences と登録点は初期化後に変更しない。
+
+観測時には軌道回路から列車への逆索引も作り、資源の在線列車の検索と警報判定に使う。複数列車が同じ資源を塞ぐ場合は、従来と同じ観測の走査順で待ち相手を選ぶ。停止中の駅も、受付・要求更新・警報判定を続ける。
 
 ## 指令値
 
