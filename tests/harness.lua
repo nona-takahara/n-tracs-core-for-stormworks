@@ -26,7 +26,7 @@ end
 
 ---車両を使わず、在線状態を直接指定してテストを進めるための before_process 代替です。
 ---(SoyaBridge:before_process() は実車のaxle位置から在線を算出するため、車両を
---- スポーンさせないテストでは使えません。test.lua と同じ考え方です)
+--- スポーンさせないテストでは使えません。)
 ---@param sw SoyaBridge
 ---@param shortMap table<string, boolean> 在線させたい抽象軌道回路名の集合(true=在線)
 local function before_process(sw, shortMap)
