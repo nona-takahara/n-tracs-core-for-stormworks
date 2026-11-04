@@ -1,6 +1,6 @@
 -- 列車を「2軸の車両」として本番の路線で動かし、ARCが動けなくなる組み合わせ(デッドロック)を探す。
 -- 実行(リポジトリルートから、駅ごとに数分かかる): lua tests/heavy/explore_arc.lua [駅=NHB|TKM|SNH|NMC] [軸距m=15] [速度m/周期=4] [本数 [件数=300 [seed]]]
--- 前提は docs/implementation/arc.md の「シミュレーションの前提」を参照。pnpm test には含めない。速度の仮定(既定 4 m/周期)は、制御開始点の測定(tests/heavy/measure_start_points.lua、110 km/h)と揃っていない(tests/README.md の「ARC のシミュレーション」を参照)。
+-- 前提は docs/implementation/arc-check.md の「シミュレーションの前提」を参照。pnpm test には含めない。速度の仮定(既定 4 m/周期)は、制御開始点の測定(tests/heavy/measure_start_points.lua、110 km/h)と揃っていない(tests/README.md の「ARC のシミュレーション」を参照)。
 -- 指令値は先頭の軸がいる軌道回路にだけ載る(実機では先頭車の前側の検知ブロックのダイアルにだけ送る)。
 --
 -- 欠陥の基準: すべての列車が止まらず動こうとしているのに、ARCのせいで固まること。
