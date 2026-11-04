@@ -47,6 +47,11 @@ id = "area_only"
 name = "Areaのみ"
 export_tracks = false
 
+[[kinds]]
+id = "kind-1"
+name = "踏切"
+export_tracks = true
+
 [[tracks]]
 id = "NHB4LT"
 kind_id = "signal"
@@ -483,7 +488,7 @@ end = "993.897416"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
 start = "1063.327424"
-end = "1671.536817"
+end = "1671.5"
 
 [[tracks]]
 id = "NHB_TKM3T"
@@ -619,13 +624,8 @@ id = "sub-21"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
-start = "711.347319"
-end = "535"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-108:duplicate_20810--tile-108:train_12:561ede8690"
 start = "870.445919"
-end = "711.347319"
+end = "535"
 
 [[tracks]]
 id = "TKM_NHB2T"
@@ -694,7 +694,7 @@ id = "sub-26"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-108:duplicate_20810--tile-127:duplicate_2969:5b268d69fe"
-start = "1665.627147"
+start = "1665.5"
 end = "2337.43126"
 
 [[tracks]]
@@ -1126,15 +1126,15 @@ end = "3462.08229"
 [[tracks]]
 id = "TKM_SGN3T"
 kind_id = "signal"
+overridden_by = ["TKM_SGN2T"]
 send = """
-set (sub-62 sub-63 sub-67)
+set sub-62
   RY ~ R: Yh
   RG ~ R: Gh
 
 always(): RY /through
   signal(TKM_SGN2) >= Y: RG
 """
-overridden_by = ["TKM_SGN2T"]
 
 [[tracks.sub_tracks]]
 id = "sub-62"
@@ -1142,28 +1142,7 @@ id = "sub-62"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
 start = "3602.476408"
-end = "3762.775041"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
-start = "4220.541544"
 end = "4380.784162"
-
-[[tracks.sub_tracks]]
-id = "sub-63"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
-start = "3762.775041"
-end = "4143.102325"
-
-[[tracks.sub_tracks]]
-id = "sub-67"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
-start = "4143.102325"
-end = "4220.541544"
 
 [[tracks]]
 id = "TKM_SGN2T"
@@ -1228,14 +1207,14 @@ id = "sub-79"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
 start = "5542.350219"
-end = "5576.570063"
+end = "5576.5"
 
 [[tracks.sub_tracks]]
 id = "sub-80"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
-start = "5576.570063"
+start = "5576.5"
 end = "5598.951646"
 
 [[tracks.sub_tracks]]
@@ -1270,15 +1249,15 @@ end = "5444.800553"
 [[tracks]]
 id = "SGN_TKM3T"
 kind_id = "signal"
+overridden_by = ["SGN_TKM2T"]
 send = """
-set (sub-65 sub-68 sub-72)
+set (sub-65 sub-72)
   LY ~ L: Yh
   LG ~ L: Gh
 
 always(): LY /through
   signal(SGN_TKM2) >= Y: LG
 """
-overridden_by = ["SGN_TKM2T"]
 
 [[tracks.sub_tracks]]
 id = "sub-65"
@@ -1286,19 +1265,6 @@ id = "sub-65"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
 start = "3943.704786"
-end = "4132.741552"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
-start = "4770.468904"
-end = "4931.813765"
-
-[[tracks.sub_tracks]]
-id = "sub-68"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
-start = "4132.741552"
 end = "4223.293273"
 
 [[tracks.sub_tracks]]
@@ -1307,7 +1273,7 @@ id = "sub-72"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
 start = "4223.293273"
-end = "4770.468904"
+end = "4931.813765"
 
 [[tracks]]
 id = "SGN_TKM2T"
@@ -1431,14 +1397,14 @@ id = "sub-77"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
 start = "5283.985367"
-end = "5566.104478"
+end = "5566.1"
 
 [[tracks.sub_tracks]]
 id = "sub-84"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
-start = "5566.104478"
+start = "5566.1"
 end = "5630.807451"
 
 [[tracks.sub_tracks]]
@@ -1508,7 +1474,7 @@ end = "7201.786276"
 id = "SGN_SNH3T"
 kind_id = "signal"
 send = """
-set (sub-130 sub-99 sub-100)
+set (sub-130 sub-99)
   RY ~ R: Yh
   RG ~ R: Gh
 
@@ -1527,7 +1493,7 @@ end = "7556.825812"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
-start = "7859.009728"
+start = "7859"
 end = "8052.264482"
 
 [[tracks.sub_tracks]]
@@ -1536,15 +1502,7 @@ id = "sub-99"
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
 start = "7556.825812"
-end = "7846.141138"
-
-[[tracks.sub_tracks]]
-id = "sub-100"
-
-[[tracks.sub_tracks.sections]]
-segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
-start = "7846.141138"
-end = "7859.009728"
+end = "7859"
 
 [[tracks]]
 id = "SGN_SNH2T"
@@ -1564,7 +1522,7 @@ id = "sub-105"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
-start = "7859.009728"
+start = "7859"
 end = "8127.325832"
 
 [[tracks.sub_tracks.sections]]
@@ -1796,7 +1754,7 @@ id = "sub-104"
 
 [[tracks.sub_tracks.sections]]
 segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
-start = "7841.860698467093"
+start = "7841.8"
 end = "8496.140544467095"
 
 [[tracks.sub_tracks]]
@@ -2543,8 +2501,114 @@ end = "230#L"
 segment_id = "segment:tile-124:train_355--tile-124:train_357:975bc73bbd"
 start = "110#L"
 
+[[tracks]]
+id = "AKA_DC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-127:train_241:930759fcfb"
+start = "1671.5"
+end = "0#L"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_22730--tile-108:train_6:7a1b73872e"
+start = "0#R"
+end = "993.897416"
+
+[[tracks]]
+id = "AKA_UC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-108:duplicate_20810--tile-127:duplicate_2969:5b268d69fe"
+start = "1665.5"
+end = "2337.43126"
+
+[[tracks]]
+id = "ONL_DC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "4143.5"
+end = "3503.5"
+
+[[tracks]]
+id = "ONL_UC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "4132.5"
+end = "4770.468904"
+
+[[tracks]]
+id = "SGN_DC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_243--tile-135:train_237:cbd169f501"
+start = "5576.5"
+end = "5016.5"
+
+[[tracks]]
+id = "SGN_UC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-127:train_242--tile-135:duplicate_6571:246d07a2a6"
+start = "5566.1"
+end = "5656.335612762694"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-134:train_12--tile-135:duplicate_6571:cb2a2dd445"
+start = "5656.335612762694"
+end = "6206.1"
+
+[[tracks]]
+id = "KGM_DC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-135:train_237--tile-153:train_98:cb78b3c9b6"
+start = "7845.6"
+end = "7285.6"
+
+[[tracks]]
+id = "KGM_UC"
+kind_id = "kind-1"
+
+[[tracks.sub_tracks]]
+id = "sub-1"
+
+[[tracks.sub_tracks.sections]]
+segment_id = "segment:tile-144:train_3--tile-153:train_83:c83b5d2d11"
+start = "7841.8"
+end = "8241.8"
+
 [addon_overlay]
-playlists = ["C:/Users/taka/AppData/Roaming/Stormworks/data/missions/N_TRACS_Soya_Express_DEV/playlist.xml", "C:/Users/taka/AppData/Roaming/Stormworks/data/missions/station_06_ShionagihamaStation_230807/playlist.xml", "C:/Users/taka/AppData/Roaming/Stormworks/data/missions/station_kari/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/neonamie/playlist.xml"]
+playlists = ["C:/Users/taka/AppData/Roaming/Stormworks/data/missions/N_TRACS_Soya_Express_DEV/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/neonamie/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/Soya04_Akatsuchi/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/Soya06_Oneru/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/Soya07_Okuma/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/Soya08_Kagamigaike/playlist.xml", "../../../../AppData/Roaming/Stormworks/data/missions/Soya09_Shionaghihama/playlist.xml"]
 
 [[addon_overlay.tile_placements]]
 tile = "mega_island_0_0.xml"
