@@ -1,10 +1,10 @@
 // 2つの minify 結果を同じ場面で動かし、Stormworks へ出した呼び出しの記録が同じかを比べる。
-// フィールド名の短縮など、名前を変える最適化が動作を変えていないかを確かめるための道具。
+// フィールド名・global名の短縮や定数最適化など、名前や定数を変える最適化が動作を変えていないかを確かめるための道具。
 //
 // 実行(リポジトリルートから):
 //   pnpm test:minify-diff                                         基準と候補を自分でビルドして比べる(要: 先に pnpm build)
 //   node tests/heavy/diff_minified.js <基準.min.lua> <候補.min.lua>   作ってある2つの出力を比べる
-// 基準は `--no-field-renaming`(field名を変えない)、候補は `--assume-closed-field-names` を付けて作る。
+// 基準は field名・global名の短縮と定数最適化を切り、候補は index.js と同じフラグ(`--assume-closed-field-names` など)で作る。
 // 記録が違えば非0で終了する。
 //
 // 入っている storm-lua-minify が `--assume-closed-field-names` を持たない版(0.9.1 など)のときは、
@@ -22,8 +22,25 @@ const toml = require("toml");
 
 process.chdir(path.join(__dirname, "..", ".."));
 
-// index.js が minify に渡すフラグと同じにする(index.js を変えたら、ここも合わせる)
-const MINIFY_FLAGS = ["-m", "--no-unused-export-removal", "--no-function-specialization", "--no-progress"];
+// 候補は、index.js が minify に渡すフラグと同じにする(index.js を変えたら、ここも合わせる)
+const GAME_CALLBACKS = [
+    "onCreate", "onDestroy", "onPlayerJoin", "onPlayerLeave", "onTick",
+    "onCustomCommand", "onVehicleLoad", "onVehicleDespawn", "onButtonPress",
+];
+const CANDIDATE_FLAGS = [
+    "-m", "--no-progress",
+    "--assume-closed-field-names",
+    ...["ui_id", "cheatBattery", "recommendedSettings"].flatMap((n) => ["--never-rename-field", n]),
+    "--constant-optimizations",
+    "--global-renaming",
+    ...GAME_CALLBACKS.flatMap((n) => ["--never-rename-global", n]),
+];
+// 基準は、名前や定数に手を入れない(field名・global名の短縮と、定数最適化を切る)。関数まわりの最適化は両方に入る
+const REFERENCE_FLAGS = [
+    "-m", "--no-progress",
+    "--no-field-renaming", "--no-global-renaming",
+    "--no-constant-expression-evaluation", "--no-local-constant-propagation", "--no-interprocedural-constant-propagation",
+];
 
 function minifyCli() {
     return process.env.STORM_LUA_MINIFY_CLI
@@ -52,13 +69,12 @@ function buildPair(directory) {
         process.exit(2);
     }
     const out = {};
-    for (const [name, extra] of [
-        ["reference", ["--no-field-renaming"]],
-        // セーブデータのキーは g_savedata を経由する読み書きなら自動で守られるが、念のため明示する
-        ["candidate", ["--assume-closed-field-names",
-            "--never-rename-field", "ui_id", "--never-rename-field", "cheatBattery", "--never-rename-field", "recommendedSettings"]],
+    // セーブデータのキーは g_savedata を経由する読み書きなら自動で守られるが、念のため候補で明示している
+    for (const [name, flags] of [
+        ["reference", REFERENCE_FLAGS],
+        ["candidate", CANDIDATE_FLAGS],
     ]) {
-        const run = spawnSync(process.execPath, [cli, ...MINIFY_FLAGS, ...extra, "script.lua"], { encoding: "utf8" });
+        const run = spawnSync(process.execPath, [cli, ...flags, "script.lua"], { encoding: "utf8" });
         const produced = "script.min.lua";
         try {
             if (run.status !== 0 || !fs.existsSync(produced)) {

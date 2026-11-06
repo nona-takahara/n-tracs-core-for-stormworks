@@ -61,6 +61,25 @@ function generateBuildInfo() {
     }
 }
 
+// minify のフラグ。tests/heavy/diff_minified.js の MINIFY_FLAGS と合わせる(変えたら両方)。
+// - 閉じた field 名: プログラムが定義する field 名を名前単位で短縮する。セーブデータのキーは、
+//   g_savedata を経由しない読み出しがあっても壊れないよう、明示して守る
+// - 定数最適化、global-renaming: global-renaming は、ゲームが直接呼ぶ関数名を守る必要がある
+// unused-export-removal と function-specialization は、storm-lua-minify 0.9.1 では誤変換があったため
+// 切っていたが、develop(0.10 系)では直っており、再び有効にしている。
+const GAME_CALLBACKS = [
+    "onCreate", "onDestroy", "onPlayerJoin", "onPlayerLeave", "onTick",
+    "onCustomCommand", "onVehicleLoad", "onVehicleDespawn", "onButtonPress",
+];
+const MINIFY_FLAGS = [
+    "-m",
+    "--assume-closed-field-names",
+    ...["ui_id", "cheatBattery", "recommendedSettings"].flatMap((n) => ["--never-rename-field", n]),
+    "--constant-optimizations",
+    "--global-renaming",
+    ...GAME_CALLBACKS.flatMap((n) => ["--never-rename-global", n]),
+];
+
 // Stormworks のスクリプト上限(文字数)。超えても止めず、警告だけ出す
 const SCRIPT_CHAR_LIMIT = 131071;
 
@@ -162,11 +181,8 @@ async function main() {
         console.warn("Lua 5.3 not found — Lua syntax check skipped");
     }
 
-    // 一時対処: unused-export-removal が、require 先モジュールの使われている export を誤って消すため切る
-    // 一時対処: function-specialization が、load_axles の呼び出しで引数 vehicle_id を落とし、
-    // 車軸の作成が Axle.new(nil, ...) になる(車両IDが失われ、車軸の座標が取れなくなる)ため切る
     generateBuildInfo();
-    console.log(execSync("npx storm-lua-minify -m --no-unused-export-removal --no-function-specialization script.lua").toString());
+    console.log(execSync(`npx storm-lua-minify ${MINIFY_FLAGS.join(" ")} script.lua`).toString());
     warnIfScriptTooLong("script.min.lua");
     await fs.promises.mkdir("dist", { recursive: true });
 
