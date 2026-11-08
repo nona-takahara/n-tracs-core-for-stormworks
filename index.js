@@ -5,6 +5,7 @@ const toml = require("toml");
 const generateAreaTrack = require("./build/generate_area_track");
 const { generateSignal, buildControlsMap, detectControlsCycle } = require("./build/generate_signal");
 const { checkRouteTrackContinuity } = require("./build/check_route_continuity");
+const { MINIFY_FLAGS } = require("./minify_flags");
 const { checkInlineTableDuplicateKeys, checkSwitchReferences } = require("./build/check_switch_config");
 require('dotenv').config();
 
@@ -162,11 +163,8 @@ async function main() {
         console.warn("Lua 5.3 not found — Lua syntax check skipped");
     }
 
-    // 一時対処: unused-export-removal が、require 先モジュールの使われている export を誤って消すため切る
-    // 一時対処: function-specialization が、load_axles の呼び出しで引数 vehicle_id を落とし、
-    // 車軸の作成が Axle.new(nil, ...) になる(車両IDが失われ、車軸の座標が取れなくなる)ため切る
     generateBuildInfo();
-    console.log(execSync("npx storm-lua-minify -m --no-unused-export-removal --no-function-specialization script.lua").toString());
+    console.log(execSync(`pnpm exec storm-lua-minify ${MINIFY_FLAGS.join(" ")} script.lua`).toString());
     warnIfScriptTooLong("script.min.lua");
     await fs.promises.mkdir("dist", { recursive: true });
 

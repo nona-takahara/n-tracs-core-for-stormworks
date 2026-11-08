@@ -1,0 +1,64 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      storm-lua-minify:
+        specifier: ^0.11.0
+        version: 0.11.0
+      toml:
+        specifier: ^5.0.1
+        version: 5.0.1
+
+packages:
+
+  commander@15.0.0:
+    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
+    engines: {node: '>=22.12.0'}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
+
+  luaparse@0.3.1:
+    resolution: {integrity: sha512-b21h2bFEbtGXmVqguHogbyrMAA0wOHyp9u/rx+w6Yc9pW1t9YjhGUsp87lYcp7pFRqSWN/PhFkrdIqKEUzRjjQ==}
+    hasBin: true
+
+  source-map@0.8.0:
+    resolution: {integrity: sha512-d8EqvL+k/SOXCreS/SUzg2ciyHqBBLcN/yuRjFsbvVhHTE2pgei7oAhmPM7kWFbkX6OSMQfUq4KbkF3au9lhYQ==}
+    engines: {node: '>= 12'}
+
+  storm-lua-minify@0.11.0:
+    resolution: {integrity: sha512-Ke/QA/E3kDDRG9UwH4KEArq7b0mpLVzWtfXkJlUkB55oarv5C5unZj1SS+5rusFQ/V5h5teqPYOizJIHuRo+MQ==}
+    engines: {node: '>=24'}
+    hasBin: true
+
+  toml@5.0.1:
+    resolution: {integrity: sha512-EqYNA/YvUNndrA2B3O2ojzLQoTQrBxeZ9UIjQwk8t10oe6n7dwclBwd9IdZQTOKwe6vWX+AXtl6IntXRbepdxQ==}
+    engines: {node: '>=20'}
+
+snapshots:
+
+  commander@15.0.0: {}
+
+  dotenv@16.6.1: {}
+
+  luaparse@0.3.1: {}
+
+  source-map@0.8.0: {}
+
+  storm-lua-minify@0.11.0:
+    dependencies:
+      commander: 15.0.0
+      luaparse: 0.3.1
+      source-map: 0.8.0
+
+  toml@5.0.1: {}

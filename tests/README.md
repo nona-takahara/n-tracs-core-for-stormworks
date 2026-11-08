@@ -105,14 +105,14 @@ pnpm test
 
 ## minify 結果の比較
 
-名前を変える最適化(storm-lua-minify の `--assume-closed-field-names`)が動作を変えていないかを、2つの minify 結果を同じ場面で動かして確かめる。
+名前や定数を変える最適化(storm-lua-minify の `--assume-closed-field-names`、`--global-renaming`、`--constant-optimizations`)が動作を変えていないかを、2つの minify 結果を同じ場面で動かして確かめる。
 
 ```sh
 pnpm build            # 先に1回(res/build_info.lua を作る)
 pnpm test:minify-diff
 ```
 
-基準(field名を変えない `--no-field-renaming`)と候補(`--assume-closed-field-names`。セーブデータのキー `ui_id`、`cheatBattery`、`recommendedSettings` は、`g_savedata` を経由する読み書きなら自動で守られるが、念のため `--never-rename-field` で明示)を、`index.js` と同じフラグでビルドし、記録を比べる。フラグは `tests/heavy/diff_minified.js` の `MINIFY_FLAGS` にあり、`index.js` を変えたら合わせる。
+基準(field名・global名の短縮と定数最適化を切る)と候補(`--assume-closed-field-names`。セーブデータのキー `ui_id`、`cheatBattery`、`recommendedSettings` は、`g_savedata` を経由する読み書きなら自動で守られるが、念のため `--never-rename-field` で明示)を、同じ場面で動かして記録を比べる。候補のフラグは、`index.js` と共有する `build/minify_flags.js` の `MINIFY_FLAGS` で、基準は同じファイルの `REFERENCE_FLAGS` である。
 
 - 入っている storm-lua-minify が `--assume-closed-field-names` を持たない版(0.9.1 など)のときは、「SKIP」と表示して成功で終わる。別の版を試すときは、環境変数 `STORM_LUA_MINIFY_CLI` に、その `dist/cli.js` のパスを指定する。
 - 作ってある2つの出力を直接比べるときは、`node tests/heavy/diff_minified.js <基準.min.lua> <候補.min.lua>` を使う。
