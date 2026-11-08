@@ -21,6 +21,7 @@ local apply_signal_alias = require("res.signal_alias")
 local apply_arc = require("res.arc")
 local crossing_factory = require("res.crossing")
 local apply_command = require("src.n_tracs_soyabridge.command")
+local WebCtc = require("src.n_tracs_soyabridge.web_ctc")
 
 apply_area_track(sw)
 apply_signal(sw)
@@ -30,6 +31,7 @@ apply_arc(sw)
 
 local crossing = crossing_factory(sw)
 local command_module = apply_command(sw)
+sw.web = WebCtc.new(sw, CTC_VERSION, command_module.run_remote)
 
 dofile("res.maplabel")
 
@@ -39,6 +41,7 @@ sw.default_area = 2
 g_savedata = {
 	recommendedSettings = property.checkbox("Start with no wind and damage", true),
 	cheatBattery = property.checkbox("Enable cheat_battery feature", true),
+	webCtc = property.checkbox("Enable Web CTC (local HTTP server)", false),
 }
 
 --@storm export
@@ -114,7 +117,14 @@ function onTick()
 				calls()
 			end
 		end
+
+		sw.web:tick(6)
 	end
+end
+
+--@storm export
+function httpReply(port, request, reply)
+	sw.web:on_reply(port, request, reply)
 end
 
 ---@diagnostic disable-next-line: lowercase-global

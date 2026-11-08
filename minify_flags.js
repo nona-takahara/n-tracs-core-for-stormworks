@@ -4,7 +4,7 @@
 const MINIFY_FLAGS = [
     "-m",
     "--assume-closed-field-names",
-    ...["ui_id", "cheatBattery", "recommendedSettings"].flatMap((n) => ["--never-rename-field", n]),
+    ...["ui_id", "cheatBattery", "recommendedSettings", "webCtc", "webCtcPort"].flatMap((n) => ["--never-rename-field", n]),
     "--constant-optimizations",
     "--global-renaming",
 ];

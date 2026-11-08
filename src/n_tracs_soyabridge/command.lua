@@ -5,9 +5,13 @@
 ---@field command function
 
 local json = require("src.utils.json")
+local SetRoute = require("src.n_tracs_core.switch.set_route")
+
+-- サーバーの応答に載って届いたコマンドの peer。結果はチャットに出さず、ログにだけ残す
+local REMOTE_PEER = -2
 
 ---@param sw SoyaBridge
----@return {COMMANDS: table<string, Command>, DELAY_ANNOUNE: function[], Announce: fun(message: string, peer_id: integer)}
+---@return {COMMANDS: table<string, Command>, DELAY_ANNOUNE: function[], Announce: fun(message: string, peer_id: integer), run_remote: fun(line: string)}
 return function(sw)
     ---@type table<string,Command>
     local COMMANDS = {}
@@ -91,6 +95,54 @@ return function(sw)
             else
                 Announce("ERROR! " .. "Singal \"" .. nm .. "\" is not found", peer_id)
             end
+        end)
+    }
+
+    COMMANDS["switch"] = {
+        admin = true,
+        auth = false,
+        description = "Request a switch position: switch <ID> normal|reverse",
+        command = (function(args, is_admin, is_auth, peer_id)
+            -- minify がフィールド名を書き換えるので、実行時の文字列で表を引かずに比べる
+            local target = (args[3] == "normal" and SetRoute.Normal) or (args[3] == "reverse" and SetRoute.Reverse) or nil
+            -- 方向てこの仮想転てつ機は対象にしない。方向てこ(set)で動かす
+            if not sw.switch_bridge[args[2] or ""] then
+                Announce("ERROR! Switch \"" .. tostring(args[2]) .. "\" is not found", peer_id)
+            elseif not target then
+                Announce("ERROR! usage: ?nt " .. COMMANDS["switch"].description, peer_id)
+            else
+                sw:request_switch(args[2], target)
+                Announce("Switch \"" .. args[2] .. "\" requested " .. args[3], peer_id)
+            end
+        end)
+    }
+
+    COMMANDS["web"] = {
+        admin = true,
+        auth = false,
+        description = "Web CTC: web on|off|port <number>|status",
+        command = (function(args, is_admin, is_auth, peer_id)
+            local web, g, op = sw.web, _ENV["g_savedata"], args[2]
+            if not web then
+                Announce("ERROR! Web CTC is not available", peer_id)
+                return
+            end
+            if op == "on" or op == "off" then
+                g.webCtc = op == "on"
+                web:reset()
+            elseif op == "port" then
+                local p = tonumber(args[3] or "")
+                if not p or p ~= math.floor(p) or p < 1 or p > 65535 then
+                    Announce("ERROR! usage: ?nt web port <1-65535>", peer_id)
+                    return
+                end
+                g.webCtcPort = math.floor(p)
+                web:reset()
+            elseif op ~= "status" then
+                Announce("ERROR! usage: ?nt " .. COMMANDS["web"].description, peer_id)
+                return
+            end
+            Announce(web:status(), peer_id)
         end)
     }
 
@@ -264,13 +316,30 @@ return function(sw)
     }
 
     Announce = function(message, peer_id)
-        server.announce("[" .. ADDON_SHORT_NAME .. "]", message, peer_id)
+        if peer_id ~= REMOTE_PEER then
+            server.announce("[" .. ADDON_SHORT_NAME .. "]", message, peer_id)
+        end
         dlog("[" .. ADDON_SHORT_NAME .. "]:" .. message)
+    end
+
+    ---サーバーの応答に載って届いたコマンドを、管理者として実行します。誰に許すかはサーバーが判定します
+    ---web は実行しません。サーバーが自分で送信を止めたり、ポートを変えたりできないようにするためです
+    ---@param line string
+    local function run_remote(line)
+        local args = {}
+        for a in line:gmatch("%S+") do args[#args + 1] = a end
+        local cmd = COMMANDS[args[1] or ""]
+        if args[1] == "web" or not cmd then
+            dlog("[" .. ADDON_SHORT_NAME .. "]:Web CTC: skipped \"" .. line .. "\"")
+            return
+        end
+        cmd.command(args, true, true, REMOTE_PEER)
     end
 
     return {
         COMMANDS = COMMANDS,
         DELAY_ANNOUNE = DELAY_ANNOUNE,
-        Announce = Announce
+        Announce = Announce,
+        run_remote = run_remote
     }
 end

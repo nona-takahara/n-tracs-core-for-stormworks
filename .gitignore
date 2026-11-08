@@ -16,3 +16,6 @@ area_track.json
 
 # ゲームデータの写しなので念のため非公開
 *.segments.json
+
+# Web CTC のログ用サーバーの出力
+/logs/
