@@ -15,7 +15,7 @@ index.js は、`lua53`・`lua5.3`・`lua` の順に、`-v` の出力に「Lua 5.
 | 指令値の処理 | `parse`・`train_id` が関数である |
 | 資源・登録点 | 資源の軌道回路、`match.at`、`enter`、`start_point`、`early.start_point` の軌道回路が存在する |
 | sequence | `moves` が空でなく、`match.at` が table、`match.accept` が関数である |
-| move | `class` が数値、`enter` が table、`options` が空でない table である。任意の項目は次のとおり。`from` は定義済みの資源、`early.accept` は関数、`wait` は正の数値（秒） |
+| move | `class` が数値、`enter` が table、`options` が空でない table である。任意の項目は次のとおり。`from` は定義済みの資源、`early.accept` は関数、`wait` は正の数値（秒）、`start_delay` は正の数値（秒）で `start_point` を持つ |
 | option | signal が存在し、`isRouteLocked` を持つ。`uses`・`dest` の資源が定義されている |
 | 到着記録 | `settle` を持つ option に `dest` があり、その move が最後の move である |
 | 予約資源 | `reserve` の名前が `reservations` に定義され、`mode` が `hold`・`take`・`free` のいずれかである |
@@ -40,6 +40,7 @@ minify は、定数の表のキーを短縮する。文字列で参照するキ�
 |---|---|
 | 本番設定のビルド時検査 | `pnpm build -- --no-deploy`（ゲームへの配置を省く） |
 | 軽量回帰テスト | `pnpm test`。`tests/repro_*.lua` をすべて実行し、`tests/repro_arc.lua` と `tests/repro_arc_index.lua` を含む |
+| 仕様書の判断 | `tests/repro_arc_spec.lua`。古い状態の消去、予約資源の取り込みと返却、除外の解除、時素、要求済みの待ち、経過時間の受け取りを、先頭軸の軌道回路にだけ指令値を載せて確かめる。車軸からの観測が、全エリアで全走査と同じ軌道回路を返すことも確かめる |
 | 登録候補の索引 | `tests/repro_arc_index.lua`。重複した登録点の判定順、early、現在の要求、駅間の観測、停止中の指令値更新、複数在線の警報を確認する。登録点と指令値の組み合わせは総当たりで、設定順の検索結果と比べる |
 | 2列車の組合せ探索 | `lua tests/heavy/explore_arc.lua NHB 15 4`（駅は `NHB`・`TKM`・`SNH`・`NMC`） |
 | 制御開始点の測定 | `lua tests/heavy/measure_start_points.lua 110 15 55 10 0.7` |
