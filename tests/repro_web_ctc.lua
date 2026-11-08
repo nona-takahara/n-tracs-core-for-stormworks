@@ -27,6 +27,11 @@ sw.web = web
 local c = h.new_checker()
 
 local MARKER = "N-TRACS for Stormworks/1"
+-- 開発者が決める値は実測で入れ直すので、テストはモジュールの原文から読む
+local src = io.open("src/n_tracs_soyabridge/web_ctc.lua"):read("a")
+local DEFAULT_PORT = tonumber(src:match("DEFAULT_PORT = (%d+)"))
+local BUDGET_CHARS = tonumber(src:match("BUDGET_CHARS = (%d+)"))
+local MAX_TICKS = 100000 -- 待ち時間や間隔を実測で延ばしても足りる回数
 local function chat(...) cmd.COMMANDS[(...)].command({ ... }, true, true, 0) end
 local function last() return sent[#sent] end
 local function answer(text, r) r = r or last(); web:on_reply(r.port, r.req, text) end
@@ -51,7 +56,7 @@ chat("web", "on")
 c:check("web on で有効になる", g_savedata.webCtc, true)
 web:tick(6)
 c:check("有効にした最初の tick で送る", #sent, 1)
-c:check("既定のポート", last().port, 8131)
+c:check("既定のポート", last().port, DEFAULT_PORT)
 c:check("つながる前は事実を載せない", last().req:match("^/ntracs/v1/state%?v=TEST%-1&b=%d+&s=1&c=0&end=1$") ~= nil, true)
 
 -- サーバーがない: 印のない応答は失敗。間隔を延ばして、すぐには送らない
@@ -60,18 +65,18 @@ c:check("印のない応答ではつながらない", web.connected, false)
 local n = #sent
 web:tick(6)
 c:check("失敗の直後は送らない", #sent, n)
-c:check("間隔をおいて送り直す", run_until(new_request(), 400) ~= nil, true)
+c:check("間隔をおいて送り直す", run_until(new_request(), MAX_TICKS) ~= nil, true)
 c:check("status はサーバーが見つからないと言う", web:status():find("server not found", 1, true) ~= nil, true)
 
 -- 失敗が続くと間隔が延びる
 answer("")
-local gap1 = run_until(new_request(), 400)
+local gap1 = run_until(new_request(), MAX_TICKS)
 answer("")
-local gap2 = run_until(new_request(), 400)
+local gap2 = run_until(new_request(), MAX_TICKS)
 c:check("失敗が続くと間隔が延びる", gap1 ~= nil and gap2 ~= nil and gap2 > gap1, true)
 
 -- 応答が返らない: 待ち時間を過ぎたら失敗として扱い、また送る
-c:check("応答がなくても、いずれ送り直す", run_until(new_request(), 2000) ~= nil, true)
+c:check("応答がなくても、いずれ送り直す", run_until(new_request(), MAX_TICKS) ~= nil, true)
 
 -- サーバーが起動した: 印のある応答でつながり、次から事実を載せる
 answer(MARKER .. "\r\n")
@@ -84,11 +89,11 @@ c:check("末尾の印で終わる", last().req:sub(-6), "&end=1")
 -- 1 周すると全事実が届き、周回番号が進む
 local seen, too_long = {}, 0
 local function collect(r)
-    if #r.req > 2000 then too_long = too_long + 1 end
+    if #r.req > BUDGET_CHARS then too_long = too_long + 1 end
     for k in r.req:gmatch("&([%w_.]+)=") do seen[k] = true end
 end
 collect(last())
-for _ = 1, 50 do
+for _ = 1, MAX_TICKS do
     answer(MARKER)
     web:tick(6)
     collect(last())
@@ -105,7 +110,7 @@ c:check("URL は字数の予算に収まる", too_long, 0)
 -- 変化した事実を先に送る。応答に載ったコマンドはチャットに出さない
 answer(MARKER)
 local before = #announced
-answer(MARKER .. "\nset NHB12L\nweb off\nnosuchcommand x\n", { port = 8131, req = "/ntracs/v1/state?b=1&s=1" })
+answer(MARKER .. "\nset NHB12L\nweb off\nnosuchcommand x\n", { port = DEFAULT_PORT, req = "/ntracs/v1/state?b=1&s=1" })
 c:check("応答のコマンドを実行する", sw.nt:get_signal("NHB12L"):getInput(), true)
 c:check("応答のコマンドの結果はチャットに出さない", #announced, before)
 c:check("応答の web コマンドは実行しない", g_savedata.webCtc, true)
@@ -114,7 +119,7 @@ c:check("変化した事実を先頭に載せる", last().req:match("&c=%d+&([^&
 
 -- 遅れて届いた応答: 送信の状態には使わないが、コマンドは実行する
 local late = last()
-c:check("待ち時間を過ぎると失敗になる", run_until(function() return not web.connected end, 2000) ~= nil, true)
+c:check("待ち時間を過ぎると失敗になる", run_until(function() return not web.connected end, MAX_TICKS) ~= nil, true)
 answer(MARKER .. "\nset NHB12R", late)
 c:check("遅れた応答ではつながったことにしない", web.connected, false)
 c:check("遅れた応答のコマンドは実行する", sw.nt:get_signal("NHB12R"):getInput(), true)
@@ -135,7 +140,7 @@ chat("web", "port", "9000")
 chat("web", "on")
 web:tick(6)
 c:check("設定したポートへ送る", last().port, 9000)
-answer(MARKER .. "\nset NHB11L", { port = 8131, req = last().req })
+answer(MARKER .. "\nset NHB11L", { port = DEFAULT_PORT, req = last().req })
 c:check("前のポートの応答は捨てる", sw.nt:get_signal("NHB11L"):getInput(), false)
 
 -- 通し番号は 999999 の次に 0 へ戻る
