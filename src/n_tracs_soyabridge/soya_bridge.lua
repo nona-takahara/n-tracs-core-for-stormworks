@@ -22,6 +22,8 @@ local Arc            = require("src.n_tracs_arc.arc")
 ---@field default_area number
 ---@field arc Arc|nil
 ---@field arc_values table<string, number>|nil 採用されている「動き」の信号機ごとのARC指令値(Phase 4で更新)
+---@field web WebCtc|nil
+---@field switch_requests table<string, SetRoute> 次の process の直前に反映する転てつ機の要求
 local SoyaBridge     = {}
 
 ---@return SoyaBridge
@@ -34,6 +36,7 @@ function SoyaBridge.new()
     obj.points = {}
     obj.vehicle_table = {}
     obj.lever_alias = {}
+    obj.switch_requests = {}
 
     return obj
 end
@@ -161,8 +164,19 @@ function SoyaBridge:before_process()
     end
 end
 
+---転てつ機の要求を預かります。要求位置 W は毎周期の before_process で戻るので、次の process の直前に反映します
+---@param switch_id string
+---@param target SetRoute
+function SoyaBridge:request_switch(switch_id, target)
+    self.switch_requests[switch_id] = target
+end
+
 ---@param deltaTicks number
 function SoyaBridge:process(deltaTicks)
+    for id, target in pairs(self.switch_requests) do
+        self.nt:get_switch(id):move(target, self.nt)
+        self.switch_requests[id] = nil
+    end
     self.nt:process(deltaTicks)
 end
 
@@ -184,9 +198,9 @@ function SoyaBridge:arc_readings(area_track)
     return out
 end
 
----ARCを設定します。信号・軌道回路の定義後に呼んでください
----@param config table res/arc.lua の設定
-function SoyaBridge:create_arc(config)
+---エリアから軌道回路への逆引きを作ります。境目のエリアは複数の軌道回路に属します。軌道回路の定義後に呼んでください
+---@return table<number, string[]>
+function SoyaBridge:area_to_tracks()
     local area_track = {}
     for track_id, bridge in pairs(self.track_bridge) do
         for _, area_id in ipairs(bridge.area_ids) do
@@ -194,6 +208,13 @@ function SoyaBridge:create_arc(config)
             table.insert(area_track[area_id], track_id)
         end
     end
+    return area_track
+end
+
+---ARCを設定します。信号・軌道回路の定義後に呼んでください
+---@param config table res/arc.lua の設定
+function SoyaBridge:create_arc(config)
+    local area_track = self:area_to_tracks()
     -- 設定の秒は、信号の時素と同じく 60 tick/秒で換算する
     self.arc = Arc.new(config, self.nt, function() return self:arc_readings(area_track) end, 60)
 end
