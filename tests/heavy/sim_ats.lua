@@ -199,12 +199,12 @@ local function simulate(target, pat, specs, sw_in)
     for gi, g in ipairs(guards) do tr.g[gi] = { passed = false } end
     trains[k] = tr
   end
-  sw.arc.probe = function(id)
+  h.set_arc_probe(sw, function(id)
     for _, tr in ipairs(trains) do
       if tr.active and id == path[track_index(tr.front)] then return tr.raw end
     end
     return 0
-  end
+  end)
 
   local t, steps = 0, 0
   while steps < 40000 do
@@ -237,7 +237,7 @@ local function simulate(target, pat, specs, sw_in)
       sw.areas[id].axles = axles
     end
     h.tick(sw, short)
-    sw:arc_process()
+    sw:arc_process(6)
     sw:before_broadcast(6)
 
     for k, tr in ipairs(trains) do

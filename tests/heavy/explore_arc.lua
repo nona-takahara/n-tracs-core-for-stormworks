@@ -194,7 +194,7 @@ function M.run(types, offsets, opts)
     end
     return false
   end
-  sw.arc.probe = function(id)
+  h.set_arc_probe(sw, function(id)
     for _, t in ipairs(trains) do
       if t.state ~= "absent" and t.state ~= "done" and not t.silent and (occ_set(t)) == id then
         local p = t.ty.phases[t.phase]
@@ -202,7 +202,7 @@ function M.run(types, offsets, opts)
       end
     end
     return 0
-  end
+  end)
 
   local idle, trace = 0, {}
   local probes = nil
@@ -312,7 +312,7 @@ function M.run(types, offsets, opts)
       end
     end
     h.tick(sw, occ)
-    sw:arc_process()
+    sw:arc_process(6)
     if alldone then return "ok", { step = step, trace = trace } end
     if progress then idle = 0 else idle = idle + 1 end
 

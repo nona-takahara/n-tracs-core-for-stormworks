@@ -166,33 +166,43 @@ function SoyaBridge:process(deltaTicks)
     self.nt:process(deltaTicks)
 end
 
----軌道回路上にいる車軸のARC指令値を返します。ARC指令値の受信はAxleが行っており、ここは引くだけです
----@param track_id string
----@return number arc 0は指令値なし
-function SoyaBridge:track_arc(track_id)
-    local bridge = self.track_bridge[track_id]
-    if not bridge then return 0 end
-    for _, area_id in ipairs(bridge.area_ids) do
-        local area = self.areas[area_id]
-        for _, axle in ipairs(area and area.axles or {}) do
-            if axle.arc ~= 0 then
-                return axle.arc
+---指令値を持つ車軸がいる軌道回路と、その指令値を返します。ARC指令値の受信はAxleが行っており、ここは引くだけです。
+---全軌道回路を走査せず、車軸の側から引きます
+---@param area_track table<number, string[]> エリアから軌道回路への逆引き。境目のエリアは複数の軌道回路に属する
+---@return {[1]: string, [2]: number}[]
+function SoyaBridge:arc_readings(area_track)
+    local out = {}
+    for _, v in pairs(self.vehicle_table) do
+        for _, axle in ipairs(v.axles) do
+            if axle.arc ~= 0 and axle.area then
+                for _, track_id in ipairs(area_track[axle.area] or {}) do
+                    table.insert(out, { track_id, axle.arc })
+                end
             end
         end
     end
-    return 0
+    return out
 end
 
 ---ARCを設定します。信号・軌道回路の定義後に呼んでください
 ---@param config table res/arc.lua の設定
 function SoyaBridge:create_arc(config)
-    self.arc = Arc.new(config, self.nt, function(track_id) return self:track_arc(track_id) end)
+    local area_track = {}
+    for track_id, bridge in pairs(self.track_bridge) do
+        for _, area_id in ipairs(bridge.area_ids) do
+            area_track[area_id] = area_track[area_id] or {}
+            table.insert(area_track[area_id], track_id)
+        end
+    end
+    -- 設定の秒は、信号の時素と同じく 60 tick/秒で換算する
+    self.arc = Arc.new(config, self.nt, function() return self:arc_readings(area_track) end, 60)
 end
 
 ---N-TRACSの演算結果が確定したあと、次の演算の前に呼びます
-function SoyaBridge:arc_process()
+---@param deltaTicks number 前回の呼び出しからの経過時間(tick)
+function SoyaBridge:arc_process(deltaTicks)
     if self.arc then
-        self.arc:process()
+        self.arc:process(deltaTicks)
         self.arc_values = self.arc:adopted_values()
     end
 end

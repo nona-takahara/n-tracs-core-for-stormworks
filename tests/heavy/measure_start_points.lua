@@ -99,7 +99,7 @@ local function run(target, starts, win)
   local function idx_at(s) for i = #path, 1, -1 do if s >= cum[i] then return i end end return 1 end
   local sf = 0
   -- 先頭軸の軌道回路にだけ指令値を載せる
-  sw.arc.probe = function(id) return id == path[idx_at(sf)] and target.raw or 0 end
+  h.set_arc_probe(sw, function(id) return id == path[idx_at(sf)] and target.raw or 0 end)
 
   -- 軌道回路 path[i] の入口を守る信号
   local guard = {}
@@ -137,7 +137,7 @@ local function run(target, starts, win)
     local fi = idx_at(sf)
     local ri = idx_at(math.max(0, sf - D))
     h.tick(sw, { [path[fi]] = true, [path[ri]] = true })
-    sw:arc_process()
+    sw:arc_process(6)
     for _, r in ipairs(recs) do
       if sf >= r.vis and sf < r.pos then
         local v = sw.nt:get_signal(r.name).aspect

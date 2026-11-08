@@ -21,25 +21,38 @@ local seqs = {
     sequence("second", { "A", "C" }),
     sequence("third", { "C" }),
 }
+---軌道回路ごとの指令値 probe(id) から、ARC が読む一覧(指令値を持つ軌道回路と、その指令値)を作る
+local function reader(ids, probe)
+    return function()
+        local out = {}
+        for _, id in ipairs(ids) do
+            local v = probe(id)
+            if v and v ~= 0 then out[#out + 1] = { id, v } end
+        end
+        return out
+    end
+end
 local arc = Arc.new({
     parse = function(v) return v ~= 0 and v or nil end,
     train_id = function(v) return v.key end,
     stations = { S = { code = 7, running = false, sequences = seqs } },
-}, nt, function(id) return values[id] or 0 end)
+}, nt, reader({ "A", "B", "C", "EARLY", "START", "BETWEEN", "END" }, function(id) return values[id] or 0 end))
 local station = arc.stations.S
 local function step(tracks, allowed, fast)
     values, calls = {}, {}
     local v = { key = "train", allowed = allowed, fast = fast }
     for _, id in ipairs(tracks) do values[id] = v end
-    arc:process()
+    arc:process(6)
     return station.requests.train
 end
 local r = step({ "A", "B", "C" }, { second = true, third = true })
 c:check("重複した登録点を設定順に一度ずつ判定", table.concat(calls, ","), "first,second")
 c:check("先に設定した適合候補を登録", r.seq.id, "second")
-r = step({ "BETWEEN" }, { second = true })
-c:check("駅間でも現在の要求を継続", r.seq.id, "second")
+r = step({ "END" }, { second = true })
+c:check("一連の動きの軌道回路の上では、登録点を離れても現在の要求を継続", r.seq.id, "second")
 c:check("停止中も指令値を更新", r.arc.allowed.second, true)
+r = step({ "BETWEEN" }, { second = true })
+c:check("一連の動きの軌道回路の外に出たら、通り抜けたとみなして要求を消す(D3)", r, nil)
 r = step({ "EARLY" }, { first = true, second = true }, false)
 c:check("現在の要求より先の候補が優先", r.seq.id, "first")
 station.requests.train = nil
@@ -96,8 +109,11 @@ for _, reverse in ipairs({ false, true }) do
         train_id = function(v) return v.key end,
         stations = { S = { running = false, sequences = routes,
             resources = { ALL = reverse and { "C", "B", "A" } or { "A", "B", "C" } } } },
-    }, { track = { A = {}, B = {}, C = {} } }, function(id) return occupied[id] end)
-    deadlock:process()
+    }, {
+        track = { A = {}, B = {}, C = {} },
+        get_signal = function() return { signalTrack = {}, routeLock = {} } end,
+    }, reader({ "A", "B", "C" }, function(id) return occupied[id] end))
+    deadlock:process(6)
     local penultimate
     for key in pairs(observations) do if key ~= last then penultimate = key end end
     local ring = { last, penultimate }
@@ -105,8 +121,8 @@ for _, reverse in ipairs({ false, true }) do
     c:check("停止中も複数在線の警報を継続 reverse=" .. tostring(reverse),
         table.concat(deadlock.stations.S.alerts, ","), table.concat(ring, "<->"))
     occupied = {}
-    deadlock.probe = function() return 0 end
-    deadlock:process()
+    deadlock.read = function() return {} end
+    deadlock:process(6)
     c:check("在線消失で警報を解除", #deadlock.stations.S.alerts, 0)
 end
 c:report()

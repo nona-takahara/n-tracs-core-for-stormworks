@@ -9,12 +9,12 @@ local function new_sim()
     require("res.arc")(sw)
     local sim = { sw = sw, trains = {}, others = {} }
     -- 軌道回路ごとの指令値を、列車から引く
-    sw.arc.probe = function(id)
+    h.set_arc_probe(sw, function(id)
         for _, t in pairs(sim.trains) do
             if t.tracks[id] then return t.raw end
         end
         return 0
-    end
+    end)
     function sim.set(key, raw, tracks)
         local set = {}
         for _, id in ipairs(tracks) do set[id] = true end
@@ -32,7 +32,7 @@ local function new_sim()
                 for id in pairs(t.tracks) do occ[id] = true end
             end
             h.tick(sw, occ)
-            sw:arc_process()
+            sw:arc_process(6)
         end
     end
     function sim.locked(lever) return sw.nt:get_signal(lever):isRouteLocked(sw.nt) end
@@ -92,7 +92,8 @@ do
     s.step(3)
     c:check("北港 下り通し・場内: NHB2Rを採用", adopted(s, "NHB", 12), "NHB2R")
     s.set(12, raw(12, 2, 5, 0), { "NHB5LT" })
-    s.step(3)
+    -- 出発(NHB5R)は、掘戸線(HLT_NHB1T)に入ってから時素(30 秒)がたつまで出さない(D14)
+    s.step(300)
     c:check("北港 下り通し・出発: NHB5Rを採用", adopted(s, "NHB", 12), "NHB5R")
     c:check("北港 下り通し: 3番に入って掘戸線予約資源を放す", s.owner("HLT"), nil)
 end
@@ -372,7 +373,8 @@ do
     t.step(3)
     t.set(172, w, { "HLT_NHB1T" })
     local pre
-    for _ = 1, 12 do
+    -- 先出しは、掘戸線に入ってから時素(30 秒)のあと(D14)
+    for _ = 1, 320 do
         t.step(1)
         local vals = t.sw.arc:adopted_values()
         if vals["NHB2R"] and vals["NHB5R"] and not pre then pre = vals["NHB5R"] end

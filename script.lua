@@ -102,7 +102,7 @@ function onTick()
 	elseif Phase == 4 then
 		sw:before_broadcast(6)
 		-- ARCはN-TRACSの演算が確定したあと、次の演算の前に動く
-		sw:arc_process()
+		sw:arc_process(6)
 	elseif Phase == 5 then
 		-- 全ての情報を配信するフェーズ
 		SendingSign = (SendingSign or -1) * -1

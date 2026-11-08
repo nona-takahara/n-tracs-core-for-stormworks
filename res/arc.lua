@@ -16,6 +16,11 @@ local WAIT_SNH_DOWN = 60 -- 潮凪浜 下り到着(SNH1R)のあと
 local WAIT_TKM_DOWN = 20 -- 高見が丘 下り到着(TKM1R)のあと
 local WAIT_SNH_UP = 30 -- 潮凪浜 上り到着(SNH4L)のあと
 
+-- 制御開始点を過ぎてから採用するまでの時素(秒)
+-- 北港 下り通しの出発(NHB5R)。掘戸線(HLT_NHB1T)は1つの軌道回路で間に制御開始点を置けないので、入ってからの秒数で遅らせる。
+-- 仮の値(利用者が決める)。110 km/h 定速の測定では、32 秒までなら NHB2R が視認範囲で G を出し続けた
+local DELAY_NHB_DOWN_DEPART = 30
+
 ---キー名を文字列として実行時に使う表(駅名・資源名・予約資源名)は、この関数で作る。
 ---minify は、表の定数のキー(HLT = ... も ["HLT"] = ... も)を短縮してしまい、`stations["NHB"]` のような文字列での参照が合わなくなる。
 ---キーを実行時に代入すれば短縮されない
@@ -53,11 +58,11 @@ end
 ---@param class number
 ---@param signal string
 ---@param enter string[]
----@param o table|nil from / start_point / wait(ArcMove)と uses / dest / reserve / accept / settle(ArcOption)
+---@param o table|nil from / start_point / start_delay / wait(ArcMove)と uses / dest / reserve / accept / settle(ArcOption)
 local function move(class, signal, enter, o)
     o = o or {}
     return {
-        class = class, enter = enter, from = o.from, start_point = o.start_point, wait = o.wait,
+        class = class, enter = enter, from = o.from, start_point = o.start_point, start_delay = o.start_delay, wait = o.wait,
         options = { { signal = signal, uses = o.uses, dest = o.dest, reserve = o.reserve, accept = o.accept, settle = o.settle } },
     }
 end
@@ -118,7 +123,7 @@ return function(sw)
         sequences = {
             seq("down_through", { "HLT_NHB1T" }, down_through, {
                 move(1, "NHB2R", { "NHB5LT" }, { start_point = "HLT_NHB1T", dest = "P3", reserve = { name = "HLT", mode = "hold" } }),
-                move(1, "NHB5R", { "NHB21T" }, { start_point = "HLT_NHB1T", uses = { "SINGLE" } }),
+                move(1, "NHB5R", { "NHB21T" }, { start_point = "HLT_NHB1T", start_delay = DELAY_NHB_DOWN_DEPART, uses = { "SINGLE" } }),
             }),
             seq("up_through", { "TKM_NHB3T", "TKM_NHB2T", "TKM_NHB1T" }, up_through, {
                 -- 掘戸町のホーム(HLT_P1)に列車がいるときは予約資源を取らない。取ると、その列車は予約資源を待ち、

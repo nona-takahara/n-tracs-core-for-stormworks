@@ -128,6 +128,7 @@ ARC の規則は `docs/implementation/arc.md`、前提と確定した事項は D
 | ファイル | 役割 | 実行 |
 |---|---|---|
 | `tests/repro_arc.lua` | ARC の規則の確認（`pnpm test`） | `lua tests/repro_arc.lua` |
+| `tests/repro_arc_spec.lua` | Docs「ARC 仕様書(草案)」の判断(古い状態の消去、予約資源の取り込みと返却、除外の解除、時素、要求済みの待ち、経過時間の受け取り)と、車軸からの観測が全走査と同じ軌道回路を返すことの確認（`pnpm test`）。指令値は先頭軸の軌道回路にだけ載せる | `lua tests/repro_arc_spec.lua` |
 | `tests/heavy/explore_arc.lua` | 複数列車を動かし、動けなくなる組み合わせ（警報あり・なし）を探す運転シミュレーション。列車は現示に従って一定速度（既定 4 m/周期＝約 144 km/h）で進む。警報なしで固まるか、上限に達すると失敗する | `lua tests/heavy/explore_arc.lua 駅` |
 | `tests/heavy/measure_start_points.lua` | 1 本の列車を流し、信号の現示から制御開始点を決める現示シミュレーション。110 km/h、実効視認距離＝制動距離＋10 秒 | `lua tests/heavy/measure_start_points.lua [km/h] [軸距] [Y] [余裕秒] [減速度]` |
 | `tests/heavy/gen_track_lengths.js` | エディタのデータから軌道回路の実長を求め、`tests/heavy/track_lengths.lua` を作る（生成物は直接編集しない） | `node tests/heavy/gen_track_lengths.js [--report]` |

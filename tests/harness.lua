@@ -53,6 +53,24 @@ function M.tick(sw, shortMap)
     sw:process(6)
 end
 
+---ARC の観測を、軌道回路ごとの関数で差し替えます。probe(track_id) は、その軌道回路の先頭軸の指令値(0は指令値なし)を返します。
+---実機では Soya Bridge が車軸の側から引きますが、テストでは全軌道回路を名前順に問い合わせて同じ一覧を作ります
+---@param sw SoyaBridge
+---@param probe fun(track_id: string): number
+function M.set_arc_probe(sw, probe)
+    local ids = {}
+    for id in pairs(sw.nt.track) do table.insert(ids, id) end
+    table.sort(ids)
+    sw.arc.read = function()
+        local out = {}
+        for _, id in ipairs(ids) do
+            local v = probe(id)
+            if v ~= 0 then table.insert(out, { id, v }) end
+        end
+        return out
+    end
+end
+
 ---ソフトアサート用チェッカー。途中で止めず失敗をすべて記録し、最後にまとめて
 ---報告します。「Nサイクル目時点の状態」を何箇所も確認したいテストに向いています。
 local Checker = {}

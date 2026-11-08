@@ -51,6 +51,13 @@ function M.check(config, nt)
                         check_track(move.early.start_point, mv .. " early.start_point")
                         if type(move.early.accept) ~= "function" then fail(mv .. ": early.accept (function) is required") end
                     end
+                    if move.start_delay ~= nil then
+                        if type(move.start_delay) ~= "number" or move.start_delay <= 0 then
+                            fail(mv .. ": start_delay must be a positive number (seconds)")
+                        elseif not move.start_point then
+                            fail(mv .. ": start_delay requires start_point")
+                        end
+                    end
                     if move.from then check_res(move.from, mv .. " from") end
                     if move.wait ~= nil and (type(move.wait) ~= "number" or move.wait <= 0) then
                         fail(mv .. ": wait must be a positive number (seconds)")

@@ -161,6 +161,9 @@ return function(sw)
                     for _, a in ipairs(st.alerts) do
                         Announce("WARNING! deadlock " .. args[2] .. ": " .. a, peer_id)
                     end
+                    for _, a in ipairs(st.stalled) do
+                        Announce("WARNING! not locked " .. args[2] .. ": " .. a, peer_id)
+                    end
                 end)
             elseif (op == "promote" or op == "restore" or op == "remove") and key then
                 local ok = arc[op](arc, args[2], key)
